@@ -76,7 +76,7 @@
                                         <i class="text-danger">*</i>
                                         <input type="text" class="form-control" :placeholder="__('enter_product_name')" v-model="name" v-on:keyup="createSlug" required>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 d-none">
                                         <label>{{ __('slug') }}</label>
                                         <i class="text-danger">*</i>
                                         <input type="text" class="form-control" :placeholder="__('enter_product_slug')" v-model="slug" readonly>
@@ -85,15 +85,15 @@
                                         <input type="hidden" v-model="seller_id">
                                     </template>
                                     <template v-else>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 d-none">
                                             <label class="control-label" for="seller_id">{{ __('seller') }}</label>
                                             <i class="text-danger">*</i>
-                                            <select id="seller_id" name="seller_id" class="form-control form-select"
+                                            <!-- <select id="seller_id" name="seller_id" class="form-control form-select"
                                                     v-model="seller_id" required @change="getSellerCategories(); getSeller()">
                                                 <option value="">{{ __('select_seller') }}</option>
                                                 <option v-for="seller in sellers" :value="seller.id">{{ seller.name }}
                                                 </option>
-                                            </select>
+                                            </select> -->
                                         </div>
                                     </template>
                                     <div class="col-md-6">
@@ -304,12 +304,12 @@
                                                 v-model="type"
                                                 :options="[
                                                         { text: ' Packet', 'value': 'packet' },
-                                                        { text: ' Loose', 'value': 'loose' },
+                                                        // { text: ' Loose', 'value': 'loose' },
                                                         ]"
                                                 buttons button-variant="outline-primary"
                                             ></b-form-radio-group>
                                         </div>
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-6 d-none">
                                             <label class="control-label">{{ __('stock_limit') }} <i class="text-danger">*</i></label><br>
                                             <b-form-radio-group
                                                 v-model="is_unlimited_stock"
@@ -332,6 +332,48 @@
                                                 <i class="text-danger">*</i>
                                                 <input type="number" step="any" min="0" class="form-control" placeholder="0"
                                                        v-model="input.packet_measurement">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>SKU</label>
+                                                <i class="text-danger">*</i>
+                                                <input type="text"  class="form-control" placeholder="0"  v-model="input.sku">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Variant Title</label>
+                                                <i class="text-danger">*</i>
+                                                <input type="text"  class="form-control" placeholder="0"  v-model="input.variant_title">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Pack</label>
+                                                <i class="text-danger">*</i>
+                                                <input type="text"  class="form-control" placeholder="0"  v-model="input.pack">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Product Form</label>
+                                                <i class="text-danger">*</i>
+                                                <input type="text"  class="form-control" placeholder="0"  v-model="input.form">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Product Processing</label>
+                                                <i class="text-danger">*</i>
+                                                <input type="text"  class="form-control" placeholder="0"  v-model="input.processing_method">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Product flavor</label>
+                                                <i class="text-danger">*</i>
+                                                <input type="text"  class="form-control" placeholder="0"  v-model="input.flavor">
                                             </div>
                                         </div>
 
@@ -743,6 +785,7 @@ export default {
     // register the component
      props: ['id', 'clone', 'record'],
     components: {  Multiselect,Select2, 'editor': Editor },
+
     data: function () {
         return {
             login_user: Auth.user,
@@ -882,7 +925,7 @@ export default {
             Include <strong>Key Features</strong> with <ul><li> bullet points.
             Add <strong>Benefits</strong> section with more <p> content.
             Use <strong> for emphasis, <em> for highlights.
-            Important: no code blocks, no markdown syntax, no explanatory text.`; 
+            Important: no code blocks, no markdown syntax, no explanatory text.`;
 
         try {
         this.loading = true;
@@ -1127,9 +1170,11 @@ export default {
             }
         },
         getCategories() {
+
             this.isLoading = true
             axios.get(this.$apiUrl + '/categories/options')
                 .then((response) => {
+                    console.log(response)
                     this.isLoading = false
                     let data = response.data;
                     this.categoryOptions = `<option value="">--Select Category--</option>` + data
@@ -1335,6 +1380,7 @@ export default {
                                     'packet_stock': item.stock,
                                     'packet_stock_unit_id': item.stock_unit_id,
                                     'packet_status': item.status,
+                                    'sku': item.sku,
                                     'images': item.images,
                                 };
                                 vm.inputs.push(variantData);
@@ -1419,6 +1465,13 @@ export default {
                     formData.append('packet_stock[]', (this.inputs[i].packet_stock != undefined) ? this.inputs[i].packet_stock : 0);
                     formData.append('packet_stock_unit_id[]', (this.inputs[i].packet_stock_unit_id != undefined) ? this.inputs[i].packet_stock_unit_id : 0);
                     formData.append('packet_status[]', (this.inputs[i].packet_status != undefined) ? this.inputs[i].packet_status : 0);
+                    formData.append('sku[]', (this.inputs[i].sku != undefined) ? this.inputs[i].sku : 0);
+                    formData.append('pack[]', (this.inputs[i].pack != undefined) ? this.inputs[i].pack : 0);
+                    formData.append('specification[]', (this.inputs[i].specification != undefined) ? this.inputs[i].specification : 0);
+                    formData.append('form[]', (this.inputs[i].form != undefined) ? this.inputs[i].form : 0);
+                    formData.append('processing_method[]', (this.inputs[i].processing_method != undefined) ? this.inputs[i].processing_method : 0);
+                    formData.append('flavor[]', (this.inputs[i].flavor != undefined) ? this.inputs[i].flavor : 0);
+                    formData.append('variant_title[]', (this.inputs[i].variant_title != undefined) ? this.inputs[i].variant_title : 0);
 
 
 
@@ -1548,6 +1601,10 @@ export default {
         },
         changeUnits: function () {
         }
+    },
+    mounted() {
+        // API will run when page loads
+        this.getCategories()
     },
 
 };

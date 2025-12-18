@@ -28,6 +28,7 @@
         "babel-preset-es2015": "^6.24.1",
         "bootstrap": "^4.4.1",
         "bootstrap-vue": "^2.5.0",
+        "crypto-js": "^4.2.0",
         "datatables.net-dt": "^1.10.19",
         "font-awesome": "^4.7.0",
         "fslightbox-vue": "^2.1.3",

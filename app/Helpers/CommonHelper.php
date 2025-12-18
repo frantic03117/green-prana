@@ -1560,11 +1560,11 @@ class CommonHelper
         }
 
         if ($order_type == 'selfpickup') {
-            return $statusQuery->orderByRaw('CASE 
-                WHEN order_status_lists.id IN (9,10,11) THEN order_status_lists.id 
-                WHEN order_status_lists.id = 7 THEN 12 
-                WHEN order_status_lists.id = 8 THEN 13 
-                ELSE order_status_lists.id 
+            return $statusQuery->orderByRaw('CASE
+                WHEN order_status_lists.id IN (9,10,11) THEN order_status_lists.id
+                WHEN order_status_lists.id = 7 THEN 12
+                WHEN order_status_lists.id = 8 THEN 13
+                ELSE order_status_lists.id
             END ASC')->get();
         }
 

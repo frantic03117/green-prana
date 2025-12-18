@@ -28,6 +28,15 @@
                         </div>
                         <div class="card-body">
                             <b-row class="mb-2">
+                                <b-col md="3" offset-md="3">
+                                    <h6 class="box-title">{{ __('search') }}</h6>
+                                    <b-form-input
+                                        id="filter-input"
+                                        v-model="filter"
+                                        type="search"
+                                        :placeholder="__('search')"
+                                    ></b-form-input>
+                                </b-col>
                                 <b-col md="3" offset-md="8">
                                     <h6 class="box-title">{{ __('search') }}</h6>
                                     <b-form-input

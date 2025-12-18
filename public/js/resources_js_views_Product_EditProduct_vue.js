@@ -758,6 +758,48 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 // import InputTag from 'vue-input-tag';
@@ -1165,6 +1207,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this7 = this;
       this.isLoading = true;
       axios__WEBPACK_IMPORTED_MODULE_1___default().get(this.$apiUrl + '/categories/options').then(function (response) {
+        console.log(response);
         _this7.isLoading = false;
         var data = response.data;
         _this7.categoryOptions = "<option value=\"\">--Select Category--</option>" + data;
@@ -1356,6 +1399,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 'packet_stock': item.stock,
                 'packet_stock_unit_id': item.stock_unit_id,
                 'packet_status': item.status,
+                'sku': item.sku,
                 'images': item.images
               };
               vm.inputs.push(variantData);
@@ -1436,6 +1480,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           formData.append('packet_stock[]', this.inputs[_i].packet_stock != undefined ? this.inputs[_i].packet_stock : 0);
           formData.append('packet_stock_unit_id[]', this.inputs[_i].packet_stock_unit_id != undefined ? this.inputs[_i].packet_stock_unit_id : 0);
           formData.append('packet_status[]', this.inputs[_i].packet_status != undefined ? this.inputs[_i].packet_status : 0);
+          formData.append('sku[]', this.inputs[_i].sku != undefined ? this.inputs[_i].sku : 0);
+          formData.append('pack[]', this.inputs[_i].pack != undefined ? this.inputs[_i].pack : 0);
+          formData.append('specification[]', this.inputs[_i].specification != undefined ? this.inputs[_i].specification : 0);
+          formData.append('form[]', this.inputs[_i].form != undefined ? this.inputs[_i].form : 0);
+          formData.append('processing_method[]', this.inputs[_i].processing_method != undefined ? this.inputs[_i].processing_method : 0);
+          formData.append('flavor[]', this.inputs[_i].flavor != undefined ? this.inputs[_i].flavor : 0);
           for (var j = 0; j < this.$refs['packet_variant_images_' + _i][0].files.length; j++) {
             var file = this.$refs['packet_variant_images_' + _i][0].files[j];
             formData.append('packet_variant_images_' + _i + '[]', file);
@@ -1549,6 +1599,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     changeUnits: function changeUnits() {}
+  },
+  mounted: function mounted() {
+    // API will run when page loads
+    this.getCategories();
   }
 });
 
@@ -2026,7 +2080,7 @@ var render = function () {
                           }),
                         ]),
                         _vm._v(" "),
-                        _c("div", { staticClass: "col-md-6" }, [
+                        _c("div", { staticClass: "col-md-6 d-none" }, [
                           _c("label", [_vm._v(_vm._s(_vm.__("slug")))]),
                           _vm._v(" "),
                           _c("i", { staticClass: "text-danger" }, [
@@ -2084,7 +2138,7 @@ var render = function () {
                               }),
                             ]
                           : [
-                              _c("div", { staticClass: "col-md-6" }, [
+                              _c("div", { staticClass: "col-md-6 d-none" }, [
                                 _c(
                                   "label",
                                   {
@@ -2097,73 +2151,6 @@ var render = function () {
                                 _c("i", { staticClass: "text-danger" }, [
                                   _vm._v("*"),
                                 ]),
-                                _vm._v(" "),
-                                _c(
-                                  "select",
-                                  {
-                                    directives: [
-                                      {
-                                        name: "model",
-                                        rawName: "v-model",
-                                        value: _vm.seller_id,
-                                        expression: "seller_id",
-                                      },
-                                    ],
-                                    staticClass: "form-control form-select",
-                                    attrs: {
-                                      id: "seller_id",
-                                      name: "seller_id",
-                                      required: "",
-                                    },
-                                    on: {
-                                      change: [
-                                        function ($event) {
-                                          var $$selectedVal =
-                                            Array.prototype.filter
-                                              .call(
-                                                $event.target.options,
-                                                function (o) {
-                                                  return o.selected
-                                                }
-                                              )
-                                              .map(function (o) {
-                                                var val =
-                                                  "_value" in o
-                                                    ? o._value
-                                                    : o.value
-                                                return val
-                                              })
-                                          _vm.seller_id = $event.target.multiple
-                                            ? $$selectedVal
-                                            : $$selectedVal[0]
-                                        },
-                                        function ($event) {
-                                          _vm.getSellerCategories()
-                                          _vm.getSeller()
-                                        },
-                                      ],
-                                    },
-                                  },
-                                  [
-                                    _c("option", { attrs: { value: "" } }, [
-                                      _vm._v(_vm._s(_vm.__("select_seller"))),
-                                    ]),
-                                    _vm._v(" "),
-                                    _vm._l(_vm.sellers, function (seller) {
-                                      return _c(
-                                        "option",
-                                        { domProps: { value: seller.id } },
-                                        [
-                                          _vm._v(
-                                            _vm._s(seller.name) +
-                                              "\n                                                "
-                                          ),
-                                        ]
-                                      )
-                                    }),
-                                  ],
-                                  2
-                                ),
                               ]),
                             ],
                         _vm._v(" "),
@@ -3007,7 +2994,6 @@ var render = function () {
                                 attrs: {
                                   options: [
                                     { text: " Packet", value: "packet" },
-                                    { text: " Loose", value: "loose" },
                                   ],
                                   buttons: "",
                                   "button-variant": "outline-primary",
@@ -3026,7 +3012,7 @@ var render = function () {
                           _vm._v(" "),
                           _c(
                             "div",
-                            { staticClass: "form-group col-md-6" },
+                            { staticClass: "form-group col-md-6 d-none" },
                             [
                               _c("label", { staticClass: "control-label" }, [
                                 _vm._v(_vm._s(_vm.__("stock_limit")) + " "),
@@ -3108,6 +3094,247 @@ var render = function () {
                                             _vm.$set(
                                               input,
                                               "packet_measurement",
+                                              $event.target.value
+                                            )
+                                          },
+                                        },
+                                      }),
+                                    ]),
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "col-md-4" }, [
+                                    _c("div", { staticClass: "form-group" }, [
+                                      _c("label", [_vm._v("SKU")]),
+                                      _vm._v(" "),
+                                      _c("i", { staticClass: "text-danger" }, [
+                                        _vm._v("*"),
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: input.sku,
+                                            expression: "input.sku",
+                                          },
+                                        ],
+                                        staticClass: "form-control",
+                                        attrs: {
+                                          type: "text",
+                                          placeholder: "0",
+                                        },
+                                        domProps: { value: input.sku },
+                                        on: {
+                                          input: function ($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              input,
+                                              "sku",
+                                              $event.target.value
+                                            )
+                                          },
+                                        },
+                                      }),
+                                    ]),
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "col-md-4" }, [
+                                    _c("div", { staticClass: "form-group" }, [
+                                      _c("label", [_vm._v("Variant Title")]),
+                                      _vm._v(" "),
+                                      _c("i", { staticClass: "text-danger" }, [
+                                        _vm._v("*"),
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: input.variant_title,
+                                            expression: "input.variant_title",
+                                          },
+                                        ],
+                                        staticClass: "form-control",
+                                        attrs: {
+                                          type: "text",
+                                          placeholder: "0",
+                                        },
+                                        domProps: {
+                                          value: input.variant_title,
+                                        },
+                                        on: {
+                                          input: function ($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              input,
+                                              "variant_title",
+                                              $event.target.value
+                                            )
+                                          },
+                                        },
+                                      }),
+                                    ]),
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "col-md-4" }, [
+                                    _c("div", { staticClass: "form-group" }, [
+                                      _c("label", [_vm._v("Pack")]),
+                                      _vm._v(" "),
+                                      _c("i", { staticClass: "text-danger" }, [
+                                        _vm._v("*"),
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: input.pack,
+                                            expression: "input.pack",
+                                          },
+                                        ],
+                                        staticClass: "form-control",
+                                        attrs: {
+                                          type: "text",
+                                          placeholder: "0",
+                                        },
+                                        domProps: { value: input.pack },
+                                        on: {
+                                          input: function ($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              input,
+                                              "pack",
+                                              $event.target.value
+                                            )
+                                          },
+                                        },
+                                      }),
+                                    ]),
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "col-md-4" }, [
+                                    _c("div", { staticClass: "form-group" }, [
+                                      _c("label", [_vm._v("Product Form")]),
+                                      _vm._v(" "),
+                                      _c("i", { staticClass: "text-danger" }, [
+                                        _vm._v("*"),
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: input.form,
+                                            expression: "input.form",
+                                          },
+                                        ],
+                                        staticClass: "form-control",
+                                        attrs: {
+                                          type: "text",
+                                          placeholder: "0",
+                                        },
+                                        domProps: { value: input.form },
+                                        on: {
+                                          input: function ($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              input,
+                                              "form",
+                                              $event.target.value
+                                            )
+                                          },
+                                        },
+                                      }),
+                                    ]),
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "col-md-4" }, [
+                                    _c("div", { staticClass: "form-group" }, [
+                                      _c("label", [
+                                        _vm._v("Product Processing"),
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("i", { staticClass: "text-danger" }, [
+                                        _vm._v("*"),
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: input.processing_method,
+                                            expression:
+                                              "input.processing_method",
+                                          },
+                                        ],
+                                        staticClass: "form-control",
+                                        attrs: {
+                                          type: "text",
+                                          placeholder: "0",
+                                        },
+                                        domProps: {
+                                          value: input.processing_method,
+                                        },
+                                        on: {
+                                          input: function ($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              input,
+                                              "processing_method",
+                                              $event.target.value
+                                            )
+                                          },
+                                        },
+                                      }),
+                                    ]),
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "col-md-4" }, [
+                                    _c("div", { staticClass: "form-group" }, [
+                                      _c("label", [_vm._v("Product flavor")]),
+                                      _vm._v(" "),
+                                      _c("i", { staticClass: "text-danger" }, [
+                                        _vm._v("*"),
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: input.flavor,
+                                            expression: "input.flavor",
+                                          },
+                                        ],
+                                        staticClass: "form-control",
+                                        attrs: {
+                                          type: "text",
+                                          placeholder: "0",
+                                        },
+                                        domProps: { value: input.flavor },
+                                        on: {
+                                          input: function ($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              input,
+                                              "flavor",
                                               $event.target.value
                                             )
                                           },

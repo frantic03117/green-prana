@@ -261,23 +261,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -342,8 +325,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       perPage: 10,
       currentPage: 1,
       totalRows: 0,
-      pageOptions: [5, 10, 15, 20, 25, 50, 100],
-      descriptionValidation: '' // For native HTML5 validation synced with TinyMCE
+      pageOptions: [5, 10, 15, 20, 25, 50, 100]
     };
   },
   mounted: function mounted() {
@@ -437,38 +419,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         this.form.image_url = URL.createObjectURL(file);
       }
     },
-    saveBlog: function saveBlog(event) {
+    saveBlog: function saveBlog() {
       var _this3 = this;
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3() {
-        var form, firstInvalid, formData, response;
+        var formData, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                // Update description validation before submitting
-                _this3.updateDescriptionValidation();
-                form = event.target;
-                if (form.checkValidity()) {
-                  _context3.next = 6;
-                  break;
-                }
-                firstInvalid = form.querySelector(':invalid');
-                if (firstInvalid) {
-                  firstInvalid.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                  });
-                  setTimeout(function () {
-                    firstInvalid.focus();
-                    firstInvalid.reportValidity();
-                  }, 100);
-                } else {
-                  form.reportValidity();
-                }
-                return _context3.abrupt("return");
-              case 6:
                 _this3.isSubmitting = true;
-                _context3.prev = 7;
+                _context3.prev = 1;
                 formData = new FormData();
                 formData.append('title', _this3.form.title);
                 formData.append('slug', _this3.form.slug);
@@ -482,29 +442,29 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   formData.append('image', _this3.form.image);
                 }
                 if (!_this3.edit_record.id) {
-                  _context3.next = 24;
+                  _context3.next = 18;
                   break;
                 }
-                _context3.next = 21;
+                _context3.next = 15;
                 return axios__WEBPACK_IMPORTED_MODULE_2___default().post(_this3.$apiUrl + "/blogs/update/".concat(_this3.edit_record.id), formData, {
                   headers: {
                     'Content-Type': 'multipart/form-data'
                   }
                 });
-              case 21:
+              case 15:
                 response = _context3.sent;
-                _context3.next = 27;
+                _context3.next = 21;
                 break;
-              case 24:
-                _context3.next = 26;
+              case 18:
+                _context3.next = 20;
                 return axios__WEBPACK_IMPORTED_MODULE_2___default().post(_this3.$apiUrl + '/blogs/save', formData, {
                   headers: {
                     'Content-Type': 'multipart/form-data'
                   }
                 });
-              case 26:
+              case 20:
                 response = _context3.sent;
-              case 27:
+              case 21:
                 if (response.data.status === 1) {
                   _this3.showMessage("success", response.data.message);
                   _this3.create_new = false;
@@ -513,22 +473,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 } else {
                   _this3.showMessage("error", response.data.message);
                 }
-                _context3.next = 33;
+                _context3.next = 27;
                 break;
-              case 30:
-                _context3.prev = 30;
-                _context3.t0 = _context3["catch"](7);
+              case 24:
+                _context3.prev = 24;
+                _context3.t0 = _context3["catch"](1);
                 _this3.showMessage("error", __('something_went_wrong'));
-              case 33:
-                _context3.prev = 33;
+              case 27:
+                _context3.prev = 27;
                 _this3.isSubmitting = false;
-                return _context3.finish(33);
-              case 36:
+                return _context3.finish(27);
+              case 30:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, null, [[7, 30, 33, 36]]);
+        }, _callee3, null, [[1, 24, 27, 30]]);
       }))();
     },
     deleteBlog: function deleteBlog(index, id) {
@@ -586,7 +546,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         status: 1
       };
       this.edit_record = {};
-      this.descriptionValidation = ''; // Reset validation field
     },
     // Create slug from title
     createSlug: function createSlug() {
@@ -599,19 +558,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     openAddModal: function openAddModal() {
       this.resetForm();
       this.create_new = true;
-    },
-    // Update hidden validation input based on TinyMCE content
-    updateDescriptionValidation: function updateDescriptionValidation() {
-      // Extract text content from HTML, removing all tags
-      var textContent = this.form.description ? this.form.description.replace(/<[^>]*>/g, '').trim() : '';
-      this.descriptionValidation = textContent;
     }
   },
   watch: {
     // Watch for edit_record changes to populate form
     edit_record: {
       handler: function handler(newVal) {
-        var _this5 = this;
         if (newVal.id) {
           this.form = {
             title: newVal.title || '',
@@ -625,18 +577,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             meta_description: newVal.meta_description || '',
             status: newVal.status
           };
-          // Update validation field when editing
-          this.$nextTick(function () {
-            _this5.updateDescriptionValidation();
-          });
           this.create_new = true;
         }
       },
       deep: true
-    },
-    // Watch description changes to update validation
-    'form.description': function formDescription() {
-      this.updateDescriptionValidation();
     },
     // Watch for pagination changes
     currentPage: function currentPage() {
@@ -733,7 +677,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   staticRenderFns: () => (/* binding */ staticRenderFns)
 /* harmony export */ });
 var render = function () {
-  var this$1 = this
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
@@ -1380,11 +1323,7 @@ var render = function () {
                       _vm._v(_vm._s(_vm.__("image"))),
                     ]),
                     _vm._v(" "),
-                    !_vm.edit_record.id || !_vm.form.image_url
-                      ? _c("span", { staticClass: "text-danger" }, [
-                          _vm._v("*"),
-                        ])
-                      : _vm._e(),
+                    _c("span", { staticClass: "text-danger" }, [_vm._v("*")]),
                     _vm._v(" "),
                     _c("input", {
                       staticClass: "form-control",
@@ -1392,7 +1331,7 @@ var render = function () {
                         type: "file",
                         id: "image",
                         accept: "image/*",
-                        required: !_vm.edit_record.id || !_vm.form.image_url,
+                        required: "",
                       },
                       on: { change: _vm.handleImageUpload },
                     }),
@@ -1412,18 +1351,6 @@ var render = function () {
                             staticClass: "img-thumbnail",
                             attrs: { src: _vm.form.image_url, height: "100" },
                           }),
-                          _vm._v(" "),
-                          _vm.edit_record.id
-                            ? _c("p", { staticClass: "text-muted mt-1" }, [
-                                _vm._v(
-                                  _vm._s(_vm.__("current_image")) +
-                                    " - " +
-                                    _vm._s(
-                                      _vm.__("leave_empty_to_keep_current")
-                                    )
-                                ),
-                              ])
-                            : _vm._e(),
                         ])
                       : _vm._e(),
                   ]),
@@ -1452,56 +1379,15 @@ var render = function () {
                             font_size_formats: this.$editorFont_size_formats,
                             content_style:
                               "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-                            setup: function (editor) {
-                              editor.on("change", function () {
-                                this$1.updateDescriptionValidation()
-                              })
-                            },
                           },
                           placeholder: _vm.__("enter_blog_description"),
                         },
-                        on: { input: _vm.updateDescriptionValidation },
                         model: {
                           value: _vm.form.description,
                           callback: function ($$v) {
                             _vm.$set(_vm.form, "description", $$v)
                           },
                           expression: "form.description",
-                        },
-                      }),
-                      _vm._v(" "),
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.descriptionValidation,
-                            expression: "descriptionValidation",
-                          },
-                        ],
-                        staticClass: "form-control",
-                        staticStyle: {
-                          height: "2px",
-                          padding: "0",
-                          "margin-top": "2px",
-                          "font-size": "1px",
-                          "line-height": "2px",
-                        },
-                        attrs: {
-                          type: "text",
-                          id: "description_validation",
-                          required: "",
-                          tabindex: "-1",
-                          "aria-label": "Description validation",
-                        },
-                        domProps: { value: _vm.descriptionValidation },
-                        on: {
-                          input: function ($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.descriptionValidation = $event.target.value
-                          },
                         },
                       }),
                     ],

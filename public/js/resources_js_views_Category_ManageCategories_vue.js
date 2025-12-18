@@ -413,6 +413,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -1372,7 +1381,7 @@ var render = function () {
                             },
                           },
                         },
-                        [_vm._v(_vm._s(_vm.__("add_category")))]
+                        [_vm._v(_vm._s(_vm.__("add_category")) + " + ")]
                       )
                     : _vm._e(),
                 ]),
@@ -1386,6 +1395,32 @@ var render = function () {
                     "b-row",
                     { staticClass: "mb-2" },
                     [
+                      _c(
+                        "b-col",
+                        { attrs: { md: "3", "offset-md": "3" } },
+                        [
+                          _c("h6", { staticClass: "box-title" }, [
+                            _vm._v(_vm._s(_vm.__("search"))),
+                          ]),
+                          _vm._v(" "),
+                          _c("b-form-input", {
+                            attrs: {
+                              id: "filter-input",
+                              type: "search",
+                              placeholder: _vm.__("search"),
+                            },
+                            model: {
+                              value: _vm.filter,
+                              callback: function ($$v) {
+                                _vm.filter = $$v
+                              },
+                              expression: "filter",
+                            },
+                          }),
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
                       _c(
                         "b-col",
                         { attrs: { md: "3", "offset-md": "8" } },

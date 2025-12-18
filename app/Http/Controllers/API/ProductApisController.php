@@ -104,7 +104,7 @@ class ProductApisController extends Controller
             }
         }
 
-        $products  = \DB::table('products as p')->select(
+        $products  = DB::table('products as p')->select(
             'p.id as id',
             'p.id as product_id',
             'p.name',
@@ -129,9 +129,9 @@ class ProductApisController extends Controller
             'pv.stock',
             'pv.stock_unit_id',
             'u.short_code',
-            \DB::raw('(select short_code from units where units.id = pv.stock_unit_id) as stock_unit')
+            DB::raw('(select short_code from units where units.id = pv.stock_unit_id) as stock_unit')
         )
-            ->join('sellers as s', 'p.seller_id', '=', 's.id')
+            ->leftJoin('sellers as s', 'p.seller_id', '=', 's.id')
             ->join('product_variants as pv', 'p.id', '=', 'pv.product_id')
             ->join('units as u', 'pv.stock_unit_id', '=', 'u.id');
 
@@ -514,294 +514,438 @@ class ProductApisController extends Controller
         return CommonHelper::responseWithData($products);
     }
 
+    // public function save(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => [
+    //             'required',
+    //             // Rule::unique('products')->where(function ($query) use ($request) {
+    //             //     $query->where('seller_id', $request->seller_id);
+    //             // })
+    //         ],
+    //         // 'seller_id' => 'required',
+
+    //         'id' => 'nullable|integer',
+    //         // 'image' => $request->id ? 'nullable' : 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         'description' => 'required',
+
+    //         'type' => 'required',
+    //         'is_unlimited_stock' => 'required',
+
+    //         'packet_measurement.*' =>  ['required_if:type,packet', 'numeric', Rule::notIn([0]),],
+    //         'packet_price.*' =>  ['required_if:type,packet', 'numeric'],
+    //         'packet_stock.*' =>  [
+    //             'required_if:type,packet',
+    //             'numeric',
+    //             function ($attribute, $value, $fail) use ($request) {
+    //                 $index = explode('.', $attribute)[1];
+    //                 $status = $request->input("packet_status.{$index}", 1);
+
+    //                 if ($request->input('is_unlimited_stock') == 0 && $value == 0 && $request->input('type') == 'packet' && $status != 0) {
+    //                     $fail($attribute . ' must be greater than 0 when is_unlimited_stock is 0 and status is not "Sold Out".');
+    //                 }
+    //             },
+    //         ],
+    //         'packet_stock_unit_id.*' =>  ['required_if:type,packet', 'numeric'],
+
+    //         'loose_measurement.*' =>  ['required_if:type,loose', 'numeric', Rule::notIn([0]),],
+    //         'loose_price.*' =>  ['required_if:type,loose', 'numeric'],
+    //         'loose_stock.*' =>  [
+    //             'required_if:type,loose',
+    //             'numeric',
+    //             function ($attribute, $value, $fail) use ($request) {
+    //                 $index = explode('.', $attribute)[1];
+    //                 $status = $request->input('status', $request->input("loose_status.{$index}", 1));
+
+    //                 if ($request->input('is_unlimited_stock') == 0 && strval($value) === '0' && $request->input('type') == 'loose' && intval($status) !== 0) {
+    //                     $fail($attribute . ' must be greater than 0 when is_unlimited_stock is 0 and status is not "Sold Out".');
+    //                 }
+    //             },
+    //         ],
+    //         'loose_stock_unit_id' => ['required_if:type,loose', 'nullable', 'numeric'],
+    //         'category_id' => 'required',
+    //         'barcode' => 'nullable|unique:products,barcode',
+    //     ], [
+    //         'name.unique' => 'The product name has already been taken.',
+    //         'seller_id.required' => 'The seller name field is required.',
+    //         'is_unlimited_stock.required' => 'The Stock Limit field is required.',
+    //         'category_id.required' => 'The Category name field is required.',
+    //         'packet_measurement.*.required_if' => 'The Packet Measurement is required when the type is "Packet".',
+    //         'packet_measurement.*.numeric' => 'The Packet Measurement  must be a number.',
+    //         'packet_measurement.*.not_in' => 'The Packet Measurement must not be zero.',
+    //         'packet_stock.*.required_if' => 'The Packet Stock is required when the type is "Packet".',
+    //         'packet_stock.*.not_in' => 'The Packet Stock must not be zero.',
+    //         'packet_stock_unit_id.*.required_if' => 'The Packet Stock Unit is required when the type is "Packet".',
+
+    //         // 'loose_measurement.*.required_if' => 'The Loose Measurement is required when the type is "Loose".',
+    //         // 'loose_measurement.*.numeric' => 'The Loose Measurement  must be a number.',
+    //         // 'loose_measurement.*.not_in' => 'The Loose Measurement must not be zero.',
+    //         // 'loose_stock_unit_id.required_if' => 'The Loose Stock Unit is required when the type is "Loose".',
+    //         // 'loose_stock_unit_id.numeric' => 'The Loose Stock Unit must be a number.',
+
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return CommonHelper::responseError($validator->errors()->first());
+    //     }
+
+    //     $variations = array();
+    //     // return response()->json(['data' => $request->all()], 500);
+    //     if ($request->type == "packet") {
+
+    //         foreach ($request->packet_measurement as $index => $item) {
+    //             $data = array();
+    //             $data['measurement'] = $request->packet_measurement[$index];
+    //             $data['sku'] = $request->sku[$index];
+    //             // $data['variant_title'] = $request->variant_title[$index];
+    //             $data['pack'] = $request->pack[$index];
+    //             $data['form'] = $request->form[$index];
+    //             $data['processing_method'] = $request->processing_method[$index];
+    //             $data['flavor'] = $request->flavor[$index];
+    //             $data['price'] = $request->packet_price[$index];
+    //             $data['discounted_price'] = $request->discounted_price[$index];
+    //             $data['status'] = $request->packet_status[$index];
+    //             $data['stock'] = ($request->is_unlimited_stock == 0) ? $request->packet_stock[$index] : 0;
+
+    //             $data['stock_unit_id'] = $request->packet_stock_unit_id[$index];
+    //             $variations[] = $data;
+    //         }
+    //     } else {
+    //         foreach ($request->loose_measurement as $index => $item) {
+    //             $data = array();
+    //             $data['measurement'] = $request->loose_measurement[$index];
+    //             $data['sku'] = $request->sku[$index];
+    //             // $data['variant_title'] = $request->variant_title[$index];
+    //             $data['pack'] = $request->pack[$index];
+    //             $data['form'] = $request->form[$index];
+    //             $data['processing_method'] = $request->processing_method[$index];
+    //             $data['flavor'] = $request->flavor[$index];
+    //             $data['price'] = $request->loose_price[$index];
+    //             $data['discounted_price'] = $request->loose_discounted_price[$index];
+    //             $variations[] = $data;
+    //         }
+    //     }
+
+    //     // if (count($variations) !== count(array_unique($variations, SORT_REGULAR))) {
+    //     //     return CommonHelper::responseError("Variations are duplicate!");
+    //     // }
+
+    //     // if ($request->max_allowed_quantity == "" || $request->max_allowed_quantity == 0) {
+    //     //     $max_allowed_quantity = Setting::get_value('max_cart_items_count');
+    //     //     if ($max_allowed_quantity == "" || $max_allowed_quantity == 0) {
+    //     //         return CommonHelper::responseError("Maximum items allowed in cart in empty in store settings.");
+    //     //     }
+    //     // } else {
+    //     //     $max_allowed_quantity = $request->max_allowed_quantity;
+    //     // }
+
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $slug = $request->slug ?: preg_replace(
+    //             '/\s+/',
+    //             '-',
+    //             trim(
+    //                 preg_replace('/[^\p{L}\p{N} ]/u', '', $request->name)
+    //             )
+    //         );
+
+    //         $count = Product::where('slug', 'LIKE', "{$slug}%")->count();
+
+    //         $row_order = Product::max('row_order') + 1;
+    //         $product = new Product();
+    //         $product->name = $request->name;
+    //         $product->slug = $count ? "{$slug}-{$count}" : $slug;
+    //         $product->row_order = $row_order;
+    //         $product->tax_id = $request->tax_id ?? "";
+    //         $product->brand_id = $request->brand_id ?? "";
+    //         $product->seller_id = 0;
+    //         $product->tags = $request->tags ?? "";
+    //         $product->type = $request->type;
+    //         $product->category_id = $request->category_id;
+    //         $product->indicator = $request->product_type;
+    //         $product->manufacturer = $request->manufacturer;
+    //         $product->made_in = $request->made_in;
+    //         $product->tax_included_in_price = $request->tax_included_in_price;
+    //         $product->return_status = $request->return_status;
+    //         $product->return_days = $request->return_days;
+    //         $product->cancelable_status = $request->cancelable_status;
+    //         $product->till_status = $request->till_status;
+    //         $product->cod_allowed = $request->cod_allowed_status;
+    //         $product->total_allowed_quantity = 10;
+    //         $product->description = $request->description;
+    //         $product->is_unlimited_stock = $request->is_unlimited_stock;
+    //         // $require_products_approval = Seller::where('id', $product->seller_id)->pluck('require_products_approval')->first();
+    //         // if ($require_products_approval == 1) {
+    //         //     $product->is_approved = 0;
+    //         // } elseif ($require_products_approval == 0) {
+    //         //     $product->is_approved = 1;
+    //         // }
+    //         $product->status = 1;
+    //         $product->brand_id = $request->brand_id;
+    //         $product->fssai_lic_no = $request->fssai_lic_no ?? "";
+    //         if ($request->fssai_lic_no != null) {
+    //             $pattern = '/^[0-9]{14}$/';
+    //             // Check if the FSSAI number matches the pattern
+    //             if (preg_match($pattern, $request->fssai_lic_no)) {
+    //             } else {
+    //                 return CommonHelper::responseError("Please enter valid FSSAI no.");
+    //             }
+    //         }
+    //         $product->barcode = $request->barcode ?? "";
+    //         if ($request->barcode != null) {
+    //             $pattern = '/^[a-zA-Z0-9-]+$/';
+    //             if (preg_match($pattern, $request->barcode)) {
+    //             } else {
+    //                 return CommonHelper::responseError("Please enter valid Barcode");
+    //             }
+    //         }
+    //         $product->meta_title = $request->meta_title ?? "";
+    //         $product->meta_keywords = $request->meta_keywords ?? "";
+    //         $product->schema_markup = $request->schema_markup ?? "";
+    //         $product->meta_description = $request->meta_description ?? "";
+    //         $image = '';
+    //         if ($request->hasFile('image')) {
+    //             $file = $request->file('image');
+    //             $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
+    //             $image = Storage::disk('public')->putFileAs('products', $file, $fileName);
+    //         } else {
+    //             $image = $request->image;
+    //         }
+    //         $product->image = $image;
+    //         $product->save();
+
+    //         if ($request->hasFile('other_images')) {
+    //             CommonHelper::uploadProductImages($request->file('other_images'), $product->id);
+    //         }
+
+    //         /*Variance*/
+    //         if ($request->type == "packet") {
+
+    //             foreach ($request->packet_measurement as $index => $item) {
+
+    //                 $data = array();
+    //                 $data['product_id'] = $product->id;
+    //                 $data['type'] = $request->type;
+    //                 $data['measurement'] = $request->packet_measurement[$index];
+    //                 $data['price'] = $request->packet_price[$index];
+    //                 $data['discounted_price'] = isset($request->discounted_price[$index]) ? $request->discounted_price[$index] : 0;
+    //                 $data['status'] = $request->packet_status[$index] ?? 1;
+    //                 $data['stock'] = ($request->is_unlimited_stock == 0) ? $request->packet_stock[$index] : 0;
+    //                 $data['stock_unit_id'] = isset($request->packet_stock_unit_id[$index]) ? $request->packet_stock_unit_id[$index] : 0;
+
+    //                 ProductVariant::insert($data);
+    //                 $variant_id = DB::getPdo()->lastInsertId();
+    //                 if ($request->hasFile('packet_variant_images_' . $index)) {
+    //                     CommonHelper::uploadProductImages($request->file('packet_variant_images_' . $index), $product->id, $variant_id);
+    //                 }
+    //             }
+    //         }
+
+    //         if ($request->type == "loose") {
+    //             foreach ($request->loose_measurement as $index => $item) {
+
+    //                 $data = array();
+    //                 $data['product_id'] = $product->id;
+    //                 $data['type'] = $request->type;
+    //                 $data['stock'] = ($request->is_unlimited_stock == 0) ? $request->loose_stock[$index] : 0;
+    //                 $data['stock_unit_id'] = $request->loose_stock_unit_id;
+    //                 $data['status'] = $request->status;
+    //                 $data['measurement'] = $request->loose_measurement[$index];
+    //                 $data['price'] = $request->loose_price[$index];
+
+    //                 $data['discounted_price'] = isset($request->loose_discounted_price[$index]) ? $request->loose_discounted_price[$index] : 0;
+
+    //                 ProductVariant::insert($data);
+    //                 $variant_id = DB::getPdo()->lastInsertId();
+    //                 if ($request->hasFile('loose_variant_images_' . $index)) {
+    //                     CommonHelper::uploadProductImages($request->file('loose_variant_images_' . $index), $product->id, $variant_id);
+    //                 }
+    //             }
+    //         }
+    //         $tagIds = array_filter(array_map('trim', explode(',', $request->tag_ids)), function ($value) {
+    //             return $value !== '';
+    //         });
+
+    //         $product = Product::find($product->id);
+
+    //         if ($product) {
+    //             $existingTagIds = [];
+    //             $newTagNames = [];
+
+    //             // Separate integer IDs (existing tags) from string names (new tags)
+    //             foreach ($tagIds as $tagId) {
+    //                 if (is_numeric($tagId)) {
+    //                     $existingTagIds[] = (int)$tagId;
+    //                 } else {
+    //                     $newTagNames[] = $tagId;
+    //                 }
+    //             }
+
+    //             // Create new tags and get their IDs
+    //             $newTagIds = [];
+    //             foreach ($newTagNames as $tagName) {
+    //                 $newTag = Tag::firstOrCreate(['name' => $tagName]);
+    //                 $newTagIds[] = $newTag->id;
+    //             }
+
+    //             // Combine existing and new tag IDs
+    //             $allTagIds = array_merge($existingTagIds, $newTagIds);
+
+    //             // Sync the tags with the product
+    //             $product->tags()->sync($allTagIds);
+    //         }
+
+    //         DB::commit();
+    //     } catch (\Exception $e) {
+    //         Log::info("Error : " . $e->getMessage());
+    //         DB::rollBack();
+    //         // throw $e;
+    //         return CommonHelper::responseError($e->getMessage());
+    //     }
+
+    //     return CommonHelper::responseSuccess("Product Saved Successfully!");
+    // }
     public function save(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => [
-                'required',
-                Rule::unique('products')->where(function ($query) use ($request) {
-                    $query->where('seller_id', $request->seller_id);
-                })
-            ],
-            // 'seller_id' => 'required',
-
-            'id' => 'nullable|integer',
-            'image' => $request->id ? 'nullable' : 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'name' => 'required',
             'description' => 'required',
-
-            'type' => 'required',
-            'is_unlimited_stock' => 'required',
-
-            'packet_measurement.*' =>  ['required_if:type,packet', 'numeric', Rule::notIn([0]),],
-            'packet_price.*' =>  ['required_if:type,packet', 'numeric'],
-            'packet_stock.*' =>  [
-                'required_if:type,packet',
-                'numeric',
-                function ($attribute, $value, $fail) use ($request) {
-                    $index = explode('.', $attribute)[1];
-                    $status = $request->input("packet_status.{$index}", 1);
-
-                    if ($request->input('is_unlimited_stock') == 0 && $value == 0 && $request->input('type') == 'packet' && $status != 0) {
-                        $fail($attribute . ' must be greater than 0 when is_unlimited_stock is 0 and status is not "Sold Out".');
-                    }
-                },
-            ],
-            'packet_stock_unit_id.*' =>  ['required_if:type,packet', 'numeric'],
-
-            'loose_measurement.*' =>  ['required_if:type,loose', 'numeric', Rule::notIn([0]),],
-            'loose_price.*' =>  ['required_if:type,loose', 'numeric'],
-            'loose_stock.*' =>  [
-                'required_if:type,loose',
-                'numeric',
-                function ($attribute, $value, $fail) use ($request) {
-                    $index = explode('.', $attribute)[1];
-                    $status = $request->input('status', $request->input("loose_status.{$index}", 1));
-
-                    if ($request->input('is_unlimited_stock') == 0 && strval($value) === '0' && $request->input('type') == 'loose' && intval($status) !== 0) {
-                        $fail($attribute . ' must be greater than 0 when is_unlimited_stock is 0 and status is not "Sold Out".');
-                    }
-                },
-            ],
-            'loose_stock_unit_id' => ['required_if:type,loose', 'nullable', 'numeric'],
+            'type' => 'required|in:packet,loose',
+            'is_unlimited_stock' => 'required|in:0,1',
             'category_id' => 'required',
+
+            'packet_measurement.*' => 'required_if:type,packet|numeric|min:1',
+            'packet_price.*' => 'required_if:type,packet|numeric|min:0',
+            'packet_stock.*' => 'required_if:type,packet|numeric|min:0',
+            'packet_stock_unit_id.*' => 'required_if:type,packet|numeric',
+
+            // 'loose_measurement.*' => 'required_if:type,loose|numeric|min:1',
+            // 'loose_price.*' => 'required_if:type,loose|numeric|min:0',
+            // 'loose_stock.*' => 'required_if:type,loose|numeric|min:0',
+            // 'loose_stock_unit_id' => 'required_if:type,loose|numeric',
+
             'barcode' => 'nullable|unique:products,barcode',
-        ], [
-            'name.unique' => 'The product name has already been taken.',
-            'seller_id.required' => 'The seller name field is required.',
-            'is_unlimited_stock.required' => 'The Stock Limit field is required.',
-            'category_id.required' => 'The Category name field is required.',
-            'packet_measurement.*.required_if' => 'The Packet Measurement is required when the type is "Packet".',
-            'packet_measurement.*.numeric' => 'The Packet Measurement  must be a number.',
-            'packet_measurement.*.not_in' => 'The Packet Measurement must not be zero.',
-            'packet_stock.*.required_if' => 'The Packet Stock is required when the type is "Packet".',
-            'packet_stock.*.not_in' => 'The Packet Stock must not be zero.',
-            'packet_stock_unit_id.*.required_if' => 'The Packet Stock Unit is required when the type is "Packet".',
-
-            'loose_measurement.*.required_if' => 'The Loose Measurement is required when the type is "Loose".',
-            'loose_measurement.*.numeric' => 'The Loose Measurement  must be a number.',
-            'loose_measurement.*.not_in' => 'The Loose Measurement must not be zero.',
-            'loose_stock_unit_id.required_if' => 'The Loose Stock Unit is required when the type is "Loose".',
-            'loose_stock_unit_id.numeric' => 'The Loose Stock Unit must be a number.',
-
         ]);
+
         if ($validator->fails()) {
             return CommonHelper::responseError($validator->errors()->first());
-        }
-
-        $variations = array();
-        if ($request->type == "packet") {
-            foreach ($request->packet_measurement as $index => $item) {
-                $data = array();
-                $data['measurement'] = $request->packet_measurement[$index];
-                $data['sku'] = $request->sku[$index];
-                $data['variant_title'] = $request->variant_title[$index];
-                $data['pack'] = $request->pack[$index];
-                $data['form'] = $request->form[$index];
-                $data['processing_method'] = $request->processing_method[$index];
-                $data['flavor'] = $request->flavor[$index];
-                $data['price'] = $request->packet_price[$index];
-                $data['discounted_price'] = $request->discounted_price[$index];
-                $data['status'] = $request->packet_status[$index];
-                $data['stock'] = ($request->is_unlimited_stock == 0) ? $request->packet_stock[$index] : 0;
-
-                $data['stock_unit_id'] = $request->packet_stock_unit_id[$index];
-                $variations[] = $data;
-            }
-        } else {
-            foreach ($request->loose_measurement as $index => $item) {
-                $data = array();
-                $data['measurement'] = $request->loose_measurement[$index];
-                $data['sku'] = $request->sku[$index];
-                $data['variant_title'] = $request->variant_title[$index];
-                $data['pack'] = $request->pack[$index];
-                $data['form'] = $request->form[$index];
-                $data['processing_method'] = $request->processing_method[$index];
-                $data['flavor'] = $request->flavor[$index];
-                $data['price'] = $request->loose_price[$index];
-                $data['discounted_price'] = $request->loose_discounted_price[$index];
-                $variations[] = $data;
-            }
-        }
-        if (count($variations) !== count(array_unique($variations, SORT_REGULAR))) {
-            return CommonHelper::responseError("Variations are duplicate!");
-        }
-
-        if ($request->max_allowed_quantity == "" || $request->max_allowed_quantity == 0) {
-            $max_allowed_quantity = Setting::get_value('max_cart_items_count');
-            if ($max_allowed_quantity == "" || $max_allowed_quantity == 0) {
-                return CommonHelper::responseError("Maximum items allowed in cart in empty in store settings.");
-            }
-        } else {
-            $max_allowed_quantity = $request->max_allowed_quantity;
         }
 
         DB::beginTransaction();
 
         try {
-            $slug = $request->slug ?: preg_replace(
-                '/\s+/',
-                '-',
-                trim(
-                    preg_replace('/[^\p{L}\p{N} ]/u', '', $request->name)
-                )
-            );
+            /* ---------- PRODUCT ---------- */
 
-            $count = Product::where('slug', 'LIKE', "{$slug}%")->count();
+            $slugBase = $request->slug ?: Str::slug($request->name);
+            $slugCount = Product::where('slug', 'LIKE', "{$slugBase}%")->count();
+            $slug = $slugCount ? "{$slugBase}-{$slugCount}" : $slugBase;
 
-            $row_order = Product::max('row_order') + 1;
             $product = new Product();
             $product->name = $request->name;
-            $product->slug = $count ? "{$slug}-{$count}" : $slug;
-            $product->row_order = $row_order;
-            $product->tax_id = $request->tax_id ?? "";
-            $product->brand_id = $request->brand_id ?? "";
-            $product->seller_id = $request->seller_id;
-            $product->tags = $request->tags ?? "";
-            $product->type = $request->type;
+            $product->slug = $slug;
+            $product->row_order = (Product::max('row_order') ?? 0) + 1;
+            $product->seller_id = 0; // ✅ always 0
             $product->category_id = $request->category_id;
-            $product->indicator = $request->product_type;
-            $product->manufacturer = $request->manufacturer;
-            $product->made_in = $request->made_in;
-            $product->tax_included_in_price = $request->tax_included_in_price;
-            $product->return_status = $request->return_status;
-            $product->return_days = $request->return_days;
-            $product->cancelable_status = $request->cancelable_status;
-            $product->till_status = $request->till_status;
-            $product->cod_allowed = $request->cod_allowed_status;
-            $product->total_allowed_quantity = $max_allowed_quantity;
+            $product->brand_id = $request->brand_id ?? null;
+            $product->tax_id = $request->tax_id ?? null;
+            $product->type = $request->type;
+            $product->indicator = $request->product_type ?? null;
+            $product->manufacturer = $request->manufacturer ?? null;
+            $product->made_in = $request->made_in ?? null;
             $product->description = $request->description;
             $product->is_unlimited_stock = $request->is_unlimited_stock;
-            $require_products_approval = Seller::where('id', $product->seller_id)->pluck('require_products_approval')->first();
-            if ($require_products_approval == 1) {
-                $product->is_approved = 0;
-            } elseif ($require_products_approval == 0) {
-                $product->is_approved = 1;
-            }
+            $product->tax_included_in_price = $request->tax_included_in_price ?? 0;
+            $product->return_status = $request->return_status ?? 0;
+            $product->return_days = $request->return_days ?? 0;
+            $product->cancelable_status = $request->cancelable_status ?? 0;
+            $product->till_status = $request->till_status ?? null;
+            $product->cod_allowed = $request->cod_allowed_status ?? 0;
+            $product->total_allowed_quantity = 10;
             $product->status = 1;
-            $product->brand_id = $request->brand_id;
-            $product->fssai_lic_no = $request->fssai_lic_no ?? "";
-            if ($request->fssai_lic_no != null) {
-                $pattern = '/^[0-9]{14}$/';
-                // Check if the FSSAI number matches the pattern
-                if (preg_match($pattern, $request->fssai_lic_no)) {
-                } else {
-                    return CommonHelper::responseError("Please enter valid FSSAI no.");
-                }
-            }
-            $product->barcode = $request->barcode ?? "";
-            if ($request->barcode != null) {
-                $pattern = '/^[a-zA-Z0-9-]+$/';
-                if (preg_match($pattern, $request->barcode)) {
-                } else {
-                    return CommonHelper::responseError("Please enter valid Barcode");
-                }
-            }
-            $product->meta_title = $request->meta_title ?? "";
-            $product->meta_keywords = $request->meta_keywords ?? "";
-            $product->schema_markup = $request->schema_markup ?? "";
-            $product->meta_description = $request->meta_description ?? "";
-            $image = '';
+            $product->is_approved = 1;
+            $product->barcode = $request->barcode ?? null;
+            $product->meta_title = $request->meta_title ?? null;
+            $product->meta_keywords = $request->meta_keywords ?? null;
+            $product->meta_description = $request->meta_description ?? null;
+            $product->schema_markup = $request->schema_markup ?? null;
+            $product->fssai_lic_no = $request->schema_markup ?? null;
+
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
-                $image = Storage::disk('public')->putFileAs('products', $file, $fileName);
+                $filename = time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
+                $product->image = Storage::disk('public')->putFileAs('products', $file, $filename);
             } else {
-                $image = $request->image;
+                $product->image = $request->image ?? null;
             }
-            $product->image = $image;
+
             $product->save();
 
-            if ($request->hasFile('other_images')) {
-                CommonHelper::uploadProductImages($request->file('other_images'), $product->id);
-            }
+            /* ---------- VARIANTS ---------- */
 
-            /*Variance*/
-            if ($request->type == "packet") {
+            if ($request->type === 'packet') {
+                foreach ($request->packet_measurement as $index => $value) {
 
-                foreach ($request->packet_measurement as $index => $item) {
-
-                    $data = array();
-                    $data['product_id'] = $product->id;
-                    $data['type'] = $request->type;
-                    $data['measurement'] = $request->packet_measurement[$index];
-                    $data['price'] = $request->packet_price[$index];
-                    $data['discounted_price'] = isset($request->discounted_price[$index]) ? $request->discounted_price[$index] : 0;
-                    $data['status'] = $request->packet_status[$index] ?? 1;
-                    $data['stock'] = ($request->is_unlimited_stock == 0) ? $request->packet_stock[$index] : 0;
-                    $data['stock_unit_id'] = isset($request->packet_stock_unit_id[$index]) ? $request->packet_stock_unit_id[$index] : 0;
-
-                    ProductVariant::insert($data);
-                    $variant_id = DB::getPdo()->lastInsertId();
-                    if ($request->hasFile('packet_variant_images_' . $index)) {
-                        CommonHelper::uploadProductImages($request->file('packet_variant_images_' . $index), $product->id, $variant_id);
-                    }
+                    ProductVariant::create([
+                        'product_id' => $product->id,
+                        'type' => 'packet',
+                        'sku' => $request->sku[$index] ?? null,
+                        'variant_title' => $request->variant_title[$index] ?? null,
+                        'pack' => $request->pack[$index] ?? null,
+                        'form' => $request->form[$index] ?? null,
+                        'processing_method' => $request->processing_method[$index] ?? null,
+                        'flavor' => $request->flavor[$index] ?? null,
+                        'specification' => $request->specification[$index] ?? null,
+                        'dietary_type' => $request->dietary_type[$index] ?? null,
+                        'measurement' => $request->packet_measurement[$index],
+                        'price' => $request->packet_price[$index],
+                        'discounted_price' => $request->discounted_price[$index] ?? 0,
+                        'status' => $request->packet_status[$index] ?? 1,
+                        'stock' => $request->is_unlimited_stock == 0 ? ($request->packet_stock[$index] ?? 0) : 0,
+                        'stock_unit_id' => $request->packet_stock_unit_id[$index] ?? 0,
+                    ]);
                 }
             }
 
-            if ($request->type == "loose") {
-                foreach ($request->loose_measurement as $index => $item) {
+            if ($request->type === 'loose') {
+                foreach ($request->loose_measurement as $index => $value) {
 
-                    $data = array();
-                    $data['product_id'] = $product->id;
-                    $data['type'] = $request->type;
-                    $data['stock'] = ($request->is_unlimited_stock == 0) ? $request->loose_stock[$index] : 0;
-                    $data['stock_unit_id'] = $request->loose_stock_unit_id;
-                    $data['status'] = $request->status;
-                    $data['measurement'] = $request->loose_measurement[$index];
-                    $data['price'] = $request->loose_price[$index];
-
-                    $data['discounted_price'] = isset($request->loose_discounted_price[$index]) ? $request->loose_discounted_price[$index] : 0;
-
-                    ProductVariant::insert($data);
-                    $variant_id = DB::getPdo()->lastInsertId();
-                    if ($request->hasFile('loose_variant_images_' . $index)) {
-                        CommonHelper::uploadProductImages($request->file('loose_variant_images_' . $index), $product->id, $variant_id);
-                    }
+                    ProductVariant::create([
+                        'product_id' => $product->id,
+                        'type' => 'loose',
+                        'sku' => $request->sku[$index] ?? null,
+                        'variant_title' => $request->variant_title[$index] ?? null,
+                        'measurement' => $request->loose_measurement[$index],
+                        'price' => $request->loose_price[$index],
+                        'discounted_price' => $request->loose_discounted_price[$index] ?? 0,
+                        'status' => $request->status ?? 1,
+                        'stock' => $request->is_unlimited_stock == 0 ? ($request->loose_stock[$index] ?? 0) : 0,
+                        'stock_unit_id' => $request->loose_stock_unit_id,
+                    ]);
                 }
             }
-            $tagIds = array_filter(array_map('trim', explode(',', $request->tag_ids)), function ($value) {
-                return $value !== '';
-            });
 
-            $product = Product::find($product->id);
+            /* ---------- TAGS ---------- */
 
-            if ($product) {
-                $existingTagIds = [];
-                $newTagNames = [];
+            if (!empty($request->tag_ids)) {
+                $tagNames = array_filter(array_map('trim', explode(',', $request->tag_ids)));
+                $tagIds = [];
 
-                // Separate integer IDs (existing tags) from string names (new tags)
-                foreach ($tagIds as $tagId) {
-                    if (is_numeric($tagId)) {
-                        $existingTagIds[] = (int)$tagId;
-                    } else {
-                        $newTagNames[] = $tagId;
-                    }
+                foreach ($tagNames as $name) {
+                    $tagIds[] = Tag::firstOrCreate(['name' => $name])->id;
                 }
 
-                // Create new tags and get their IDs
-                $newTagIds = [];
-                foreach ($newTagNames as $tagName) {
-                    $newTag = Tag::firstOrCreate(['name' => $tagName]);
-                    $newTagIds[] = $newTag->id;
-                }
-
-                // Combine existing and new tag IDs
-                $allTagIds = array_merge($existingTagIds, $newTagIds);
-
-                // Sync the tags with the product
-                $product->tags()->sync($allTagIds);
+                $product->tags()->sync($tagIds);
             }
 
             DB::commit();
+            return CommonHelper::responseSuccess("Product Saved Successfully!");
         } catch (\Exception $e) {
-            Log::info("Error : " . $e->getMessage());
             DB::rollBack();
-            // throw $e;
+            Log::error($e->getMessage());
             return CommonHelper::responseError($e->getMessage());
         }
-
-        return CommonHelper::responseSuccess("Product Saved Successfully!");
     }
+
 
     public function edit($id)
     {
@@ -951,7 +1095,7 @@ class ProductApisController extends Controller
             $product->row_order = $row_order;
             $product->tax_id = $request->tax_id;
             $product->brand_id = $request->brand_id;
-            $product->seller_id = $request->seller_id;
+            $product->seller_id = 0;
             $product->type = $request->type;
             $product->category_id = $request->category_id;
             $product->indicator = $request->product_type;
@@ -969,7 +1113,7 @@ class ProductApisController extends Controller
             if (isset($request->is_approved)) {
                 $product->is_approved = $request->is_approved;
             }
-            $product->fssai_lic_no = $request->fssai_lic_no ?? "";
+            $product->fssai_lic_no = $request->fssai_lic_no ?? rand(1111, 999);
             if ($request->fssai_lic_no != null) {
                 $pattern = '/^[0-9]{14}$/';
                 // Check if the FSSAI number matches the pattern
@@ -1029,6 +1173,7 @@ class ProductApisController extends Controller
                     $variant->price = $request->packet_price[$index];
                     $variant->discounted_price = isset($request->discounted_price[$index]) ? $request->discounted_price[$index] : 0;
                     $variant->status = $request->packet_status[$index];
+                    $variant->variant_title = $request->variant_title[$index];
                     $variant->stock = ($request->is_unlimited_stock == 0) ? $request->packet_stock[$index] : 0;
                     $variant->stock_unit_id = isset($request->packet_stock_unit_id[$index]) ? $request->packet_stock_unit_id[$index] : 0;
                     $variant->save();
