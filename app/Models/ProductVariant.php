@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 class ProductVariant extends Model
 {
 
@@ -12,6 +13,14 @@ class ProductVariant extends Model
     protected $fillable = [
         'id',
         'product_id',
+        'sku',
+        'variant_title',
+        'pack',
+        'specification',
+        'form',
+        'processing_method',
+        'flavor',
+        'dietary_type',
         'type',
         'measurement',
         'price',

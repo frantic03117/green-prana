@@ -593,6 +593,12 @@ class ProductApisController extends Controller
             foreach ($request->packet_measurement as $index => $item) {
                 $data = array();
                 $data['measurement'] = $request->packet_measurement[$index];
+                $data['sku'] = $request->sku[$index];
+                $data['variant_title'] = $request->variant_title[$index];
+                $data['pack'] = $request->pack[$index];
+                $data['form'] = $request->form[$index];
+                $data['processing_method'] = $request->processing_method[$index];
+                $data['flavor'] = $request->flavor[$index];
                 $data['price'] = $request->packet_price[$index];
                 $data['discounted_price'] = $request->discounted_price[$index];
                 $data['status'] = $request->packet_status[$index];
@@ -605,6 +611,12 @@ class ProductApisController extends Controller
             foreach ($request->loose_measurement as $index => $item) {
                 $data = array();
                 $data['measurement'] = $request->loose_measurement[$index];
+                $data['sku'] = $request->sku[$index];
+                $data['variant_title'] = $request->variant_title[$index];
+                $data['pack'] = $request->pack[$index];
+                $data['form'] = $request->form[$index];
+                $data['processing_method'] = $request->processing_method[$index];
+                $data['flavor'] = $request->flavor[$index];
                 $data['price'] = $request->loose_price[$index];
                 $data['discounted_price'] = $request->loose_discounted_price[$index];
                 $variations[] = $data;
