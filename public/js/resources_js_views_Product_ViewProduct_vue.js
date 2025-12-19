@@ -254,6 +254,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -626,7 +640,21 @@ var render = function () {
                             _vm._v("Seller"),
                           ]),
                           _vm._v(" "),
-                          _c("td", [_vm._v(_vm._s(_vm.record.seller.name))]),
+                          _c("td", [
+                            _vm.record.seller
+                              ? _c("span", [
+                                  _vm._v(
+                                    "\n                                                    " +
+                                      _vm._s(_vm.record.seller.name) +
+                                      "\n                                                "
+                                  ),
+                                ])
+                              : _c("span", [
+                                  _vm._v(
+                                    "\n                                                    —\n                                                "
+                                  ),
+                                ]),
+                          ]),
                         ]),
                         _vm._v(" "),
                         _c("tr", [
@@ -674,11 +702,11 @@ var render = function () {
                               _vm.record.tax
                                 ? [
                                     _vm._v(
-                                      "\n                                                " +
+                                      "\n                                                    " +
                                         _vm._s(_vm.record.tax.title) +
                                         " " +
                                         _vm._s(_vm.record.tax.percentage) +
-                                        "%\n                                            "
+                                        "%\n                                                "
                                     ),
                                   ]
                                 : _vm._e(),
@@ -696,11 +724,11 @@ var render = function () {
                               _vm.record.made_in_country
                                 ? [
                                     _vm._v(
-                                      "\n                                                " +
+                                      "\n                                                    " +
                                         _vm._s(
                                           _vm.record.made_in_country.name
                                         ) +
-                                        "\n                                            "
+                                        "\n                                                "
                                     ),
                                   ]
                                 : _vm._e(),
@@ -758,9 +786,9 @@ var render = function () {
                           _vm._v(" "),
                           _c("td", [
                             _vm._v(
-                              "\n                                            " +
+                              "\n                                                " +
                                 _vm._s(_vm.record.manufacturer) +
-                                "\n                                        "
+                                "\n                                            "
                             ),
                           ]),
                           _vm._v(" "),
@@ -771,7 +799,9 @@ var render = function () {
                           _c("td", [
                             _vm.record.till_status == 0
                               ? _c("span", { staticClass: "badge bg-danger" }, [
-                                  _vm._v("Not Applicable"),
+                                  _vm._v(
+                                    "Not\n                                                    Applicable"
+                                  ),
                                 ])
                               : _vm._e(),
                             _vm._v(" "),
@@ -877,9 +907,9 @@ var render = function () {
                               _vm.record.category
                                 ? [
                                     _vm._v(
-                                      "\n                                                " +
+                                      "\n                                                    " +
                                         _vm._s(_vm.record.category.name) +
-                                        "\n                                            "
+                                        "\n                                                "
                                     ),
                                   ]
                                 : _vm._e(),
@@ -1008,26 +1038,26 @@ var render = function () {
                                 variant.unit
                                   ? [
                                       _vm._v(
-                                        "\n                                                " +
+                                        "\n                                                    " +
                                           _vm._s(
                                             _vm.record.name +
                                               " " +
                                               variant.measurement +
-                                              " " +
+                                              "" +
                                               variant.unit.short_code
                                           ) +
-                                          "\n                                            "
+                                          "\n                                                "
                                       ),
                                     ]
                                   : [
                                       _vm._v(
-                                        "\n                                                " +
+                                        "\n                                                    " +
                                           _vm._s(
                                             _vm.record.name +
                                               " " +
                                               variant.measurement
                                           ) +
-                                          "\n                                            "
+                                          "\n                                                "
                                       ),
                                     ],
                               ],
@@ -1042,20 +1072,20 @@ var render = function () {
                                 variant.unit
                                   ? [
                                       _vm._v(
-                                        "\n                                                " +
+                                        "\n                                                    " +
                                           _vm._s(
                                             variant.measurement +
                                               " " +
                                               variant.unit.short_code
                                           ) +
-                                          "\n                                            "
+                                          "\n                                                "
                                       ),
                                     ]
                                   : [
                                       _vm._v(
-                                        "\n                                                " +
+                                        "\n                                                    " +
                                           _vm._s(variant.measurement) +
-                                          "\n                                            "
+                                          "\n                                                "
                                       ),
                                     ],
                               ],

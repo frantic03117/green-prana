@@ -168,7 +168,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.page-content-wrapper[data-v-2fc7d8ec] {\n  min-height: calc(95vh - 200px);\n  display: flex;\n  flex-direction: column;\n}\n.page-content[data-v-2fc7d8ec] {\n  flex: 1;\n  padding-bottom: 2rem;\n}\n.card[data-v-2fc7d8ec] {\n  margin-bottom: 2rem;\n}\n\n/* Ensure proper spacing for footer */\n@media (min-height: 600px) {\n.page-content-wrapper[data-v-2fc7d8ec] {\n    min-height: calc(95vh - 150px);\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.page-content-wrapper[data-v-2fc7d8ec] {\r\n  min-height: calc(95vh - 200px);\r\n  display: flex;\r\n  flex-direction: column;\n}\n.page-content[data-v-2fc7d8ec] {\r\n  flex: 1;\r\n  padding-bottom: 2rem;\n}\n.card[data-v-2fc7d8ec] {\r\n  margin-bottom: 2rem;\n}\r\n\r\n/* Ensure proper spacing for footer */\n@media (min-height: 600px) {\n.page-content-wrapper[data-v-2fc7d8ec] {\r\n    min-height: calc(95vh - 150px);\n}\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

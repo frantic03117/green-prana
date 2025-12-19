@@ -38,7 +38,7 @@ import Vuelidate from 'vuelidate';
 Vue.use(Vuelidate);
 
 import CryptoJS from "crypto-js";
-
+const GoogleMapApiKey = "AIzaSyABqKC2p80oHQBP9LIBXM1hgZ2r693I4jw";
 const secretKey = "ewgrrtoecaemr";
 
 function decryptMapApiKey(encryptedKey) {
@@ -57,12 +57,12 @@ let decryptedMapKey = decryptMapApiKey(window.GoogleMapApiKey);
 
 Vue.use(VueGoogleMaps, {
     load: {
-        key: window.GoogleMapApiKey || window.MapApiKey || decryptedMapKey || decryptedKey, // Use unencrypted map API key first, then fallback to place API key
+        key: window.GoogleMapApiKey || window.MapApiKey || decryptedMapKey || decryptedKey || "AIzaSyABqKC2p80oHQBP9LIBXM1hgZ2r693I4jw", // Use unencrypted map API key first, then fallback to place API key
         libraries: 'places,drawing',
     },
 })
 
-Vue.prototype.$googleMapsKey = window.GoogleMapApiKey || window.MapApiKey || decryptedMapKey || decryptedKey;
+Vue.prototype.$googleMapsKey = window.GoogleMapApiKey || window.MapApiKey || decryptedMapKey || decryptedKey || "AIzaSyABqKC2p80oHQBP9LIBXM1hgZ2r693I4jw";
 Vue.prototype.$appName = window.appName;
 Vue.prototype.$appLogo = window.appLogo;
 Vue.prototype.$panelLoginBackgroundImg = window.panelLoginBackgroundImg;

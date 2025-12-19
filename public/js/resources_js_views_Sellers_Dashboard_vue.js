@@ -835,7 +835,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue2_daterange_picker_dist_vue2_daterange_picker_css__WEBPACK_IMPORTED_MODULE_1__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.vue-daterange-picker[data-v-1ebd09d2][data-v-209c7b6a] {\n    min-width: 80%;\n}\n@media only screen and (min-width: 600px) {\n.vue-daterange-picker[data-v-1ebd09d2][data-v-209c7b6a] {\n        min-width: 90%;\n}\n}\n.btn_product_count[data-v-209c7b6a]{\n    margin-bottom: 10px;\n}\n.chart-container[data-v-209c7b6a] {\n  min-height: 300px;\n  height: 60vh;\n}\n@media (max-width: 768px) {\n.chart-container[data-v-209c7b6a] {\n    height: 40vh;\n}\n}\n\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.vue-daterange-picker[data-v-1ebd09d2][data-v-209c7b6a] {\r\n    min-width: 80%;\n}\n@media only screen and (min-width: 600px) {\n.vue-daterange-picker[data-v-1ebd09d2][data-v-209c7b6a] {\r\n        min-width: 90%;\n}\n}\n.btn_product_count[data-v-209c7b6a]{\r\n    margin-bottom: 10px;\n}\n.chart-container[data-v-209c7b6a] {\r\n  min-height: 300px;\r\n  height: 60vh;\n}\n@media (max-width: 768px) {\n.chart-container[data-v-209c7b6a] {\r\n    height: 40vh;\n}\n}\r\n\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

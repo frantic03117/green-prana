@@ -1486,6 +1486,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           formData.append('form[]', this.inputs[_i].form != undefined ? this.inputs[_i].form : 0);
           formData.append('processing_method[]', this.inputs[_i].processing_method != undefined ? this.inputs[_i].processing_method : 0);
           formData.append('flavor[]', this.inputs[_i].flavor != undefined ? this.inputs[_i].flavor : 0);
+          formData.append('variant_title[]', this.inputs[_i].variant_title != undefined ? this.inputs[_i].variant_title : 0);
           for (var j = 0; j < this.$refs['packet_variant_images_' + _i][0].files.length; j++) {
             var file = this.$refs['packet_variant_images_' + _i][0].files[j];
             formData.append('packet_variant_images_' + _i + '[]', file);
@@ -1628,7 +1629,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_multiselect_dist_vue_multiselect_min_css__WEBPACK_IMPORTED_MODULE_1__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
