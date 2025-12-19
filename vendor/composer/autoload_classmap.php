@@ -187,6 +187,7 @@ return array(
     'App\\Models\\Section' => $baseDir . '/app/Models/Section.php',
     'App\\Models\\Seller' => $baseDir . '/app/Models/Seller.php',
     'App\\Models\\SellerCommission' => $baseDir . '/app/Models/SellerCommission.php',
+    'App\\Models\\SellerProduct' => $baseDir . '/app/Models/SellerProduct.php',
     'App\\Models\\SellerTransaction' => $baseDir . '/app/Models/SellerTransaction.php',
     'App\\Models\\SellerWalletTransaction' => $baseDir . '/app/Models/SellerWalletTransaction.php',
     'App\\Models\\SeoSetting' => $baseDir . '/app/Models/SeoSetting.php',

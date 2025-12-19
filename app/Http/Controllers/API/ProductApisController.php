@@ -17,6 +17,7 @@ use App\Models\Tag;
 use App\Models\Unit;
 use App\Models\Role;
 use App\Models\Section;
+use App\Models\SellerProduct;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -46,7 +47,7 @@ class ProductApisController extends Controller
             $sellers = Seller::where('status', 1)->select('id', 'name')->orderBy('id', 'DESC')->get()->makeHidden(['logo_url', 'national_identity_card_url', 'address_proof_url', 'categories_array'])->toArray();
         }
         $categories = Category::where('status', 1)
-            ->select('id', 'name') // Only select specific columns
+            ->select('id', 'name')
             ->orderBy('id', 'DESC')
             ->get()
             ->makeHidden(['image_url', 'has_child', 'has_active_child'])
@@ -58,7 +59,12 @@ class ProductApisController extends Controller
         if (isset($request->is_approved) && $request->is_approved !== "") {
             $where[] = ['p.is_approved', '=', $request->is_approved];
         }
-
+        if ($request->filled('category_id')) {
+            $where[] = ['p.category_id', '=', $request->category_id];
+        }
+        if ($request->filled('product_id')) {
+            $where[] = ['p.id', '=', $request->product_id];
+        }
         if (isset($request->seller) && $request->seller !== "") {
             $where[] = ['p.seller_id', '=', $request->seller];
             // Get the assigned categories from the seller table
@@ -178,6 +184,31 @@ class ProductApisController extends Controller
 
         return CommonHelper::responseWithData($data, $total);
     }
+    public function sellerAssignedVariants(Request $request)
+    {
+        $sellerId = $request->seller_id;
+
+        $data = SellerProduct::with([
+            'product:id,name',
+            'variant:id,measurement'
+        ])
+            ->where('seller_id', $sellerId)
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->map(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'product' => $row->product->name,
+                    'variant' => $row->variant->measurement,
+                    'price' => $row->price,
+                    'stock' => $row->stock_quantity,
+                    'status' => $row->status
+                ];
+            });
+
+        return CommonHelper::responseWithData($data);
+    }
+
 
     public function getProducts_sellerapp(Request $request)
     {

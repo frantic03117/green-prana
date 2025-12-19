@@ -98,6 +98,7 @@ Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'products'], function () {
         Route::get('/', [\App\Http\Controllers\API\ProductApisController::class, 'getProducts']);
         Route::get('active', [\App\Http\Controllers\API\ProductApisController::class, 'getActiveProducts']);
+        Route::get('seller_assigned_variants', [\App\Http\Controllers\API\ProductApisController::class, 'sellerAssignedVariants']);
 
         Route::post('save', [\App\Http\Controllers\API\ProductApisController::class, 'save'])->name('products.save');
         Route::post('update', [\App\Http\Controllers\API\ProductApisController::class, 'update'])->name('products.update');

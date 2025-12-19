@@ -30,12 +30,12 @@ class SellerApiController extends Controller
             $filterStatus = [$filterStatus];
         }
         $sellers = Seller::with('city', 'categories') ;
-       
+
         if(isset($filterStatus) && $filterStatus != ""){
             $sellers = $sellers->whereIn("status",$filterStatus);
         }
         $sellers = $sellers->orderBy('id','DESC')->get();
-       
+
         return CommonHelper::responseWithData($sellers);
     }
 
@@ -115,7 +115,7 @@ class SellerApiController extends Controller
             $record->pickup_longitude = $request->pickup_longitude;
             $record->pickup_store_timings = $request->pickup_store_timings;
             $record->door_step_mode = $request->door_step_mode ?? 1;
-            
+
             $record->status = Seller::$statusActive;
             $record->slug = Str::slug($request->name);
 
@@ -168,18 +168,18 @@ class SellerApiController extends Controller
     }
     public function edit($id){
         $seller = Seller::with('admin')->where('id',$id)->first();
-        
+
         if(!$seller){
             return CommonHelper::responseError("Seller Not found!");
         }
-        
+
         if ($seller->city_id && $seller->admin && $seller->admin->seller) {
             $cityIds = explode(',', $seller->city_id);
             $cities = City::whereIn('id', $cityIds)->get(['id', 'name']);
-            
+
             $seller->admin->seller->cities = $cities;
         }
-        
+
         return CommonHelper::responseWithData($seller);
     }
 
@@ -230,7 +230,7 @@ class SellerApiController extends Controller
 
                     $record->name = $request->name;
                     $record->email = $request->email;
-                  
+
                     $record->mobile = $request->mobile;
                     $record->store_name = $request->store_name;
 
@@ -265,7 +265,7 @@ class SellerApiController extends Controller
                     $record->pickup_longitude = $request->pickup_longitude;
                     $record->pickup_store_timings = $request->pickup_store_timings;
                     $record->door_step_mode = $request->door_step_mode ?? 1;
-                    
+
                     $record->status = $request->status;
                     $record->remark = $request->remark;
                     $record->slug = Str::slug($request->name);
@@ -296,7 +296,7 @@ class SellerApiController extends Controller
                         $existingCommission = SellerCommission::where('seller_id', $record->id)
                                                               ->where('category_id', $category_id)
                                                               ->first();
-                    
+
                         if (!$existingCommission) {
                             // If no existing entry found, create a new one
                             $commission = new SellerCommission();
@@ -307,7 +307,7 @@ class SellerApiController extends Controller
                     }
 
                     DB::commit();
-               
+
                 if($oldStatus !== $record->status){
                     try {
                         CommonHelper::sendMailAdminStatus("seller", $record, $record->status, $request->email);
@@ -349,7 +349,7 @@ class SellerApiController extends Controller
                 $seller->status = (int)$request->status; // Ensure status is an integer
                 $seller->remark = $request->remark ?? "";
                 $seller->save();
-            
+
                 // Match status with strict comparison
                 $status_name = match ((int)$request->status) {
                     Seller::$statusActive => Seller::$Active,
@@ -360,7 +360,7 @@ class SellerApiController extends Controller
                     default => 'Unknown Status', // Handles unexpected cases
                 };
 
-               
+
 
                 // Send admin notification email
                 $user = Admin::find($seller->admin_id);
@@ -413,7 +413,7 @@ class SellerApiController extends Controller
             ->where(DB::raw('DATE_ADD(DATE_FORMAT(order_items.created_at, "%Y-%m-%d"), INTERVAL products.return_days DAY)'),'<', $date)
             ->orderBy('order_items.id','DESC')
             ->get();
-       
+
         if (!empty($result) && $result->count() !== 0) {
             foreach ($result as $row) {
                 $seller_info = Seller::select('commission', 'email', 'name')->where('id',$row['seller_id'])->first();

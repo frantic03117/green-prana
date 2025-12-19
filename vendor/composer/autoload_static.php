@@ -1202,6 +1202,7 @@ class ComposerStaticInit7d6406e194efdf922031427a95cb6ef2
         'App\\Models\\Section' => __DIR__ . '/../..' . '/app/Models/Section.php',
         'App\\Models\\Seller' => __DIR__ . '/../..' . '/app/Models/Seller.php',
         'App\\Models\\SellerCommission' => __DIR__ . '/../..' . '/app/Models/SellerCommission.php',
+        'App\\Models\\SellerProduct' => __DIR__ . '/../..' . '/app/Models/SellerProduct.php',
         'App\\Models\\SellerTransaction' => __DIR__ . '/../..' . '/app/Models/SellerTransaction.php',
         'App\\Models\\SellerWalletTransaction' => __DIR__ . '/../..' . '/app/Models/SellerWalletTransaction.php',
         'App\\Models\\SeoSetting' => __DIR__ . '/../..' . '/app/Models/SeoSetting.php',
