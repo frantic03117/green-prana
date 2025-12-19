@@ -65,6 +65,7 @@ class ProductApisController extends Controller
         if ($request->filled('product_id')) {
             $where[] = ['p.id', '=', $request->product_id];
         }
+
         if (isset($request->seller) && $request->seller !== "") {
             $where[] = ['p.seller_id', '=', $request->seller];
             // Get the assigned categories from the seller table
@@ -184,6 +185,159 @@ class ProductApisController extends Controller
 
         return CommonHelper::responseWithData($data, $total);
     }
+    public function variants(Request $request)
+    {
+        $pv = ProductVariant::query();
+
+        // =========================
+        // Relationships
+        // =========================
+        $pv->with(['product' => fn($q) => $q->without('variants')]);
+
+        // =========================
+        // Filter: Variant ID
+        // =========================
+        if ($request->filled('variant_id')) {
+            $pv->where('id', $request->variant_id);
+        }
+
+        // =========================
+        // Filter: Product ID
+        // =========================
+        if ($request->filled('product_id')) {
+            $pv->where('product_id', $request->product_id);
+        }
+
+        // =========================
+        // Filter: Status
+        // =========================
+        if ($request->filled('status')) {
+            $pv->where('status', $request->status);
+        }
+
+        // =========================
+        // Filter: In Stock
+        // =========================
+        if ($request->filled('in_stock')) {
+            $pv->where('stock', '>', 0);
+        }
+
+        // =========================
+        // Filter: Price Range
+        // =========================
+        if ($request->filled('price_min')) {
+            $pv->where('price', '>=', $request->price_min);
+        }
+
+        if ($request->filled('price_max')) {
+            $pv->where('price', '<=', $request->price_max);
+        }
+
+        // =========================
+        // Filter: Search (SKU / Variant Title)
+        // =========================
+        if ($request->filled('search')) {
+            $pv->where(function ($q) use ($request) {
+                $q->where('sku', 'like', '%' . $request->search . '%')
+                    ->orWhere('variant_title', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // =========================
+        // Filter: Category (via Product)
+        // =========================
+        if ($request->filled('category_id')) {
+            $pv->whereHas('product', function ($q) use ($request) {
+                $q->where('category_id', $request->category_id);
+            });
+        }
+
+        // =========================
+        // Filter: Brand (via Product)
+        // =========================
+        if ($request->filled('brand_id')) {
+            $pv->whereHas('product', function ($q) use ($request) {
+                $q->where('brand_id', $request->brand_id);
+            });
+        }
+
+        // =========================
+        // Filter: Seller Assignment
+        // =========================
+        if ($request->filled('seller_id')) {
+
+            $assigned = filter_var(
+                $request->get('assigned', true),
+                FILTER_VALIDATE_BOOLEAN
+            );
+
+            if ($assigned) {
+                // ✅ Assigned to seller
+                $pv->whereHas('sellers', function ($q) use ($request) {
+                    $q->where('sellers.id', $request->seller_id);
+                });
+            } else {
+                // ❌ Not assigned to seller
+                $pv->whereDoesntHave('sellers', function ($q) use ($request) {
+                    $q->where('sellers.id', $request->seller_id);
+                });
+            }
+        }
+
+        // =========================
+        // Sorting
+        // =========================
+        if ($request->filled('sort_by')) {
+            $pv->orderBy(
+                $request->sort_by,
+                $request->get('sort_order', 'asc')
+            );
+        } else {
+            $pv->latest('id');
+        }
+        // =========================
+        // Pagination
+        // =========================
+        $paginated = $pv->paginate($request->get('per_page', 20));
+
+        // =========================
+        // Transform paginated data
+        // =========================
+        $paginated->getCollection()->transform(function ($v) {
+            return [
+                'id'                 => $v->product->id,
+                'product_id'         => $v->product->id,
+                'name'               => $v->product->name,
+                'seller_id'          => $v->product->seller_id,
+                'seller_name'        => $v->product->seller?->name,
+                'status'             => $v->product->status,
+                'tax_id'             => $v->product->tax_id,
+                'image'              => $v->product->image,
+                'indicator'          => $v->product->indicator,
+                'is_approved'        => $v->product->is_approved,
+                'manufacturer'       => $v->product->manufacturer,
+                'made_in'            => $v->product->made_in,
+                'return_status'      => $v->product->return_status,
+                'cancelable_status'  => $v->product->cancelable_status,
+                'till_status'        => $v->product->till_status,
+
+                'product_variant_id' => $v->id,
+                'price'              => $v->price,
+                'discounted_price'   => $v->discounted_price,
+                'measurement'        => $v->measurement,
+                'pv_status'          => $v->pv_status,
+                'stock'              => $v->stock,
+                'stock_unit_id'      => $v->stock_unit_id,
+                'short_code'         => $v->unit?->short_code,
+                'stock_unit'         => $v->unit?->short_code,
+            ];
+        });
+
+        return CommonHelper::responseWithData($paginated);
+
+
+        return CommonHelper::responseWithData($data);
+    }
     public function sellerAssignedVariants(Request $request)
     {
         $sellerId = $request->seller_id;
@@ -209,6 +363,28 @@ class ProductApisController extends Controller
         return CommonHelper::responseWithData($data);
     }
 
+    public function assign_product_to_seller(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'seller_id' => 'required',
+            'product_id' => 'required',
+            'price' => 'required',
+            // 'stock_quantity' => 'required|integer|min:0',
+            // 'variant_id' => 'nullable|exists:product_variants,id',
+        ]);
+        if ($validation->fails()) {
+            return response()->json(['errors' => $validation->errors()], 422);
+        }
+        $sellerProduct = SellerProduct::create([
+            'seller_id' => $request->input('seller_id'),
+            'product_id' => $request->input('product_id'),
+            'price' => $request->input('price'),
+            'stock_quantity' => $request->input('stock_quantity') ?? 1,
+            'variant_id' => $request->input('variant_id') ?? 0,
+            'status' => $request->input('status', 'active'),
+        ]);
+        return response()->json(['message' => 'Product created successfully', 'data' => $sellerProduct], 201);
+    }
 
     public function getProducts_sellerapp(Request $request)
     {

@@ -50,6 +50,15 @@ class ProductVariant extends Model
 
         return $this->hasOne(Unit::class, 'id', 'stock_unit_id');
     }
+    public function sellers()
+    {
+        return $this->belongsToMany(
+            Seller::class,
+            'seller_products',
+            'variant_id',
+            'seller_id'
+        );
+    }
 
     public function product()
     {
@@ -58,12 +67,18 @@ class ProductVariant extends Model
 
     public function getFinalPriceWithTaxAttribute()
     {
-        $taxPercentage = $this->product->tax?->percentage ?? 0;
+        $taxPercentage = $this->product?->tax?->percentage ?? 0;
 
-        $basePrice = ($this->attributes['discounted_price'] > 0 && $this->attributes['discounted_price'] !== null)
-            ? $this->attributes['discounted_price']
-            : $this->attributes['price'];
+        $basePrice = ($this->discounted_price !== null && $this->discounted_price > 0)
+            ? $this->discounted_price
+            : $this->price;
 
-        return $basePrice;
+        if (!$basePrice) {
+            return 0;
+        }
+
+        $taxAmount = ($basePrice * $taxPercentage) / 100;
+
+        return round($basePrice + $taxAmount, 2);
     }
 }

@@ -37,25 +37,26 @@ class SellerProductController extends Controller
      */
     public function store(Request $request)
     {
-        $validation = Validator::make($request->all(), [
-            'seller_id' => 'required|exists:sellers,id',
-            'product_id' => 'required|exists:products,id',
-            'price' => 'required|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'variant_id' => 'nullable|exists:product_variants,id',
-        ]);
-        if ($validation->fails()) {
-            return response()->json(['errors' => $validation->errors()], 422);
-        }
-        $sellerProduct = SellerProduct::create([
-            'seller_id' => $request->input('seller_id'),
-            'product_id' => $request->input('product_id'),
-            'price' => $request->input('price'),
-            'stock_quantity' => $request->input('stock_quantity'),
-            'variant_id' => $request->input('variant_id'),
-            'status' => $request->input('status', 'active'),
-        ]);
-        return response()->json(['message' => 'Product created successfully', 'data' => $sellerProduct], 201);
+        return response()->json(['message' => 'Store method called'], 200);
+        // $validation = Validator::make($request->all(), [
+        //     'seller_id' => 'required',
+        //     'product_id' => 'required',
+        //     'price' => 'required',
+        //     // 'stock_quantity' => 'required|integer|min:0',
+        //     // 'variant_id' => 'nullable|exists:product_variants,id',
+        // ]);
+        // if ($validation->fails()) {
+        //     return response()->json(['errors' => $validation->errors()], 422);
+        // }
+        // $sellerProduct = SellerProduct::create([
+        //     'seller_id' => $request->input('seller_id'),
+        //     'product_id' => $request->input('product_id'),
+        //     'price' => $request->input('price'),
+        //     'stock_quantity' => $request->input('stock_quantity') ?? 1,
+        //     'variant_id' => $request->input('variant_id') ?? 0,
+        //     'status' => $request->input('status', 'active'),
+        // ]);
+        // return response()->json(['message' => 'Product created successfully', 'data' => $sellerProduct], 201);
     }
 
     /**
