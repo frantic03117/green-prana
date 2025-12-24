@@ -11528,6 +11528,7 @@ return array(
     'ZipStream\\Option\\Version' => $vendorDir . '/maennchen/zipstream-php/src/Option/Version.php',
     'ZipStream\\Stream' => $vendorDir . '/maennchen/zipstream-php/src/Stream.php',
     'ZipStream\\ZipStream' => $vendorDir . '/maennchen/zipstream-php/src/ZipStream.php',
+    'pcinaglia\\laraUpdater\\LaraUpdaterController' => $vendorDir . '/pcinaglia/laraupdater/src/LaraUpdaterController.php',
     'pcinaglia\\laraupdater\\LaraUpdaterServiceProvider' => $vendorDir . '/pcinaglia/laraupdater/src/LaraUpdaterServiceProvider.php',
     'phpseclib3\\Common\\Functions\\Strings' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Common/Functions/Strings.php',
     'phpseclib3\\Crypt\\AES' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Crypt/AES.php',

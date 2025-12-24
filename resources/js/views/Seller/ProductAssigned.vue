@@ -86,6 +86,7 @@ export default {
                 }
             })
                 .then((res) => {
+                    this.loadProducts()
                     this.isLoading = false;
                     this.$swal.fire("Success", res.data.message, "success");
                 })
@@ -115,12 +116,12 @@ export default {
             if (!this.categoryId) return;
 
             axios
-                .get(this.$apiUrl + "/products", {
-                    params: { category_id: this.categoryId, seller_id: this.seller_id},
+                .get(this.$apiUrl + "/products/variants", {
+                    params: { category_id: this.categoryId, seller_id: this.seller_id, assigned: false},
                 })
                 .then((res) => {
                     console.log(res);
-                    this.products = res.data.data.products;
+                    this.products = res.data.data.data;
                 })
                 .catch(() => { });
         },

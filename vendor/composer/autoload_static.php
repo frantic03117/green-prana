@@ -12543,6 +12543,7 @@ class ComposerStaticInit7d6406e194efdf922031427a95cb6ef2
         'ZipStream\\Option\\Version' => __DIR__ . '/..' . '/maennchen/zipstream-php/src/Option/Version.php',
         'ZipStream\\Stream' => __DIR__ . '/..' . '/maennchen/zipstream-php/src/Stream.php',
         'ZipStream\\ZipStream' => __DIR__ . '/..' . '/maennchen/zipstream-php/src/ZipStream.php',
+        'pcinaglia\\laraUpdater\\LaraUpdaterController' => __DIR__ . '/..' . '/pcinaglia/laraupdater/src/LaraUpdaterController.php',
         'pcinaglia\\laraupdater\\LaraUpdaterServiceProvider' => __DIR__ . '/..' . '/pcinaglia/laraupdater/src/LaraUpdaterServiceProvider.php',
         'phpseclib3\\Common\\Functions\\Strings' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/Common/Functions/Strings.php',
         'phpseclib3\\Crypt\\AES' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/Crypt/AES.php',

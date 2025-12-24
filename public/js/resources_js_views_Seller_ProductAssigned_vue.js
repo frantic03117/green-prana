@@ -88,6 +88,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     savePrice: function savePrice(product) {
+      var _this2 = this;
       // alert("Saving price for: " + product.name + " Price: " + product.price);
       console.log("Saving price for:", product.name);
       console.log("Price:", product.price);
@@ -97,41 +98,55 @@ __webpack_require__.r(__webpack_exports__);
         product_id: product.product_id,
         variant_id: product.product_variant_id,
         price: product.price
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(function (res) {
+        _this2.loadProducts();
+        _this2.isLoading = false;
+        _this2.$swal.fire("Success", res.data.message, "success");
+      })["catch"](function (error) {
+        _this2.isLoading = false;
+        console.error("Error saving price:", error);
+        _this2.$swal.fire("Error", "Something went wrong", "error");
       });
     },
     // Load categories assigned to seller
     loadCategories: function loadCategories() {
-      var _this2 = this;
+      var _this3 = this;
       axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.$apiUrl + "/categories/seller_categories", {
         params: {
           seller_id: this.seller_id
         }
       }).then(function (res) {
-        _this2.categoryOptions = res.data; // API returns <option> HTML
+        _this3.categoryOptions = res.data; // API returns <option> HTML
       })["catch"](function () {});
     },
     // Load products by seller + category
     loadProducts: function loadProducts() {
-      var _this3 = this;
+      var _this4 = this;
       this.selectedProductId = "";
       this.variants = [];
       if (!this.categoryId) return;
-      axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.$apiUrl + "/products", {
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.$apiUrl + "/products/variants", {
         params: {
-          category_id: this.categoryId
+          category_id: this.categoryId,
+          seller_id: this.seller_id,
+          assigned: false
         }
       }).then(function (res) {
         console.log(res);
-        _this3.products = res.data.data.products;
+        _this4.products = res.data.data.data;
       })["catch"](function () {});
     },
     // Load variants for selected product
     loadVariants: function loadVariants() {
-      var _this4 = this;
+      var _this5 = this;
       this.variants = [];
       if (!this.selectedProductId) return;
       var productVariants = this.products.filter(function (p) {
-        return p.product_id === _this4.selectedProductId;
+        return p.product_id === _this5.selectedProductId;
       });
       this.variants = productVariants.map(function (v) {
         return {
@@ -144,7 +159,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     // Save all variants for this seller
     saveVariants: function saveVariants() {
-      var _this5 = this;
+      var _this6 = this;
       var payload = {
         seller_id: this.seller_id,
         category_id: this.categoryId,
@@ -152,9 +167,9 @@ __webpack_require__.r(__webpack_exports__);
         variants: this.variants
       };
       axios__WEBPACK_IMPORTED_MODULE_0___default().post(this.$apiUrl + "/seller/product-variants/save", payload).then(function (res) {
-        _this5.$swal.fire("Success", res.data.message, "success");
+        _this6.$swal.fire("Success", res.data.message, "success");
       })["catch"](function () {
-        _this5.$swal.fire("Error", "Something went wrong", "error");
+        _this6.$swal.fire("Error", "Something went wrong", "error");
       });
     }
   }
