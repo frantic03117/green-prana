@@ -62,7 +62,7 @@ class AdminAuthController extends Controller
         if (!Hash::check(request()->password, $user->password)) {
             return CommonHelper::responseError('Email/Password is wrong!');
         }
-        $otherRoleIds = array(Role::$roleSeller, Role::$roleDeliveryBoy);
+        $otherRoleIds = array(Role::$roleSuperAdmin, Role::$roleSeller, Role::$roleDeliveryBoy);
         // return response()->json(['data' => in_array($user->role_id, $otherRoleIds)], 500);
 
         if (!in_array($user->role_id, $otherRoleIds)) {
