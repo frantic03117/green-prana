@@ -40,9 +40,9 @@ class SellerPosController extends Controller
 
             // Apply search if provided
             if (!empty($search)) {
-                $posUsers->where(function($query) use ($search) {
+                $posUsers->where(function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%')
-                          ->orWhere('phone', 'like', '%' . $search . '%');
+                        ->orWhere('phone', 'like', '%' . $search . '%');
                 });
             }
 
@@ -54,10 +54,10 @@ class SellerPosController extends Controller
 
             // Apply search if provided
             if (!empty($search)) {
-                $regUsers->where(function($query) use ($search) {
+                $regUsers->where(function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%')
-                          ->orWhere('mobile', 'like', '%' . $search . '%')
-                          ->orWhere('email', 'like', '%' . $search . '%');
+                        ->orWhere('mobile', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
                 });
             }
 
@@ -318,11 +318,11 @@ class SellerPosController extends Controller
             $page = $request->page ?? 1;
 
             $productQuery = Product::select('products.*')
-                ->where('products.seller_id', $sellerId)
                 ->where('products.status', 1)
-                ->with(['variants' => function($query) {
+                ->with(['variants' => function ($query) {
                     $query->with('unit'); // Remove status filter to show all variants including sold out ones
                 }]);
+
 
             // Apply category filter if provided
             if ($request->category_id) {
@@ -332,10 +332,10 @@ class SellerPosController extends Controller
             // Apply search filter if provided
             if ($request->search) {
                 $search = $request->search;
-                $productQuery->where(function($query) use ($search) {
+                $productQuery->where(function ($query) use ($search) {
                     $query->where('products.name', 'like', '%' . $search . '%')
-                          ->orWhere('products.slug', 'like', '%' . $search . '%')
-                          ->orWhere('products.tags', 'like', '%' . $search . '%');
+                        ->orWhere('products.slug', 'like', '%' . $search . '%')
+                        ->orWhere('products.tags', 'like', '%' . $search . '%');
                 });
             }
 
@@ -353,7 +353,7 @@ class SellerPosController extends Controller
                     'description' => $product->description,
                     'image_url' => CommonHelper::getImage($product->image),
                     'is_unlimited_stock' => (bool)$product->is_unlimited_stock,
-                    'variants' => $product->variants->map(function($variant) use ($product) {
+                    'variants' => $product->variants->map(function ($variant) use ($product) {
                         return [
                             'id' => $variant->id,
                             'measurement' => $variant->measurement,
@@ -381,7 +381,6 @@ class SellerPosController extends Controller
             ];
 
             return response()->json($response);
-
         } catch (\Exception $e) {
             Log::error("Error fetching products: " . $e->getMessage());
             return response()->json([
@@ -408,7 +407,7 @@ class SellerPosController extends Controller
                 ->where('status', 1)
                 ->orderBy('name', 'ASC')
                 ->get()
-                ->map(function($category) {
+                ->map(function ($category) {
                     return [
                         'id' => $category->id,
                         'name' => $category->name,
@@ -420,7 +419,6 @@ class SellerPosController extends Controller
                 'status' => true,
                 'data' => $categories
             ]);
-
         } catch (\Exception $e) {
             Log::error("Error fetching categories: " . $e->getMessage());
             return response()->json([
@@ -484,14 +482,14 @@ class SellerPosController extends Controller
 
             // Create composite keys for existing and new items (product_id + variant_id)
             $existingItemsMap = [];
-            foreach($existingItems as $item) {
+            foreach ($existingItems as $item) {
                 $key = $item->product_id . '_' . $item->product_variant_id;
                 $existingItemsMap[$key] = $item;
             }
 
             // Create a map of new items
             $newItemsMap = [];
-            foreach($request->items as $item) {
+            foreach ($request->items as $item) {
                 $key = $item['product_id'] . '_' . $item['product_variant_id'];
                 $newItemsMap[$key] = $item;
             }
@@ -521,7 +519,6 @@ class SellerPosController extends Controller
                                 }
 
                                 $productVariant->save();
-
                             } else if ($product->type == 'loose') {
                                 $weightToRestore = $productVariant->measurement * $removedItem->quantity;
                                 $newStock = $productVariant->stock + $weightToRestore;
@@ -551,7 +548,6 @@ class SellerPosController extends Controller
                 $deleted = DB::table('pos_order_items')
                     ->where('id', $removedItem->id)
                     ->delete();
-
             }
 
             // Step 2: Process remaining items (update existing or add new)
@@ -771,7 +767,7 @@ class SellerPosController extends Controller
                 ->get();
 
             // Add variant names to order items
-            foreach($order_items as $item) {
+            foreach ($order_items as $item) {
                 $variant = ProductVariant::find($item->product_variant_id);
                 if ($variant) {
                     $item->variant_name = $variant->measurement . " " .
@@ -820,12 +816,11 @@ class SellerPosController extends Controller
                 ->get();
 
             // Check if view exists
-            if(!view()->exists('pos_invoice')) {
+            if (!view()->exists('pos_invoice')) {
                 return response()->view('errors.404', ['message' => 'Invoice template not found'], 404);
             }
 
             return view('pos_invoice', compact('order', 'order_items', 'additional_charges'));
-
         } catch (\Exception $e) {
             Log::error("Error showing POS invoice: " . $e->getMessage());
             return response()->view('errors.500', ['message' => 'Error generating invoice: ' . $e->getMessage()], 500);
@@ -856,7 +851,6 @@ class SellerPosController extends Controller
                     'store_name' => $seller->store_name
                 ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,

@@ -1549,3 +1549,5 @@
 #46 {main}
 "} 
 [2025-12-26 05:33:24] production.ERROR: Add Seller status send mail error ["Address in mailbox given [] does not comply with RFC 2822, 3.6.2."] 
+[2025-12-26 09:30:36] production.ERROR: Approve Seller status send mail error ["Address in mailbox given [] does not comply with RFC 2822, 3.6.2."] 
+[2025-12-26 09:30:44] production.ERROR: Approve Seller status send mail error ["Address in mailbox given [] does not comply with RFC 2822, 3.6.2."] 

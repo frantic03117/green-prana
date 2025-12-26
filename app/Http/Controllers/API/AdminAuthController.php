@@ -62,9 +62,10 @@ class AdminAuthController extends Controller
         if (!Hash::check(request()->password, $user->password)) {
             return CommonHelper::responseError('Email/Password is wrong!');
         }
-
         $otherRoleIds = array(Role::$roleSeller, Role::$roleDeliveryBoy);
-        if (in_array($user->role_id, $otherRoleIds)) {
+        // return response()->json(['data' => in_array($user->role_id, $otherRoleIds)], 500);
+
+        if (!in_array($user->role_id, $otherRoleIds)) {
             return CommonHelper::responseError('System is not activated yet, Please Contact to Administrator!');
         }
 
