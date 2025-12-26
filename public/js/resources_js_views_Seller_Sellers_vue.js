@@ -307,12 +307,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -1140,11 +1134,11 @@ var render = function () {
                             fn: function (row) {
                               return [
                                 _vm._v(
-                                  "\n                                " +
+                                  "\n                                    " +
                                     _vm._s(
                                       _vm._f("emailMask")(row.item.email)
                                     ) +
-                                    "\n                            "
+                                    "\n                                "
                                 ),
                               ]
                             },
@@ -1154,11 +1148,11 @@ var render = function () {
                             fn: function (row) {
                               return [
                                 _vm._v(
-                                  "\n                                " +
+                                  "\n                                    " +
                                     _vm._s(
                                       _vm._f("mobileMask")(row.item.mobile)
                                     ) +
-                                    "\n                            "
+                                    "\n                                "
                                 ),
                               ]
                             },
@@ -1247,7 +1241,12 @@ var render = function () {
                                   ? _c(
                                       "label",
                                       { staticClass: "badge bg-success" },
-                                      [_vm._v(" " + _vm._s(_vm.__("yes")))]
+                                      [
+                                        _vm._v(
+                                          "\n                                        " +
+                                            _vm._s(_vm.__("yes"))
+                                        ),
+                                      ]
                                     )
                                   : row.item.require_products_approval == 0
                                   ? _c(
@@ -1350,16 +1349,16 @@ var render = function () {
                                   },
                                   [
                                     _vm._v(
-                                      "\n                               \n                               " +
+                                      "\n\n                                        " +
                                         _vm._s(row.item.categories_array) +
-                                        "\n                            "
+                                        "\n                                    "
                                     ),
                                   ]
                                 ),
                                 _vm._v(
-                                  "\n                            " +
+                                  "\n                                    " +
                                     _vm._s(row.item.bonus_percentage) +
-                                    "\n                        "
+                                    "\n                                "
                                 ),
                               ]
                             },
@@ -1378,11 +1377,6 @@ var render = function () {
                                             rawName: "v-b-tooltip.hover",
                                             modifiers: { hover: true },
                                           },
-                                          {
-                                            name: "b-tooltip",
-                                            rawName: "v-b-tooltip.hover",
-                                            modifiers: { hover: true },
-                                          },
                                         ],
                                         staticClass: "btn btn-primary btn-sm",
                                         attrs: {
@@ -1393,8 +1387,42 @@ var render = function () {
                                               record: row.item,
                                             },
                                           },
-                                          title: "Edit",
                                           title: _vm.__("edit"),
+                                        },
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "fa fa-pencil-alt",
+                                        }),
+                                      ]
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                _vm.$can("seller_update")
+                                  ? _c(
+                                      "router-link",
+                                      {
+                                        directives: [
+                                          {
+                                            name: "b-tooltip",
+                                            rawName: "v-b-tooltip.hover",
+                                            modifiers: { hover: true },
+                                          },
+                                          {
+                                            name: "b-tooltip",
+                                            rawName: "v-b-tooltip.hover:title",
+                                            value: _vm.__("edit"),
+                                            expression: "__('edit')",
+                                            modifiers: { "hover:title": true },
+                                          },
+                                        ],
+                                        staticClass: "btn btn-primary btn-sm",
+                                        attrs: {
+                                          to: {
+                                            name: "Seller Products",
+                                            params: { sellerId: row.item.id },
+                                          },
+                                          title: "Edit",
                                         },
                                       },
                                       [

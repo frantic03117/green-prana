@@ -190,6 +190,9 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (res) {
         console.log(res);
+        if (res.data.data.data.length == 0) {
+          _this4.$swal.fire("Error", "No product found", "error");
+        }
         _this4.products = res.data.data.data;
       })["catch"](function () {});
     },
