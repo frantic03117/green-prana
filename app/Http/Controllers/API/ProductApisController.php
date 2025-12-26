@@ -1086,6 +1086,9 @@ class ProductApisController extends Controller
             }
 
             $product->save();
+            if ($request->hasFile('other_images')) {
+                CommonHelper::uploadProductImages($request->file('other_images'), $product->id);
+            }
 
             /* ---------- VARIANTS ---------- */
 
