@@ -34,6 +34,56 @@
                 </div>
             </div>
         </div>
+        <div class="row mt-4" v-if="assignedProducts.length">
+            <div class="col-12">
+                <h5>Products Assigned: {{ assignedProducts.length }}</h5>
+            </div>
+
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Discounted Price</th>
+                                <th>Stock</th>
+                                <th>Measurement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(prod, index) in assignedProducts" :key="prod.id">
+                                <td>{{ index + 1 }}</td>
+
+                                <td>
+                                    <img :src="`/${prod.image}`" alt="Product Image" class="img-thumbnail"
+                                        style="width: 60px; height: 60px; object-fit: cover;" />
+                                </td>
+
+                                <td>{{ prod.name }}</td>
+
+                                <td>₹{{ prod.price }}</td>
+
+                                <td>
+                                    <span class="text-success fw-bold">
+                                        ₹{{ prod.discounted_price }}
+                                    </span>
+                                </td>
+
+                                <td>{{ prod.stock }}</td>
+
+                                <td>
+                                    {{ prod.measurement }} {{ prod.short_code }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -53,6 +103,7 @@ export default {
             variants: [],
             categoryId: "",
             selectedProductId: "",
+            assignedProducts: [],
             isLoading: false,
         };
     },
@@ -67,6 +118,7 @@ export default {
         this.seller_id = this.$route.params.sellerId;
         if (this.seller_id) {
             this.loadCategories();
+            this.loadAssignedProducts();
         }
     },
     methods: {
@@ -86,7 +138,8 @@ export default {
                 }
             })
                 .then((res) => {
-                    this.loadProducts()
+                    this.loadProducts();
+                    this.loadAssignedProducts();
                     this.isLoading = false;
                     this.$swal.fire("Success", res.data.message, "success");
                 })
@@ -95,7 +148,7 @@ export default {
                     console.error("Error saving price:", error);
                     this.$swal.fire("Error", "Something went wrong", "error");
 
-            })
+                })
         },
         // Load categories assigned to seller
         loadCategories() {
@@ -117,11 +170,25 @@ export default {
 
             axios
                 .get(this.$apiUrl + "/products/variants", {
-                    params: { category_id: this.categoryId, seller_id: this.seller_id, assigned: false},
+                    params: { category_id: this.categoryId, seller_id: this.seller_id, assigned: false },
                 })
                 .then((res) => {
                     console.log(res);
+                    if(res.data.data.data.length == 0 ){
+                           this.$swal.fire("Error", "No product found", "error");
+                    }
                     this.products = res.data.data.data;
+                })
+                .catch(() => { });
+        },
+        loadAssignedProducts() {
+            if (!this.seller_id) return;
+
+            axios.get(this.$apiUrl + "/products/variants", {
+                params: { seller_id: this.seller_id, assigned: true },
+            })
+                .then((res) => {
+                    this.assignedProducts = res.data.data.data;
                 })
                 .catch(() => { });
         },
@@ -162,5 +229,6 @@ export default {
                 });
         },
     },
+
 };
 </script>

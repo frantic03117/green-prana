@@ -53,6 +53,56 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -67,6 +117,7 @@ __webpack_require__.r(__webpack_exports__);
       variants: [],
       categoryId: "",
       selectedProductId: "",
+      assignedProducts: [],
       isLoading: false
     };
   },
@@ -84,6 +135,7 @@ __webpack_require__.r(__webpack_exports__);
     this.seller_id = this.$route.params.sellerId;
     if (this.seller_id) {
       this.loadCategories();
+      this.loadAssignedProducts();
     }
   },
   methods: {
@@ -104,6 +156,7 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (res) {
         _this2.loadProducts();
+        _this2.loadAssignedProducts();
         _this2.isLoading = false;
         _this2.$swal.fire("Success", res.data.message, "success");
       })["catch"](function (error) {
@@ -140,13 +193,25 @@ __webpack_require__.r(__webpack_exports__);
         _this4.products = res.data.data.data;
       })["catch"](function () {});
     },
+    loadAssignedProducts: function loadAssignedProducts() {
+      var _this5 = this;
+      if (!this.seller_id) return;
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.$apiUrl + "/products/variants", {
+        params: {
+          seller_id: this.seller_id,
+          assigned: true
+        }
+      }).then(function (res) {
+        _this5.assignedProducts = res.data.data.data;
+      })["catch"](function () {});
+    },
     // Load variants for selected product
     loadVariants: function loadVariants() {
-      var _this5 = this;
+      var _this6 = this;
       this.variants = [];
       if (!this.selectedProductId) return;
       var productVariants = this.products.filter(function (p) {
-        return p.product_id === _this5.selectedProductId;
+        return p.product_id === _this6.selectedProductId;
       });
       this.variants = productVariants.map(function (v) {
         return {
@@ -159,7 +224,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     // Save all variants for this seller
     saveVariants: function saveVariants() {
-      var _this6 = this;
+      var _this7 = this;
       var payload = {
         seller_id: this.seller_id,
         category_id: this.categoryId,
@@ -167,9 +232,9 @@ __webpack_require__.r(__webpack_exports__);
         variants: this.variants
       };
       axios__WEBPACK_IMPORTED_MODULE_0___default().post(this.$apiUrl + "/seller/product-variants/save", payload).then(function (res) {
-        _this6.$swal.fire("Success", res.data.message, "success");
+        _this7.$swal.fire("Success", res.data.message, "success");
       })["catch"](function () {
-        _this6.$swal.fire("Error", "Something went wrong", "error");
+        _this7.$swal.fire("Error", "Something went wrong", "error");
       });
     }
   }
@@ -375,9 +440,110 @@ var render = function () {
           ),
         ])
       : _vm._e(),
+    _vm._v(" "),
+    _vm.assignedProducts.length
+      ? _c("div", { staticClass: "row mt-4" }, [
+          _c("div", { staticClass: "col-12" }, [
+            _c("h5", [
+              _vm._v(
+                "Products Assigned: " + _vm._s(_vm.assignedProducts.length)
+              ),
+            ]),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-12" }, [
+            _c("div", { staticClass: "table-responsive" }, [
+              _c(
+                "table",
+                {
+                  staticClass:
+                    "table table-bordered table-striped align-middle",
+                },
+                [
+                  _vm._m(0),
+                  _vm._v(" "),
+                  _c(
+                    "tbody",
+                    _vm._l(_vm.assignedProducts, function (prod, index) {
+                      return _c("tr", { key: prod.id }, [
+                        _c("td", [_vm._v(_vm._s(index + 1))]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _c("img", {
+                            staticClass: "img-thumbnail",
+                            staticStyle: {
+                              width: "60px",
+                              height: "60px",
+                              "object-fit": "cover",
+                            },
+                            attrs: {
+                              src: "/" + prod.image,
+                              alt: "Product Image",
+                            },
+                          }),
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(prod.name))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v("₹" + _vm._s(prod.price))]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _c("span", { staticClass: "text-success fw-bold" }, [
+                            _vm._v(
+                              "\n                                    ₹" +
+                                _vm._s(prod.discounted_price) +
+                                "\n                                "
+                            ),
+                          ]),
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(prod.stock))]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _vm._v(
+                            "\n                                " +
+                              _vm._s(prod.measurement) +
+                              " " +
+                              _vm._s(prod.short_code) +
+                              "\n                            "
+                          ),
+                        ]),
+                      ])
+                    }),
+                    0
+                  ),
+                ]
+              ),
+            ]),
+          ]),
+        ])
+      : _vm._e(),
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", { staticClass: "table-light" }, [
+      _c("tr", [
+        _c("th", [_vm._v("#")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Image")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Product Name")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Price")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Discounted Price")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Stock")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Measurement")]),
+      ]),
+    ])
+  },
+]
 render._withStripped = true
 
 
