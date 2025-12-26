@@ -25,6 +25,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
 use App\Models\Category;
+use App\Models\SellerProduct;
 
 class SellerPosController extends Controller
 {
