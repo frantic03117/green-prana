@@ -310,79 +310,169 @@ class SellerPosController extends Controller
         }
     }
 
+    // public function getProducts(Request $request)
+    // {
+    //     try {
+    //         $sellerId = auth()->user()->seller->id;
+    //         $perPage = $request->per_page ?? 9;
+    //         $page = $request->page ?? 1;
+
+    //         $productQuery = Product::select('products.*')
+    //             ->where('products.status', 1)
+    //             ->with(['variants' => function ($query) {
+    //                 $query->with('unit'); // Remove status filter to show all variants including sold out ones
+    //             }]);
+
+
+    //         // Apply category filter if provided
+    //         if ($request->category_id) {
+    //             $productQuery->where('category_id', $request->category_id);
+    //         }
+
+    //         // Apply search filter if provided
+    //         if ($request->search) {
+    //             $search = $request->search;
+    //             $productQuery->where(function ($query) use ($search) {
+    //                 $query->where('products.name', 'like', '%' . $search . '%')
+    //                     ->orWhere('products.slug', 'like', '%' . $search . '%')
+    //                     ->orWhere('products.tags', 'like', '%' . $search . '%');
+    //             });
+    //         }
+
+    //         $totalProducts = $productQuery->count();
+    //         $products = $productQuery->orderBy('id', 'DESC')
+    //             ->paginate($perPage, ['*'], 'page', $page);
+
+    //         // Transform products for POS display
+    //         $transformedProducts = $products->map(function ($product) {
+    //             $variant = $product->variants->isNotEmpty() ? $product->variants[0] : null;
+
+    //             return [
+    //                 'id' => $product->id,
+    //                 'name' => $product->name,
+    //                 'description' => $product->description,
+    //                 'image_url' => CommonHelper::getImage($product->image),
+    //                 'is_unlimited_stock' => (bool)$product->is_unlimited_stock,
+    //                 'variants' => $product->variants->map(function ($variant) use ($product) {
+    //                     return [
+    //                         'id' => $variant->id,
+    //                         'measurement' => $variant->measurement,
+    //                         'measurement_unit_name' => $variant->unit ? $variant->unit->short_code : '',
+    //                         'price' => $variant->price,
+    //                         'discounted_price' => $variant->discounted_price,
+    //                         'stock' => $variant->stock,
+    //                         'status' => $variant->status
+    //                     ];
+    //                 })
+    //             ];
+    //         });
+
+    //         $response = [
+    //             'status' => true,
+    //             'data' => $transformedProducts,
+    //             'meta' => [
+    //                 'total' => $totalProducts,
+    //                 'current_page' => $products->currentPage(),
+    //                 'last_page' => $products->lastPage(),
+    //                 'per_page' => $products->perPage(),
+    //                 'from' => $products->firstItem() ?? 0,
+    //                 'to' => $products->lastItem() ?? 0
+    //             ]
+    //         ];
+
+    //         return response()->json($response);
+    //     } catch (\Exception $e) {
+    //         Log::error("Error fetching products: " . $e->getMessage());
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Something went wrong while fetching products.',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
     public function getProducts(Request $request)
     {
         try {
             $sellerId = auth()->user()->seller->id;
             $perPage = $request->per_page ?? 9;
-            $page = $request->page ?? 1;
 
-            $productQuery = Product::select('products.*')
-                ->where('products.status', 1)
-                ->with(['variants' => function ($query) {
-                    $query->with('unit'); // Remove status filter to show all variants including sold out ones
-                }]);
+            $query = SellerProduct::with([
+                'product',
+                'variant.unit'
+            ])
+                ->where('seller_id', $sellerId)
+                ->whereHas('product', function ($q) {
+                    $q->where('status', 1);
+                });
 
-
-            // Apply category filter if provided
-            if ($request->category_id) {
-                $productQuery->where('category_id', $request->category_id);
-            }
-
-            // Apply search filter if provided
-            if ($request->search) {
-                $search = $request->search;
-                $productQuery->where(function ($query) use ($search) {
-                    $query->where('products.name', 'like', '%' . $search . '%')
-                        ->orWhere('products.slug', 'like', '%' . $search . '%')
-                        ->orWhere('products.tags', 'like', '%' . $search . '%');
+            // =========================
+            // Category filter
+            // =========================
+            if ($request->filled('category_id')) {
+                $query->whereHas('product', function ($q) use ($request) {
+                    $q->where('category_id', $request->category_id);
                 });
             }
 
-            $totalProducts = $productQuery->count();
-            $products = $productQuery->orderBy('id', 'DESC')
-                ->paginate($perPage, ['*'], 'page', $page);
+            // =========================
+            // Search filter
+            // =========================
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->whereHas('product', function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                        ->orWhere('slug', 'like', "%$search%")
+                        ->orWhere('tags', 'like', "%$search%");
+                });
+            }
 
-            // Transform products for POS display
-            $transformedProducts = $products->map(function ($product) {
-                $variant = $product->variants->isNotEmpty() ? $product->variants[0] : null;
+            // =========================
+            // Pagination
+            // =========================
+            $sellerProducts = $query->latest()->paginate($perPage);
 
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'description' => $product->description,
-                    'image_url' => CommonHelper::getImage($product->image),
-                    'is_unlimited_stock' => (bool)$product->is_unlimited_stock,
-                    'variants' => $product->variants->map(function ($variant) use ($product) {
-                        return [
-                            'id' => $variant->id,
-                            'measurement' => $variant->measurement,
-                            'measurement_unit_name' => $variant->unit ? $variant->unit->short_code : '',
-                            'price' => $variant->price,
-                            'discounted_price' => $variant->discounted_price,
-                            'stock' => $variant->stock,
-                            'status' => $variant->status
-                        ];
-                    })
-                ];
-            });
+            // =========================
+            // Group by product
+            // =========================
+            $grouped = $sellerProducts->getCollection()
+                ->groupBy('product_id')
+                ->map(function ($items) {
+                    $product = $items->first()->product;
 
-            $response = [
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'description' => $product->description,
+                        'image_url' => CommonHelper::getImage($product->image),
+                        'variants' => $items->map(function ($sp) {
+                            return [
+                                'id' => $sp->variant->id,
+                                'measurement' => $sp->variant->measurement,
+                                'measurement_unit_name' => $sp->variant->unit?->short_code,
+                                'price' => $sp->price,                // ✅ seller price
+                                'stock' => $sp->stock_quantity,        // ✅ seller stock
+                                'status' => $sp->status                // ✅ seller status
+                            ];
+                        })->values()
+                    ];
+                })->values();
+
+            // Replace paginator collection
+            $sellerProducts->setCollection($grouped);
+
+            return response()->json([
                 'status' => true,
-                'data' => $transformedProducts,
+                'data' => $sellerProducts->items(),
                 'meta' => [
-                    'total' => $totalProducts,
-                    'current_page' => $products->currentPage(),
-                    'last_page' => $products->lastPage(),
-                    'per_page' => $products->perPage(),
-                    'from' => $products->firstItem() ?? 0,
-                    'to' => $products->lastItem() ?? 0
+                    'total' => $sellerProducts->total(),
+                    'current_page' => $sellerProducts->currentPage(),
+                    'last_page' => $sellerProducts->lastPage(),
+                    'per_page' => $sellerProducts->perPage(),
                 ]
-            ];
-
-            return response()->json($response);
+            ]);
         } catch (\Exception $e) {
-            Log::error("Error fetching products: " . $e->getMessage());
+            Log::error("Error fetching seller products: " . $e->getMessage());
+
             return response()->json([
                 'status' => false,
                 'message' => 'Something went wrong while fetching products.',
@@ -390,6 +480,7 @@ class SellerPosController extends Controller
             ], 500);
         }
     }
+
 
     public function getSellerCategories()
     {
