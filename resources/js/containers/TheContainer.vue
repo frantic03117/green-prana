@@ -3,7 +3,6 @@
         <div id="sidebar" class="active">
             <div class="sidebar-wrapper active">
                 <div class="sidebar-header">
-
                     <div class="d-flex flex-row justify-content-center">
                         <div class="logo">
                             <router-link to="/" class="d-flex flex-column align-items-center justify-content-center align-content-center flex-wrap ">

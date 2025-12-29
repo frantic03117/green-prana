@@ -45,7 +45,7 @@ Route::get('seller/seller_commission', [\App\Http\Controllers\API\SellerApiContr
 
 Route::get('role', [\App\Http\Controllers\API\RoleApiController::class, 'index']);
 
-Route::middleware('auth:api')->group(function () {
+Route::group(function () {
     Route::get('admin_settings', [\App\Http\Controllers\Controller::class, 'getAdminSettings']);
     Route::get('dashboard', [\App\Http\Controllers\Controller::class, 'index']);
     Route::get('get_top_notifications', [\App\Http\Controllers\Controller::class, 'getTopNotifications']);
