@@ -44,8 +44,18 @@ Route::get('seller/categories', [\App\Http\Controllers\API\CategoryApiController
 Route::get('seller/seller_commission', [\App\Http\Controllers\API\SellerApiController::class, 'getSellerCommission']);
 
 Route::get('role', [\App\Http\Controllers\API\RoleApiController::class, 'index']);
-
-Route::group(function () {
+Route::group(['prefix' => 'categories'], function () {
+    Route::get('active', [\App\Http\Controllers\API\CategoryApiController::class, 'getActiveCategories']);
+});
+Route::group(['prefix' => 'web_settings'], function () {
+    Route::get('/', [\App\Http\Controllers\API\WebSettingsApiController::class, 'index']);
+    // Route::post('save', [\App\Http\Controllers\API\WebSettingsApiController::class, 'save'])->name('web_settings.save');
+});
+Route::group(['prefix' => 'payment_methods'], function () {
+    Route::get('/', [\App\Http\Controllers\API\PaymentMethodsApiController::class, 'index']);
+    // Route::post('save', [\App\Http\Controllers\API\PaymentMethodsApiController::class, 'save'])->name('payment_methods.save');
+});
+Route::middleware('auth:api')->group(function () {
     Route::get('admin_settings', [\App\Http\Controllers\Controller::class, 'getAdminSettings']);
     Route::get('dashboard', [\App\Http\Controllers\Controller::class, 'index']);
     Route::get('get_top_notifications', [\App\Http\Controllers\Controller::class, 'getTopNotifications']);
@@ -54,7 +64,7 @@ Route::group(function () {
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', [\App\Http\Controllers\API\CategoryApiController::class, 'getCategories']);
         Route::get('main', [\App\Http\Controllers\API\CategoryApiController::class, 'getMainCategories']);
-        Route::get('active', [\App\Http\Controllers\API\CategoryApiController::class, 'getActiveCategories']);
+        // Route::get('active', [\App\Http\Controllers\API\CategoryApiController::class, 'getActiveCategories']);
         Route::post('save', [\App\Http\Controllers\API\CategoryApiController::class, 'save'])->name('categories.save');
         Route::post('update', [\App\Http\Controllers\API\CategoryApiController::class, 'update'])->name('categories.update');
         Route::post('delete', [\App\Http\Controllers\API\CategoryApiController::class, 'delete'])->name('categories.delete');
@@ -183,7 +193,7 @@ Route::group(function () {
 
 
     Route::group(['prefix' => 'payment_methods'], function () {
-        Route::get('/', [\App\Http\Controllers\API\PaymentMethodsApiController::class, 'index']);
+        // Route::get('/', [\App\Http\Controllers\API\PaymentMethodsApiController::class, 'index']);
         Route::post('save', [\App\Http\Controllers\API\PaymentMethodsApiController::class, 'save'])->name('payment_methods.save');
     });
 
@@ -328,7 +338,7 @@ Route::group(function () {
     });
 
     Route::group(['prefix' => 'web_settings'], function () {
-        Route::get('/', [\App\Http\Controllers\API\WebSettingsApiController::class, 'index']);
+        // Route::get('/', [\App\Http\Controllers\API\WebSettingsApiController::class, 'index']);
         Route::post('save', [\App\Http\Controllers\API\WebSettingsApiController::class, 'save'])->name('web_settings.save');
     });
 
