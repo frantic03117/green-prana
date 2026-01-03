@@ -100,9 +100,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 
 
 
@@ -199,13 +196,13 @@ __webpack_require__.r(__webpack_exports__);
     loadAssignedProducts: function loadAssignedProducts() {
       var _this5 = this;
       if (!this.seller_id) return;
-      axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.$apiUrl + "/products/variants", {
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.$apiUrl + "/products/seller_assigned_variants", {
         params: {
           seller_id: this.seller_id,
           assigned: true
         }
       }).then(function (res) {
-        _this5.assignedProducts = res.data.data.data;
+        _this5.assignedProducts = res.data.data || [];
       })["catch"](function () {});
     },
     // Load variants for selected product
@@ -238,6 +235,24 @@ __webpack_require__.r(__webpack_exports__);
         _this7.$swal.fire("Success", res.data.message, "success");
       })["catch"](function () {
         _this7.$swal.fire("Error", "Something went wrong", "error");
+      });
+    },
+    updateStock: function updateStock(prod) {
+      var _this8 = this;
+      // Build payload
+      var payload = {
+        seller_id: this.seller_id,
+        // current seller
+        id: prod.id,
+        stock_quantity: prod.stock // new stock value
+      };
+
+      // Send POST request
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post(this.$apiUrl + "/products/variants/update-stock", payload).then(function (res) {
+        _this8.loadAssignedProducts();
+        _this8.$swal.fire("Success", res.data.message, "success");
+      })["catch"](function () {
+        _this8.$swal.fire("Error", "Failed to update stock", "error");
       });
     }
   }
@@ -471,45 +486,56 @@ var render = function () {
                       return _c("tr", { key: prod.id }, [
                         _c("td", [_vm._v(_vm._s(index + 1))]),
                         _vm._v(" "),
-                        _c("td", [
-                          _c("img", {
-                            staticClass: "img-thumbnail",
-                            staticStyle: {
-                              width: "60px",
-                              height: "60px",
-                              "object-fit": "cover",
-                            },
-                            attrs: {
-                              src: "/" + prod.image,
-                              alt: "Product Image",
-                            },
-                          }),
-                        ]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(prod.name))]),
+                        _c("td", [_vm._v(_vm._s(prod.product))]),
                         _vm._v(" "),
                         _c("td", [_vm._v("₹" + _vm._s(prod.price))]),
                         _vm._v(" "),
                         _c("td", [
-                          _c("span", { staticClass: "text-success fw-bold" }, [
-                            _vm._v(
-                              "\n                                    ₹" +
-                                _vm._s(prod.discounted_price) +
-                                "\n                                "
+                          _c("div", { staticClass: "input-group" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: prod.stock,
+                                  expression: "prod.stock",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: { type: "text", name: "stock" },
+                              domProps: { value: prod.stock },
+                              on: {
+                                input: function ($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(prod, "stock", $event.target.value)
+                                },
+                              },
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-outline-primary",
+                                attrs: { disabled: prod.updating },
+                                on: {
+                                  click: function ($event) {
+                                    return _vm.updateStock(prod)
+                                  },
+                                },
+                              },
+                              [
+                                _vm._v(
+                                  "\n                                        " +
+                                    _vm._s(
+                                      prod.updating ? "Updating..." : "Update"
+                                    ) +
+                                    "\n                                    "
+                                ),
+                              ]
                             ),
                           ]),
-                        ]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(prod.stock))]),
-                        _vm._v(" "),
-                        _c("td", [
-                          _vm._v(
-                            "\n                                " +
-                              _vm._s(prod.measurement) +
-                              " " +
-                              _vm._s(prod.short_code) +
-                              "\n                            "
-                          ),
                         ]),
                       ])
                     }),
@@ -532,17 +558,11 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", [_vm._v("#")]),
         _vm._v(" "),
-        _c("th", [_vm._v("Image")]),
-        _vm._v(" "),
         _c("th", [_vm._v("Product Name")]),
         _vm._v(" "),
         _c("th", [_vm._v("Price")]),
         _vm._v(" "),
-        _c("th", [_vm._v("Discounted Price")]),
-        _vm._v(" "),
         _c("th", [_vm._v("Stock")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Measurement")]),
       ]),
     ])
   },

@@ -1411,18 +1411,18 @@ var render = function () {
                                           {
                                             name: "b-tooltip",
                                             rawName: "v-b-tooltip.hover:title",
-                                            value: _vm.__("edit"),
-                                            expression: "__('edit')",
+                                            value: _vm.__("Products"),
+                                            expression: "__('Products')",
                                             modifiers: { "hover:title": true },
                                           },
                                         ],
-                                        staticClass: "btn btn-primary btn-sm",
+                                        staticClass: "btn btn-info btn-sm",
                                         attrs: {
                                           to: {
                                             name: "Seller Products",
                                             params: { sellerId: row.item.id },
                                           },
-                                          title: "Edit",
+                                          title: "Products",
                                         },
                                       },
                                       [

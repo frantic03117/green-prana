@@ -326,7 +326,7 @@ class ProductApisController extends Controller
                 'discounted_price'   => $v->discounted_price,
                 'measurement'        => $v->measurement,
                 'pv_status'          => $v->pv_status,
-                'stock'              => $v->stock,
+                'stock'              => $v->stock_quantity,
                 'stock_unit_id'      => $v->stock_unit_id,
                 'short_code'         => $v->unit?->short_code,
                 'stock_unit'         => $v->unit?->short_code,
@@ -676,6 +676,29 @@ class ProductApisController extends Controller
             return CommonHelper::responseError("Something Went Wrong!");
         }
     }
+    public function updateSellerProductStock(Request $request)
+    {
+        $request->validate([
+            'seller_id' => 'required|integer|exists:sellers,id',
+            'id' => 'required|integer|exists:seller_products,id',
+            'stock_quantity' => 'required|integer|min:0',
+        ]);
+
+        $sellerProduct = SellerProduct::where('seller_id', $request->seller_id)
+            ->where('id', $request->id)
+            ->firstOrFail();
+
+        $sellerProduct->stock_quantity = $request->stock_quantity;
+        $sellerProduct->save();
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Stock updated successfully',
+            'data' => $sellerProduct
+        ]);
+    }
+
+
 
     public function getActiveProducts()
     {

@@ -45,38 +45,35 @@
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
-                                <th>Image</th>
                                 <th>Product Name</th>
                                 <th>Price</th>
-                                <th>Discounted Price</th>
                                 <th>Stock</th>
-                                <th>Measurement</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(prod, index) in assignedProducts" :key="prod.id">
                                 <td>{{ index + 1 }}</td>
 
-                                <td>
-                                    <img :src="`/${prod.image}`" alt="Product Image" class="img-thumbnail"
-                                        style="width: 60px; height: 60px; object-fit: cover;" />
-                                </td>
 
-                                <td>{{ prod.name }}</td>
+
+                                <td>{{ prod.product }}</td>
 
                                 <td>₹{{ prod.price }}</td>
 
-                                <td>
-                                    <span class="text-success fw-bold">
-                                        ₹{{ prod.discounted_price }}
-                                    </span>
-                                </td>
 
-                                <td>{{ prod.stock }}</td>
 
                                 <td>
-                                    {{ prod.measurement }} {{ prod.short_code }}
+
+                                    <div class="input-group">
+                                        <input type="text" name="stock" v-model="prod.stock" class="form-control">
+                                        <button :disabled="prod.updating" @click="updateStock(prod)"
+                                            class="btn btn-outline-primary">
+                                            {{ prod.updating ? 'Updating...' : 'Update' }}
+                                        </button>
+                                    </div>
                                 </td>
+
+
                             </tr>
                         </tbody>
                     </table>
@@ -174,8 +171,8 @@ export default {
                 })
                 .then((res) => {
                     console.log(res);
-                    if(res.data.data.data.length == 0 ){
-                           this.$swal.fire("Error", "No product found", "error");
+                    if (res.data.data.data.length == 0) {
+                        this.$swal.fire("Error", "No product found", "error");
                     }
                     this.products = res.data.data.data;
                 })
@@ -184,11 +181,11 @@ export default {
         loadAssignedProducts() {
             if (!this.seller_id) return;
 
-            axios.get(this.$apiUrl + "/products/variants", {
+            axios.get(this.$apiUrl + "/products/seller_assigned_variants", {
                 params: { seller_id: this.seller_id, assigned: true },
             })
                 .then((res) => {
-                    this.assignedProducts = res.data.data.data;
+                    this.assignedProducts = res.data.data || [];
                 })
                 .catch(() => { });
         },
@@ -228,6 +225,26 @@ export default {
                     this.$swal.fire("Error", "Something went wrong", "error");
                 });
         },
+
+        updateStock(prod) {
+            // Build payload
+            const payload = {
+                seller_id: this.seller_id,                    // current seller
+                id: prod.id,
+                stock_quantity: prod.stock                     // new stock value
+            };
+
+            // Send POST request
+            axios.post(this.$apiUrl + "/products/variants/update-stock", payload)
+                .then((res) => {
+                     this.loadAssignedProducts();
+                    this.$swal.fire("Success", res.data.message, "success");
+                })
+                .catch(() => {
+                    this.$swal.fire("Error", "Failed to update stock", "error");
+                });
+        }
+
     },
 
 };

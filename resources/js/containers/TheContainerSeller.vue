@@ -5,15 +5,19 @@
                 <div class="sidebar-header">
                     <div class="d-flex justify-content-between">
                         <div class="logo">
-                            <router-link to="/seller" style="display: flex; align-items: center; justify-content: flex-start;">
-                                <img class="container-logo" v-if="$appLogo != ''" :src="$storageUrl+$appLogo" alt='Logo' srcset=""/>
-                                <img class="container-logo" v-else :src="$baseUrl + '/images/logo.png'" alt='Logo' srcset=""/>
+                            <router-link to="/seller"
+                                style="display: flex; align-items: center; justify-content: flex-start;">
+                                <img class="container-logo" v-if="$appLogo != ''" :src="$storageUrl + $appLogo" alt='Logo'
+                                    srcset="" />
+                                <img class="container-logo" v-else :src="$baseUrl + '/images/logo.png'" alt='Logo'
+                                    srcset="" />
                                 {{ $appName }}
                             </router-link>
                         </div>
 
                         <div class="toggler">
-                            <a href="javascript:void(0)" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                            <a href="javascript:void(0)" class="sidebar-hide d-xl-none d-block"><i
+                                    class="bi bi-x bi-middle"></i></a>
                         </div>
 
                     </div>
@@ -23,17 +27,19 @@
 
                         <template v-for="item in sidebarItems">
 
-                            <li class="sidebar-item" :class="{ 'active' : isActive(item.url) || subIsActive(item), 'has-sub' : isHasSub(item) }"
-                                v-if=" item.role==true ? ($role('Super Admin') && (item.name=='Role' || item.name=='System Users')) : (item.permission && $can(item.permission) )">
+                            <li class="sidebar-item"
+                                :class="{ 'active': isActive(item.url) || subIsActive(item), 'has-sub': isHasSub(item) }"
+                                v-if="item.role == true ? ($role('Super Admin') && (item.name == 'Role' || item.name == 'System Users')) : (item.permission && $can(item.permission))">
 
                                 <template v-if="isHasSub(item)">
                                     <a class="sidebar-link">
                                         <i :class="`fa fa-${item.icon}`"></i>
                                         <span>{{ item.name }}</span>
                                     </a>
-                                    <ul class="submenu" :class="{ 'active' : subIsActive(item) } ">
+                                    <ul class="submenu" :class="{ 'active': subIsActive(item) }">
                                         <template v-for="sub in item.submenu">
-                                            <li class="submenu-item" :class="{ 'active' : isActive(sub.url) } " :key="sub.key">
+                                            <li class="submenu-item" :class="{ 'active': isActive(sub.url) }"
+                                                :key="sub.key">
                                                 <router-link :to="sub.url">
                                                     {{ sub.name }}
                                                 </router-link>
@@ -89,35 +95,35 @@ export default {
     },
     mounted() {
         //lang
-        if(window.localStorage.getItem('lang')){
+        if (window.localStorage.getItem('lang')) {
             this.lang = window.localStorage.getItem('lang');
         }
 
-        function slideToggle(t,e,o){0===t.clientHeight?j(t,e,o,!0):j(t,e,o)}function slideUp(t,e,o){j(t,e,o)}function slideDown(t,e,o){j(t,e,o,!0)}function j(t,e,o,i){void 0===e&&(e=400),void 0===i&&(i=!1),t.style.overflow="hidden",i&&(t.style.display="block");var p,l=window.getComputedStyle(t),n=parseFloat(l.getPropertyValue("height")),a=parseFloat(l.getPropertyValue("padding-top")),s=parseFloat(l.getPropertyValue("padding-bottom")),r=parseFloat(l.getPropertyValue("margin-top")),d=parseFloat(l.getPropertyValue("margin-bottom")),g=n/e,y=a/e,m=s/e,u=r/e,h=d/e;window.requestAnimationFrame(function l(x){void 0===p&&(p=x);var f=x-p;i?(t.style.height=g*f+"px",t.style.paddingTop=y*f+"px",t.style.paddingBottom=m*f+"px",t.style.marginTop=u*f+"px",t.style.marginBottom=h*f+"px"):(t.style.height=n-g*f+"px",t.style.paddingTop=a-y*f+"px",t.style.paddingBottom=s-m*f+"px",t.style.marginTop=r-u*f+"px",t.style.marginBottom=d-h*f+"px"),f>=e?(t.style.height="",t.style.paddingTop="",t.style.paddingBottom="",t.style.marginTop="",t.style.marginBottom="",t.style.overflow="",i||(t.style.display="none"),"function"==typeof o&&o()):window.requestAnimationFrame(l)})}
+        function slideToggle(t, e, o) { 0 === t.clientHeight ? j(t, e, o, !0) : j(t, e, o) } function slideUp(t, e, o) { j(t, e, o) } function slideDown(t, e, o) { j(t, e, o, !0) } function j(t, e, o, i) { void 0 === e && (e = 400), void 0 === i && (i = !1), t.style.overflow = "hidden", i && (t.style.display = "block"); var p, l = window.getComputedStyle(t), n = parseFloat(l.getPropertyValue("height")), a = parseFloat(l.getPropertyValue("padding-top")), s = parseFloat(l.getPropertyValue("padding-bottom")), r = parseFloat(l.getPropertyValue("margin-top")), d = parseFloat(l.getPropertyValue("margin-bottom")), g = n / e, y = a / e, m = s / e, u = r / e, h = d / e; window.requestAnimationFrame(function l(x) { void 0 === p && (p = x); var f = x - p; i ? (t.style.height = g * f + "px", t.style.paddingTop = y * f + "px", t.style.paddingBottom = m * f + "px", t.style.marginTop = u * f + "px", t.style.marginBottom = h * f + "px") : (t.style.height = n - g * f + "px", t.style.paddingTop = a - y * f + "px", t.style.paddingBottom = s - m * f + "px", t.style.marginTop = r - u * f + "px", t.style.marginBottom = d - h * f + "px"), f >= e ? (t.style.height = "", t.style.paddingTop = "", t.style.paddingBottom = "", t.style.marginTop = "", t.style.marginBottom = "", t.style.overflow = "", i || (t.style.display = "none"), "function" == typeof o && o()) : window.requestAnimationFrame(l) }) }
         let sidebarItems = document.querySelectorAll('.sidebar-item.has-sub');
-        for(var i = 0; i < sidebarItems.length; i++) {
+        for (var i = 0; i < sidebarItems.length; i++) {
             let sidebarItem = sidebarItems[i];
-            sidebarItems[i].querySelector('.sidebar-link').addEventListener('click', function(e) {
+            sidebarItems[i].querySelector('.sidebar-link').addEventListener('click', function (e) {
                 e.preventDefault();
 
                 let submenu = sidebarItem.querySelector('.submenu');
-                if( submenu?.classList?.contains('active') ) submenu.style.display = "block"
-                if( submenu.style.display == "none" ) submenu?.classList?.add('active')
+                if (submenu?.classList?.contains('active')) submenu.style.display = "block"
+                if (submenu.style.display == "none") submenu?.classList?.add('active')
                 else submenu?.classList?.remove('active')
                 slideToggle(submenu, 300)
             })
         }
         window.addEventListener('DOMContentLoaded', (event) => {
             var w = window.innerWidth;
-            if(w < 1200) {
+            if (w < 1200) {
                 document.getElementById('sidebar')?.classList?.remove('active');
             }
         });
         window.addEventListener('resize', (event) => {
             var w = window.innerWidth;
-            if(w < 1200) {
+            if (w < 1200) {
                 document.getElementById('sidebar')?.classList?.remove('active');
-            }else{
+            } else {
                 document.getElementById('sidebar')?.classList?.add('active');
             }
         });
@@ -128,7 +134,7 @@ export default {
             document.getElementById('sidebar')?.classList?.toggle('active');
         })
         // Perfect Scrollbar Init
-        if(typeof PerfectScrollbar.default == 'function') {
+        if (typeof PerfectScrollbar.default == 'function') {
             const container = document.querySelector(".sidebar-wrapper");
             const ps = new PerfectScrollbar.default(container, {
                 wheelPropagation: false
@@ -137,135 +143,135 @@ export default {
         // Scroll into active sidebar
         document.querySelector('.sidebar-item.active').scrollIntoView(false)
     },
-    data: function() {
+    data: function () {
         return {
             lang: 'en',
-            sidebarItems :[
+            sidebarItems: [
                 {
                     name: __('dashboard'),
-                    icon : 'tachometer-alt',
+                    icon: 'tachometer-alt',
                     //url:'/seller/dashboard',
-                    url:'/seller',
-                    permission:'manage_dashboard'
+                    url: '/seller',
+                    permission: 'manage_dashboard'
                 },
                 {
                     name: __('orders'),
-                    icon :'shopping-cart',
-                    url:'/seller/orders',
-                    permission:'order_list'
+                    icon: 'shopping-cart',
+                    url: '/seller/orders',
+                    permission: 'order_list'
                 },
                 {
                     name: __('self_pickup_orders'),
-                    icon :'shopping-cart',
-                    url:'/seller/self_pickup_orders',
-                    permission:'self_pickup_order_list'
+                    icon: 'shopping-cart',
+                    url: '/seller/self_pickup_orders',
+                    permission: 'self_pickup_order_list'
                 },
                 {
                     name: __('categories'),
-                    icon : 'bullseye',
-                    url:'/seller/categories', 
-                    permission:'category_list',
+                    icon: 'bullseye',
+                    url: '/seller/categories',
+                    permission: 'category_list',
                 },
                 {
                     name: __('products'),
-                    icon : 'cubes',
-                    permission:'product_list',
-                    submenu:[
+                    icon: 'cubes',
+                    permission: 'product_list',
+                    submenu: [
                         {
                             name: __('add_product'),
-                            icon : 'grid-fill',
-                            url:'/seller/manage_products/create',
+                            icon: 'grid-fill',
+                            url: '/seller/manage_products/create',
                         },
                         {
                             name: __('manage_products'),
-                            icon : 'grid-fill',
-                            url:'/seller/manage_products'
+                            icon: 'grid-fill',
+                            url: '/seller/manage_products'
                         },
                         {
                             name: __('units'),
-                            icon : 'grid-fill',
-                            url:'/seller/units',
+                            icon: 'grid-fill',
+                            url: '/seller/units',
                         },
                         {
                             name: __('media'),
-                            icon : 'grid-fill',
-                            url:'/seller/media'
+                            icon: 'grid-fill',
+                            url: '/seller/media'
                         },
                         {
                             name: __('bulk_upload'),
-                            icon : 'grid-fill',
-                            url:'/seller/bulk_upload'
+                            icon: 'grid-fill',
+                            url: '/seller/bulk_upload'
                         },
                         {
                             name: __('bulk_update'),
-                            icon : 'grid-fill',
-                            url:'/seller/bulk_update',
+                            icon: 'grid-fill',
+                            url: '/seller/bulk_update',
                         },
                         {
                             name: __('taxes'),
-                            icon : 'grid-fill',
-                            url:'/seller/taxes'
+                            icon: 'grid-fill',
+                            url: '/seller/taxes'
                         },
                         {
                             name: __('brands'),
-                            icon : 'grid-fill',
-                            url:'/seller/brands'
+                            icon: 'grid-fill',
+                            url: '/seller/brands'
                         },
 
                     ]
                 },
                 {
                     name: __('stock_management'),
-                    icon : 'cubes',
-                    url:'/seller/manage_stock',
-                    permission:'product_list',
+                    icon: 'cubes',
+                    url: '/seller/stock_record',
+                    permission: 'product_list',
                 },
                 {
                     name: __('return_requests'),
-                    icon : 'retweet',
-                    url:'/seller/return_requests',
-                    permission:'return_request_list',
+                    icon: 'retweet',
+                    url: '/seller/return_requests',
+                    permission: 'return_request_list',
                 },
                 {
                     name: __('point_of_sale'),
-                    icon : 'calculator',
-                    url:'/seller/point_of_sale',
-                    permission:'product_list',
+                    icon: 'calculator',
+                    url: '/seller/point_of_sale',
+                    permission: 'product_list',
                 },
                 {
                     name: __('withdrawal_requests'),
-                    icon : 'credit-card',
-                    url:'/seller/withdrawal_requests',
-                    permission:'product_sales_reports', 
+                    icon: 'credit-card',
+                    url: '/seller/withdrawal_requests',
+                    permission: 'product_sales_reports',
                 },
-                 {
+                {
                     name: __('wallet_transactions'),
-                    icon : 'credit-card',
-                    url:'/seller/seller_wallet_transactions',
-                    permission:'product_sales_reports',
+                    icon: 'credit-card',
+                    url: '/seller/seller_wallet_transactions',
+                    permission: 'product_sales_reports',
                 },
                 {
                     name: __('reports'),
-                    icon : 'folder-open',
-                    permission:'product_sales_reports',
+                    icon: 'folder-open',
+                    permission: 'product_sales_reports',
                     submenu: [
                         {
                             name: __('product_sales_report'),
                             icon: 'grid-fill',
                             url: '/seller/product_sales_reports',
-                            permission:'product_sales_reports',
+                            permission: 'product_sales_reports',
                         },
                         {
                             name: __('sales_reports'),
                             icon: 'grid-fill',
                             url: '/seller/sales_reports',
-                            permission:'sales_reports',
+                            permission: 'sales_reports',
                         },
                         {
                             name: __('pos_reports'),
                             icon: 'grid-fill',
                             url: '/seller/pos_reports',
-                            permission:'product_sales_reports',
+                            permission: 'product_sales_reports',
                         }
                     ]
                 },
@@ -280,27 +286,27 @@ export default {
             });
         },
         isActive(url) {
-            if(this.$route.path == url){
+            if (this.$route.path == url) {
                 return true;
             }
             return false;
         },
-        isHasSub(item){
-            if(item.hasOwnProperty("submenu")){
-                if(item.submenu.length > 0){
+        isHasSub(item) {
+            if (item.hasOwnProperty("submenu")) {
+                if (item.submenu.length > 0) {
                     return true;
                 }
             }
             return false;
         },
-        changeLanguage(event){
+        changeLanguage(event) {
             this.lang = event.target.value;
             window.localStorage.setItem('lang', this.lang);
             this.isLoading = true
             let data = {
-                language : this.lang
+                language: this.lang
             }
-            axios.post(this.$apiUrl + '/change_language',data)
+            axios.post(this.$apiUrl + '/change_language', data)
                 .then((response) => {
                     this.isLoading = false;
                     window.location.reload();
@@ -313,32 +319,32 @@ export default {
 
             this.sidebarItems.forEach(menu => {
                 //Only Main Categories
-                if(menu.submenu && menu.submenu.length>0) {
+                if (menu.submenu && menu.submenu.length > 0) {
 
                     menu.submenu.forEach(submenu => {
-                        if(submenu.url == current_path){
+                        if (submenu.url == current_path) {
                             permission = submenu.permission;
                         }
                     });
 
-                }else{
+                } else {
 
-                    if(menu.url == current_path){
+                    if (menu.url == current_path) {
                         permission = menu.permission;
                     }
                 }
             });
 
 
-            if(Auth.check() && UserPermissions.length ==0){
+            if (Auth.check() && UserPermissions.length == 0) {
                 //this.$router.push({path:'/login'});
-                if(window.localStorage.getItem('loginCheck') == 1){
+                if (window.localStorage.getItem('loginCheck') == 1) {
                     Auth.logout();
                 }
-                window.localStorage.setItem('loginCheck',1);
+                window.localStorage.setItem('loginCheck', 1);
                 window.location.reload();
-            }else if(Auth.check() && permission && !this.$can(permission)){
-                this.$router.push({path:'/unauthorized'});
+            } else if (Auth.check() && permission && !this.$can(permission)) {
+                this.$router.push({ path: '/unauthorized' });
             }
 
         }
@@ -352,6 +358,7 @@ export default {
 .fade-leave-active {
     transition: opacity 0.3s;
 }
+
 .fade-enter,
 .fade-leave-to {
     opacity: 0;

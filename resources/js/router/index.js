@@ -247,6 +247,8 @@ const DeliveryBoyInvoiceOrder = () => import("../views/Orders/InvoiceOrder");
 const DeliveryBoyViewProduct = () => import("../views/Product/ViewProduct");
 const SellerProductList = () => import("../views/Seller/ProductAssigned.vue");
 
+const StockManager = () => import("../views/Seller/StockManager.vue");
+
 let router = new Router({
     mode: "history",
     scrollBehavior: () => ({ y: 0 }),
@@ -1741,6 +1743,16 @@ function configRoutes() {
                         title: 'Stock Management'
 
                     },
+                },
+                {
+                    path: "stock_record",
+                    name: "StockManager",
+                    component: StockManager,
+                    props: true,
+                    meta: {
+                        role: sellerRoles,
+                        title: 'Stock Management'
+                    }
                 },
                 {
                     path: "/seller/units",
