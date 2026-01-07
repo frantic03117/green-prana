@@ -38,9 +38,9 @@ use App\Models\RatingImages;
 use App\Models\SellerProduct;
 use Illuminate\Validation\Rule;
 use Doctrine\Inflector\InflectorFactory;
-use Illuminate\Support\Facades\Response
+use Illuminate\Support\Facades\Response;
 
-use Response;
+
 
 class ProductsApiController extends Controller
 {
