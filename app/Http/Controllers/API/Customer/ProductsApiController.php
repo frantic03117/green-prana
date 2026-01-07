@@ -67,7 +67,8 @@ class ProductsApiController extends Controller
         $seller_ids = CommonHelper::getSellerIds($request->latitude, $request->longitude);
         //seller_ids is working tested
         $pids = SellerProduct::whereIn('seller_id', $seller_ids)->distinct('product_id')->pluck('product_id')->toArray();
-        $findProducts = Product::whereIn('id', $pids);
+        $findProducts = Product::whereIn('id', $pids)
+            ->with(['category', 'variants', 'images', 'brand', 'ratings', 'tags']);
         $products = $findProducts->get();
         $total = $findProducts->count();
 
