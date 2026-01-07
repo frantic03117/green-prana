@@ -35,17 +35,18 @@ class SmsApiController extends Controller
         if ($success == true) {
             // Set OTP expiration time, for example, 10 minutes
             $expiresAt = Carbon::now()->addMinutes(10);
-
-            // Store the OTP in the database
-            SmsVerification::insert([
+            $data = [
                 'phone' => $phone,
                 'otp' => $otp,
                 'status' => 'pending',
                 'expires_at' => $expiresAt,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ]);
-            return CommonHelper::responseSuccess("OTP sent Successfully!");
+            ];
+            // Store the OTP in the database
+            SmsVerification::insert($data);
+
+            return CommonHelper::responseWithData($data);
         }
         return CommonHelper::responseError("Sms Gateway error!");
     }
