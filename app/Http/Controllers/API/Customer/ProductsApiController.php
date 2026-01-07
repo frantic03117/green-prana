@@ -66,7 +66,7 @@ class ProductsApiController extends Controller
         }
         $seller_ids = CommonHelper::getSellerIds($request->latitude, $request->longitude);
         //seller_ids is working tested
-        $variants = SellerProduct::whereIn('seller_id', $seller_ids)->pluck('product_id')->toArray();
+        $variants = SellerProduct::whereIn('seller_id', $seller_ids)->distinct('product_id')->pluck('product_id')->toArray();
         return response()->json(['data' => $variants]);
     }
     public function getProducts(Request $request)
