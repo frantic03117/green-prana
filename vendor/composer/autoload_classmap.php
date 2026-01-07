@@ -209,6 +209,7 @@ return array(
     'App\\Models\\UserProductRequest' => $baseDir . '/app/Models/UserProductRequest.php',
     'App\\Models\\UserToken' => $baseDir . '/app/Models/UserToken.php',
     'App\\Models\\WalletTransaction' => $baseDir . '/app/Models/WalletTransaction.php',
+    'App\\Models\\WareHouse' => $baseDir . '/app/Models/WareHouse.php',
     'App\\Models\\WithdrawalRequest' => $baseDir . '/app/Models/WithdrawalRequest.php',
     'App\\Notifications\\OrderNotification' => $baseDir . '/app/Notifications/OrderNotification.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',

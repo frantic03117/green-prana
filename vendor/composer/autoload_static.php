@@ -1224,6 +1224,7 @@ class ComposerStaticInit7d6406e194efdf922031427a95cb6ef2
         'App\\Models\\UserProductRequest' => __DIR__ . '/../..' . '/app/Models/UserProductRequest.php',
         'App\\Models\\UserToken' => __DIR__ . '/../..' . '/app/Models/UserToken.php',
         'App\\Models\\WalletTransaction' => __DIR__ . '/../..' . '/app/Models/WalletTransaction.php',
+        'App\\Models\\WareHouse' => __DIR__ . '/../..' . '/app/Models/WareHouse.php',
         'App\\Models\\WithdrawalRequest' => __DIR__ . '/../..' . '/app/Models/WithdrawalRequest.php',
         'App\\Notifications\\OrderNotification' => __DIR__ . '/../..' . '/app/Notifications/OrderNotification.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',

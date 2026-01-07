@@ -58,7 +58,7 @@ let decryptedMapKey = decryptMapApiKey(window.GoogleMapApiKey);
 Vue.use(VueGoogleMaps, {
     load: {
         key: window.GoogleMapApiKey || window.MapApiKey || decryptedMapKey || decryptedKey || "AIzaSyABqKC2p80oHQBP9LIBXM1hgZ2r693I4jw", // Use unencrypted map API key first, then fallback to place API key
-        libraries: 'places,drawing',
+        libraries: "places,drawing,geometry", // 👈 geometry REQUIRED
     },
 })
 

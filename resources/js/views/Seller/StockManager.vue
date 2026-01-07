@@ -58,7 +58,6 @@
 <script>
 import axios from "axios";
 import Auth from "../../Auth.js";
-import { computed } from "vue";
 export default {
     name: "StockManager",
     data() {

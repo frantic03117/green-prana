@@ -249,6 +249,9 @@ const SellerProductList = () => import("../views/Seller/ProductAssigned.vue");
 
 const StockManager = () => import("../views/Seller/StockManager.vue");
 
+
+const CreateWareHouse = () => import('../views/warehouse/CreateWareHouse.vue');
+
 let router = new Router({
     mode: "history",
     scrollBehavior: () => ({ y: 0 }),
@@ -464,6 +467,16 @@ function configRoutes() {
                         permission: 'order_list',
                         role: adminRoles,
                         title: 'Notification'
+                    },
+                },
+                {
+                    path: "/warehouse/create",
+                    name: "warehouse_create",
+                    component: CreateWareHouse,
+                    meta: {
+                        role: adminRoles,
+
+                        title: 'Warehouse Register'
                     },
                 },
                 {
@@ -1563,6 +1576,7 @@ function configRoutes() {
                 title: 'Seller Register'
             },
         },
+
         {
             path: "/seller/details",
             name: "seller_details",
