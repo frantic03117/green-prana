@@ -40,7 +40,7 @@ Route::group(['middleware' => ['auth.customer']], function () {
 
     Route::group(['prefix' => 'products'], function () {
         Route::post('/app', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getAppProducts']);
-        Route::post('/', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getProducts']);
+        Route::post('/', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getAppProducts']);
         Route::post('/filter', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getProducts_filter']);
         Route::post('similar', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getSimilarProducts']);
         Route::post('search', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getSearchProducts']);
