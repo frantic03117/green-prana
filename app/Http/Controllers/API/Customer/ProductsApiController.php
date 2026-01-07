@@ -69,7 +69,18 @@ class ProductsApiController extends Controller
         $pids = SellerProduct::whereIn('seller_id', $seller_ids)->distinct('product_id')->pluck('product_id')->toArray();
         $findProducts = Product::whereIn('id', $pids);
         $products = $findProducts->get();
-        return response()->json(['data' => $products]);
+        $total = $findProducts->count();
+
+        return Response::json(array(
+            'status' => 1,
+            'message' => 'success',
+            'total' => $total,
+            'total_min_price' => $total_min_price ?? 0,
+            'total_max_price' => $total_max_price ?? 0,
+            //'brands' => $brands,
+            //'sizes' => $sizes,
+            'data' => $products
+        ));
     }
     public function getProducts(Request $request)
     {
