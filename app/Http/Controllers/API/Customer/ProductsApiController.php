@@ -410,7 +410,7 @@ class ProductsApiController extends Controller
 
             $productResult = Product::from('products as p')
                 ->leftJoin('product_variants as pv', 'pv.product_id', '=', 'p.id')
-                ->whereIn('p.seller_id', $seller_ids)
+
                 ->selectRaw(
                     '
         MIN(IF(pv.discounted_price > 0, pv.discounted_price, pv.price)) as min_price,
