@@ -35,6 +35,7 @@ use App\Models\User;
 use function App\Models\Setting;
 use App\Models\ProductRating;
 use App\Models\RatingImages;
+use App\Models\SellerProduct;
 use Illuminate\Validation\Rule;
 use Doctrine\Inflector\InflectorFactory;
 
@@ -65,7 +66,7 @@ class ProductsApiController extends Controller
         }
         $seller_ids = CommonHelper::getSellerIds($request->latitude, $request->longitude);
         //seller_ids is working tested
-        $variants = ProductVariant::whereIn('seller_id', $seller_ids)->select('product_id')->get();
+        $variants = SellerProduct::whereIn('seller_id', $seller_ids)->select('product_id')->get();
         return response()->json(['data' => $variants]);
     }
     public function getProducts(Request $request)
