@@ -38,6 +38,7 @@ use App\Models\RatingImages;
 use App\Models\SellerProduct;
 use Illuminate\Validation\Rule;
 use Doctrine\Inflector\InflectorFactory;
+use Illuminate\Support\Facades\Response
 
 use Response;
 
@@ -52,37 +53,142 @@ class ProductsApiController extends Controller
         $this->categoryRepository = $categoryRepository;
     }
 
+
     public function getAppProducts(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'latitude' => 'required',
-            'longitude' => 'required',
-        ], [
-            'latitude.required' => 'The latitude field is required.',
-            'longitude.required' => 'The longitude field is required.'
-        ]);
-        if ($validator->fails()) {
-            return CommonHelper::responseError($validator->errors()->first());
-        }
-        $seller_ids = CommonHelper::getSellerIds($request->latitude, $request->longitude);
-        //seller_ids is working tested
-        $pids = SellerProduct::whereIn('seller_id', $seller_ids)->distinct('product_id')->pluck('product_id')->toArray();
-        $findProducts = Product::whereIn('id', $pids)
-            ->with(['category', 'variants', 'images', 'brand', 'ratings', 'tags']);
-        $products = $findProducts->get();
-        $total = $findProducts->count();
+        try {
+            // ✅ Validation
+            $validator = Validator::make($request->all(), [
+                'latitude'  => 'required',
+                'longitude' => 'required',
+            ], [
+                'latitude.required'  => 'The latitude field is required.',
+                'longitude.required' => 'The longitude field is required.',
+            ]);
 
-        return Response::json(array(
-            'status' => 1,
-            'message' => 'success',
-            'total' => $total,
-            'total_min_price' => $total_min_price ?? 0,
-            'total_max_price' => $total_max_price ?? 0,
-            //'brands' => $brands,
-            //'sizes' => $sizes,
-            'data' => $products
-        ));
+            if ($validator->fails()) {
+                return CommonHelper::responseError($validator->errors()->first());
+            }
+
+            // ✅ Pagination inputs
+            $perPage = $request->get('limit', 10);
+            $page    = $request->get('page', 1);
+
+            // ✅ Logged-in user
+            $user_id = $request->user('api-customers')
+                ? $request->user('api-customers')->id
+                : null;
+
+            // ✅ Get sellers by location
+            $seller_ids = CommonHelper::getSellerIds(
+                $request->latitude,
+                $request->longitude
+            );
+
+            // ✅ Get product IDs sold by those sellers
+            $pids = SellerProduct::whereIn('seller_id', $seller_ids)
+                ->distinct()
+                ->pluck('product_id')
+                ->toArray();
+
+            // ✅ Paginated product query
+            $products = Product::whereIn('id', $pids)
+                ->with([
+                    'category',
+                    'images',
+                    'brand',
+                    'ratings',
+                    'tags',
+                    'variants.product.tax',
+                    'variants.unit',
+                    'variants.images'
+                ])
+                ->paginate($perPage, ['*'], 'page', $page);
+
+            // ✅ Process products & variants
+            foreach ($products as $product) {
+
+                foreach ($product->variants as $variant) {
+
+                    // Hide fields
+                    $variant->makeHidden([
+                        'product_id',
+                        'measurement_unit_id',
+                        'stock_unit_id',
+                        'deleted_at'
+                    ]);
+
+                    // Stock-based status
+                    if ($variant->stock <= 0 && $product->is_unlimited_stock == 0) {
+                        $variant->status = 0;
+                    } else {
+                        $variant->status = (int) $variant->status ?? 0;
+                    }
+
+                    // Cart count
+                    if ($user_id) {
+                        $cart = Cart::where('product_variant_id', $variant->id)
+                            ->where('user_id', $user_id)
+                            ->first();
+
+                        $variant->cart_count = $cart ? $cart->qty : 0;
+                    } else {
+                        $variant->cart_count = 0;
+                    }
+
+                    // Tax calculation
+                    $taxed = ProductHelper::getTaxableAmount($variant->id);
+
+                    $variant->discounted_price = CommonHelper::doubleNumber(
+                        $taxed->taxable_discounted_price ?? $variant->discounted_price
+                    );
+
+                    $variant->price = CommonHelper::doubleNumber(
+                        $taxed->taxable_price ?? $variant->price
+                    );
+
+                    $variant->taxable_amount = CommonHelper::doubleNumber(
+                        $taxed->taxable_amount ?? 0
+                    );
+
+                    // Images
+                    $variant->images = CommonHelper::getImages(
+                        $variant->product_id,
+                        $variant->id
+                    );
+
+                    // Unit name safety
+                    $variant->stock_unit_name = $variant->stock_unit_name ?? '';
+                }
+            }
+
+            // ✅ Global min/max price (for filters)
+            $priceRange = Product::from('products as p')
+                ->leftJoin('product_variants as pv', 'pv.product_id', '=', 'p.id')
+                ->selectRaw("
+                MIN(IF(pv.discounted_price > 0, pv.discounted_price, pv.price)) as min_price,
+                MAX(IF(pv.discounted_price > 0, pv.discounted_price, pv.price)) as max_price
+            ")
+                ->first();
+
+            // ✅ Final response
+            return Response::json([
+                'status' => 1,
+                'message' => 'success',
+                'total' => $products->total(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+                'total_min_price' => $priceRange->min_price ?? 0,
+                'total_max_price' => $priceRange->max_price ?? 0,
+                'data' => $products->items(),
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('getAppProducts Error: ' . $e->getMessage());
+            return CommonHelper::responseError('Something went wrong');
+        }
     }
+
     public function getProducts(Request $request)
     {
 
