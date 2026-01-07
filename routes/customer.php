@@ -13,32 +13,33 @@ Route::get('/google_maps_geocoding', [\App\Http\Controllers\API\StoreSettingsApi
 
 Route::group(['middleware' => ['auth.customer']], function () {
 
-    Route::post('send_sms',[\App\Http\Controllers\API\Customer\SmsApiController::class, 'store']);
-    Route::post('verify_user',[\App\Http\Controllers\API\Customer\SmsApiController::class, 'verifyContact']);
-   
+    Route::post('send_sms', [\App\Http\Controllers\API\Customer\SmsApiController::class, 'store']);
+    Route::post('verify_user', [\App\Http\Controllers\API\Customer\SmsApiController::class, 'verifyContact']);
+
 
     Route::post('register', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'register']);
-    Route::post('verify_email',[\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'verifyEmail']);
-    Route::post('verify_user_exist',[\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'verifyUserExist']);
+    Route::post('verify_email', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'verifyEmail']);
+    Route::post('verify_user_exist', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'verifyUserExist']);
     Route::post('login', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'login']);
     Route::get('login', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'notLogin'])->name('login');
     Route::post('add_fcm_token', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'addFcmToken']);
     Route::post('forgot_password_otp', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'forgetPasswordOtp']);
     Route::post('forgot_password', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'forgotPassword']);
-   
+
 
     // Guest
-   
+
     Route::get('categories', [\App\Http\Controllers\API\Customer\BasicApiController::class, 'getCategories']);
     Route::get('categories/get_seo_things', [\App\Http\Controllers\API\Customer\BasicApiController::class, 'getSeoThings']);
     Route::get('shop', [\App\Http\Controllers\API\Customer\ShopApiController::class, 'getShopData']);
     Route::get('brands', [\App\Http\Controllers\API\Customer\BasicApiController::class, 'getBrands']);
     Route::get('countries', [\App\Http\Controllers\API\Customer\BasicApiController::class, 'getCountries']);
     Route::get('/sellers', [\App\Http\Controllers\API\Customer\BasicApiController::class, 'getSellers']);
-    
+
 
 
     Route::group(['prefix' => 'products'], function () {
+        Route::post('/app', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getAppProducts']);
         Route::post('/', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getProducts']);
         Route::post('/filter', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getProducts_filter']);
         Route::post('similar', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getSimilarProducts']);
@@ -48,7 +49,6 @@ Route::group(['middleware' => ['auth.customer']], function () {
         Route::post('rating/image_list', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'productRatingImageList']);
 
         Route::get('get_seo_things', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getSeoThings']);
-
     });
     Route::post('/product_by_id', [\App\Http\Controllers\API\Customer\ProductsApiController::class, 'getProduct']);
 
@@ -93,7 +93,7 @@ Route::group(['middleware' => ['auth.customer']], function () {
         Route::post('upload_profile', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'uploadProfile']);
         Route::post('update_fcm_token', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'updateFcmToken']);
         Route::get('user_details', [\App\Http\Controllers\API\Customer\CustomerAuthController::class, 'getLoginUserDetails']);
-         
+
 
         // Transactions
         Route::get('get_user_transactions', [\App\Http\Controllers\API\Customer\BasicApiController::class, 'getUserTransactions']);
@@ -152,7 +152,7 @@ Route::group(['middleware' => ['auth.customer']], function () {
             Route::post('/validate', [\App\Http\Controllers\API\Customer\BasicApiController::class, 'validatePromoCode']);
         });
 
-           // Customer Product Request Routes
+        // Customer Product Request Routes
         Route::group(['prefix' => 'user_product_requests'], function () {
             Route::post('/add', [\App\Http\Controllers\API\ProductRequestApiController::class, 'create']);
             Route::get('/list', [\App\Http\Controllers\API\ProductRequestApiController::class, 'getAuthUserRequests']);
@@ -187,7 +187,7 @@ Route::group(['middleware' => ['auth.customer']], function () {
 
         //Phonepe
         Route::get('order_status_phonepe', [\App\Http\Controllers\API\Customer\OrderApiController::class, 'getOrderStatusPhonepe']);
-        
+
         //PayTm
         Route::get('paytm_checksum', [\App\Http\Controllers\API\Customer\OrderApiController::class, 'generatePaytmChecksum']);
         Route::get('paytm_txn_token', [\App\Http\Controllers\API\Customer\OrderApiController::class, 'generatePaytmTxnToken']);
@@ -212,7 +212,6 @@ Route::group(['middleware' => ['auth.customer']], function () {
     Route::post('ipn', [\App\Http\Controllers\API\Customer\OrderApiController::class, 'ipn']);
 
     Route::get('distance_test', [\App\Http\Controllers\API\Customer\BasicApiController::class, 'findGoogleMapDistanceTest']);
-    
 });
 
 // Guest Carts

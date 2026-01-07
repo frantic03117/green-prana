@@ -50,6 +50,23 @@ class ProductsApiController extends Controller
         $this->productRepository = $productRepository;
         $this->categoryRepository = $categoryRepository;
     }
+
+    public function getAppProducts(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'latitude' => 'required',
+            'longitude' => 'required',
+        ], [
+            'latitude.required' => 'The latitude field is required.',
+            'longitude.required' => 'The longitude field is required.'
+        ]);
+        if ($validator->fails()) {
+            return CommonHelper::responseError($validator->errors()->first());
+        }
+        $seller_ids = CommonHelper::getSellerIds($request->latitude, $request->longitude);
+        //seller_ids is working tested
+        $variants = ProductVariant
+    }
     public function getProducts(Request $request)
     {
 
