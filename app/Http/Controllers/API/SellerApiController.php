@@ -24,24 +24,26 @@ use Illuminate\Support\Str;
 
 class SellerApiController extends Controller
 {
-    public function getSellers(Request $request){
-        $filterStatus = $request->filterStatus ?? [1,3]; // Display all active & deactive
+    public function getSellers(Request $request)
+    {
+        $filterStatus = $request->filterStatus ?? [1, 3]; // Display all active & deactive
         if (!is_array($filterStatus)) {
             $filterStatus = [$filterStatus];
         }
-        $sellers = Seller::with('city', 'categories') ;
+        $sellers = Seller::with('city', 'categories', 'warehouse');
 
-        if(isset($filterStatus) && $filterStatus != ""){
-            $sellers = $sellers->whereIn("status",$filterStatus);
+        if (isset($filterStatus) && $filterStatus != "") {
+            $sellers = $sellers->whereIn("status", $filterStatus);
         }
-        $sellers = $sellers->orderBy('id','DESC')->get();
+        $sellers = $sellers->orderBy('id', 'DESC')->get();
 
         return CommonHelper::responseWithData($sellers);
     }
 
-    public function save(Request $request){
+    public function save(Request $request)
+    {
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'email|required|unique:admins',
             'mobile' => 'required',
@@ -86,7 +88,7 @@ class SellerApiController extends Controller
             $record->store_url = $request->store_url;
             $record->store_name = $request->store_name;
             $record->street = $request->street;
-            $record->pincode_id = ($request->pincode_id)??0;
+            $record->pincode_id = ($request->pincode_id) ?? 0;
             $record->city_id = $request->city_id;
             $record->categories = $request->categories_ids;
             $record->state = $request->state;
@@ -118,31 +120,34 @@ class SellerApiController extends Controller
 
             $record->status = Seller::$statusActive;
             $record->slug = Str::slug($request->name);
+            $record->warehouse_id = $request->warehouse_id ?? null;
+            $record->supply_radius = $request->supply_radius;
+            $record->coverage_area = $request->coverage_area; // 🔥 AUTO handled by model
 
-            if($request->hasFile('store_logo')){
+            if ($request->hasFile('store_logo')) {
                 $file = $request->file('store_logo');
-                $fileName = time().'_'.rand(1111,99999).'.'.$file->getClientOriginalExtension();
+                $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
                 $image = Storage::disk('public')->putFileAs('sellers', $file, $fileName);
                 $record->logo = $image;
             }
 
-            if($request->hasFile('national_id_card')){
+            if ($request->hasFile('national_id_card')) {
                 $file = $request->file('national_id_card');
-                $fileName = time().'_'.rand(1111,99999).'.'.$file->getClientOriginalExtension();
+                $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
                 $image = Storage::disk('public')->putFileAs('sellers', $file, $fileName);
                 $record->national_identity_card = $image;
             }
 
-            if($request->hasFile('address_proof')){
+            if ($request->hasFile('address_proof')) {
                 $file = $request->file('address_proof');
-                $fileName = time().'_'.rand(1111,99999).'.'.$file->getClientOriginalExtension();
-                $image = Storage::disk('public')->putFileAs('sellers', $file,$fileName);
+                $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
+                $image = Storage::disk('public')->putFileAs('sellers', $file, $fileName);
                 $record->address_proof = $image;
             }
             $record->save();
 
-            $categories_ids = explode(',',$request->categories_ids);
-            foreach ($categories_ids as $key => $category_id){
+            $categories_ids = explode(',', $request->categories_ids);
+            foreach ($categories_ids as $key => $category_id) {
                 $commission = new SellerCommission();
                 $commission->seller_id = $record->id;
                 $commission->category_id = $category_id;
@@ -151,7 +156,7 @@ class SellerApiController extends Controller
 
             DB::commit();
         } catch (\Exception $e) {
-            Log::info("Error : ".$e->getMessage());
+            Log::info("Error : " . $e->getMessage());
             DB::rollBack();
             // throw $e;
             return CommonHelper::responseError("Something Went Wrong!");
@@ -160,16 +165,17 @@ class SellerApiController extends Controller
 
         try {
             CommonHelper::sendMailAdminStatus("seller", $record, $record->status, $request->email);
-        }catch ( \Exception $e){
-            Log::error("Add Seller status send mail error",[$e->getMessage()] );
+        } catch (\Exception $e) {
+            Log::error("Add Seller status send mail error", [$e->getMessage()]);
         }
 
         return CommonHelper::responseSuccess("Seller Saved Successfully!");
     }
-    public function edit($id){
-        $seller = Seller::with('admin')->where('id',$id)->first();
+    public function edit($id)
+    {
+        $seller = Seller::with('admin')->where('id', $id)->first();
 
-        if(!$seller){
+        if (!$seller) {
             return CommonHelper::responseError("Seller Not found!");
         }
 
@@ -184,10 +190,11 @@ class SellerApiController extends Controller
     }
 
 
-    public function update(Request $request){
-        $validator = Validator::make($request->all(),[
+    public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'email|required|unique:admins,email,'.$request->admin_id,
+            'email'                                                                                               => 'email|required|unique:admins,email,' . $request->admin_id,
             'mobile' => 'required',
             'confirm_password' => 'same:password',
             'store_name' => 'required',
@@ -207,132 +214,141 @@ class SellerApiController extends Controller
         if ($validator->fails()) {
             return CommonHelper::responseError($validator->errors()->first());
         }
-        if($request->self_pickup_mode == 0 && $request->door_step_mode == 0){
+        if ($request->self_pickup_mode == 0 && $request->door_step_mode == 0) {
             return CommonHelper::responseError("At least one delivery mode must be enabled.");
         }
-        if(isset($request->id)){
+        if (isset($request->id)) {
             $record = Seller::find($request->id);
 
-            if($record) {
+            if ($record) {
 
                 $oldStatus = $record->status;
                 DB::beginTransaction();
 
-                    $data = array();
-                    $data['username'] = $request->name;
-                    $data['email'] = $request->email;
+                $data = array();
+                $data['username'] = $request->name;
+                $data['email'] = $request->email;
 
-                    if (isset($request->password) && $request->password != "") {
+                if (isset($request->password) && $request->password != "") {
 
-                        $data['password'] = bcrypt($request->password);
-                    }
-                    Admin::where('id', $request->admin_id)->update($data);
+                    $data['password'] = bcrypt($request->password);
+                }
+                Admin::where('id', $request->admin_id)->update($data);
 
-                    $record->name = $request->name;
-                    $record->email = $request->email;
+                $record->name = $request->name;
+                $record->email = $request->email;
 
-                    $record->mobile = $request->mobile;
-                    $record->store_name = $request->store_name;
+                $record->mobile = $request->mobile;
+                $record->store_name = $request->store_name;
 
-                    $record->store_url = $request->store_url;
-                    $record->street = $request->street;
-                    $record->pincode_id = ($request->pincode_id) ?? 0;
-                    $record->city_id = $request->city_id;
-                    $record->categories = $request->categories_ids;
-                    $record->state = $request->state;
-                    $record->account_number = $request->account_number;
-                    $record->bank_ifsc_code = $request->ifsc_code;
-                    $record->bank_name = $request->bank_name;
-                    $record->account_name = $request->account_name;
-                    $record->commission = $request->commission;
-                    $record->tax_name = $request->tax_name;
-                    $record->tax_number = $request->tax_number;
-                    $record->pan_number = $request->pan_number;
-                    $record->latitude = $request->latitude;
-                    $record->longitude = $request->longitude;
-                    $record->place_name = $request->place_name;
-                    $record->formatted_address = $request->formatted_address;
+                $record->store_url = $request->store_url;
+                $record->street = $request->street;
+                $record->pincode_id = ($request->pincode_id) ?? 0;
+                $record->city_id = $request->city_id;
+                $record->categories = $request->categories_ids;
+                $record->state = $request->state;
+                $record->account_number = $request->account_number;
+                $record->bank_ifsc_code = $request->ifsc_code;
+                $record->bank_name = $request->bank_name;
+                $record->account_name = $request->account_name;
+                $record->commission = $request->commission;
+                $record->tax_name = $request->tax_name;
+                $record->tax_number = $request->tax_number;
+                $record->pan_number = $request->pan_number;
+                $record->latitude = $request->latitude;
+                $record->longitude = $request->longitude;
+                $record->place_name = $request->place_name;
+                $record->formatted_address = $request->formatted_address;
 
-                    $record->store_description = $request->store_description;
-                    $record->require_products_approval = $request->require_products_approval;
-                    $record->customer_privacy = $request->customer_privacy;
-                    $record->view_order_otp = $request->view_order_otp;
-                    $record->assign_delivery_boy = $request->assign_delivery_boy;
-                    $record->change_order_status_delivered = $request->change_order_status_delivered;
-                    $record->self_pickup_mode = $request->self_pickup_mode ?? 0;
-                    $record->pickup_store_address = $request->pickup_store_address;
-                    $record->pickup_latitude = $request->pickup_latitude;
-                    $record->pickup_longitude = $request->pickup_longitude;
-                    $record->pickup_store_timings = $request->pickup_store_timings;
-                    $record->door_step_mode = $request->door_step_mode ?? 1;
+                $record->store_description = $request->store_description;
+                $record->require_products_approval = $request->require_products_approval;
+                $record->customer_privacy = $request->customer_privacy;
+                $record->view_order_otp = $request->view_order_otp;
+                $record->assign_delivery_boy = $request->assign_delivery_boy;
+                $record->change_order_status_delivered = $request->change_order_status_delivered;
+                $record->self_pickup_mode = $request->self_pickup_mode ?? 0;
+                $record->pickup_store_address = $request->pickup_store_address;
+                $record->pickup_latitude = $request->pickup_latitude;
+                $record->pickup_longitude = $request->pickup_longitude;
+                $record->pickup_store_timings = $request->pickup_store_timings;
+                $record->door_step_mode = $request->door_step_mode ?? 1;
 
-                    $record->status = $request->status;
-                    $record->remark = $request->remark;
-                    $record->slug = Str::slug($request->name);
+                $record->status = $request->status;
+                $record->remark = $request->remark;
+                $record->slug = Str::slug($request->name);
+                if (!empty($request->warehouse_id)) {
+                    $record->warehouse_id = $request->warehouse_id;
+                }
+                if (!empty($request->supply_radius)) {
+                    $record->supply_radius = $request->supply_radius;
+                }
+                if (!empty($request->coverage_area)) {
+                    $record->coverage_area = $request->coverage_area; // 🔥 AUTO handled by model
+                }
 
-                    if ($request->hasFile('store_logo')) {
-                        $file = $request->file('store_logo');
-                        $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
-                        $image = Storage::disk('public')
-                            ->putFileAs('sellers', $file, $fileName);
-                        $record->logo = $image;
-                    }
-                    if ($request->hasFile('national_id_card')) {
-                        $file = $request->file('national_id_card');
-                        $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
-                        $image = Storage::disk('public')->putFileAs('sellers', $file, $fileName);
-                        $record->national_identity_card = $image;
-                    }
-                    if ($request->hasFile('address_proof')) {
-                        $file = $request->file('address_proof');
-                        $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
-                        $image = Storage::disk('public')->putFileAs('sellers', $file, $fileName);
-                        $record->address_proof = $image;
-                    }
-                    $record->save();
-                    $categories_ids = explode(',',$request->categories_ids);
-                    foreach ($categories_ids as $key => $category_id) {
-                        // Check if an entry already exists with the given seller_id and category_id
-                        $existingCommission = SellerCommission::where('seller_id', $record->id)
-                                                              ->where('category_id', $category_id)
-                                                              ->first();
+                if ($request->hasFile('store_logo')) {
+                    $file = $request->file('store_logo');
+                    $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
+                    $image = Storage::disk('public')
+                        ->putFileAs('sellers', $file, $fileName);
+                    $record->logo = $image;
+                }
+                if ($request->hasFile('national_id_card')) {
+                    $file = $request->file('national_id_card');
+                    $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
+                    $image = Storage::disk('public')->putFileAs('sellers', $file, $fileName);
+                    $record->national_identity_card = $image;
+                }
+                if ($request->hasFile('address_proof')) {
+                    $file = $request->file('address_proof');
+                    $fileName = time() . '_' . rand(1111, 99999) . '.' . $file->getClientOriginalExtension();
+                    $image = Storage::disk('public')->putFileAs('sellers', $file, $fileName);
+                    $record->address_proof = $image;
+                }
+                $record->save();
+                $categories_ids = explode(',', $request->categories_ids);
+                foreach ($categories_ids as $key => $category_id) {
+                    // Check if an entry already exists with the given seller_id and category_id
+                    $existingCommission = SellerCommission::where('seller_id', $record->id)
+                        ->where('category_id', $category_id)
+                        ->first();
 
-                        if (!$existingCommission) {
-                            // If no existing entry found, create a new one
-                            $commission = new SellerCommission();
-                            $commission->seller_id = $record->id;
-                            $commission->category_id = $category_id;
-                            $commission->save();
-                        }
-                    }
-
-                    DB::commit();
-
-                if($oldStatus !== $record->status){
-                    try {
-                        CommonHelper::sendMailAdminStatus("seller", $record, $record->status, $request->email);
-                    }catch ( \Exception $e){
-                        Log::error("Seller Update status send mail error",[$e->getMessage()] );
+                    if (!$existingCommission) {
+                        // If no existing entry found, create a new one
+                        $commission = new SellerCommission();
+                        $commission->seller_id = $record->id;
+                        $commission->category_id = $category_id;
+                        $commission->save();
                     }
                 }
 
-            }else{
+                DB::commit();
+
+                if ($oldStatus !== $record->status) {
+                    try {
+                        CommonHelper::sendMailAdminStatus("seller", $record, $record->status, $request->email);
+                    } catch (\Exception $e) {
+                        Log::error("Seller Update status send mail error", [$e->getMessage()]);
+                    }
+                }
+            } else {
                 return CommonHelper::responseSuccess("Seller Not Found!");
             }
         }
         return CommonHelper::responseSuccess("Seller Updated Successfully!");
     }
 
-    public function delete(Request $request){
-        if(isset($request->id)){
+    public function delete(Request $request)
+    {
+        if (isset($request->id)) {
             $seller = Seller::find($request->id);
-            if($seller){
+            if ($seller) {
                 @Storage::disk('public')->delete($seller->logo);
                 @Storage::disk('public')->delete($seller->national_identity_card);
                 @Storage::disk('public')->delete($seller->address_proof);
                 $seller->delete();
                 return CommonHelper::responseSuccess("Seller Deleted Successfully!");
-            }else{
+            } else {
                 return CommonHelper::responseSuccess("Seller Already Deleted!");
             }
         }
@@ -345,7 +361,7 @@ class SellerApiController extends Controller
         if ($seller_id) {
             $seller = Seller::find($seller_id);
 
-           if ($seller) {
+            if ($seller) {
                 $seller->status = (int)$request->status; // Ensure status is an integer
                 $seller->remark = $request->remark ?? "";
                 $seller->save();
@@ -401,30 +417,39 @@ class SellerApiController extends Controller
 
 
 
-    public function updateCommission(){
+    public function updateCommission()
+    {
         $date = date('Y-m-d');
-        $result = OrderItem::select('categories.id as category_id', 'order_items.id', DB::raw('date(order_items.created_at) as order_date'),
-            'order_items.order_id','order_items.product_variant_id','order_items.seller_id','order_items.sub_total','products.return_days')
+        $result = OrderItem::select(
+            'categories.id as category_id',
+            'order_items.id',
+            DB::raw('date(order_items.created_at) as order_date'),
+            'order_items.order_id',
+            'order_items.product_variant_id',
+            'order_items.seller_id',
+            'order_items.sub_total',
+            'products.return_days'
+        )
             ->leftJoin('product_variants', 'order_items.product_variant_id', '=', 'product_variants.id')
             ->leftJoin('products', 'product_variants.product_id', '=', 'products.id')
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
-            ->where('order_items.active_status','=','delivered')
-            ->where('order_items.is_credited','=', 0)
-            ->where(DB::raw('DATE_ADD(DATE_FORMAT(order_items.created_at, "%Y-%m-%d"), INTERVAL products.return_days DAY)'),'<', $date)
-            ->orderBy('order_items.id','DESC')
+            ->where('order_items.active_status', '=', 'delivered')
+            ->where('order_items.is_credited', '=', 0)
+            ->where(DB::raw('DATE_ADD(DATE_FORMAT(order_items.created_at, "%Y-%m-%d"), INTERVAL products.return_days DAY)'), '<', $date)
+            ->orderBy('order_items.id', 'DESC')
             ->get();
 
         if (!empty($result) && $result->count() !== 0) {
             foreach ($result as $row) {
-                $seller_info = Seller::select('commission', 'email', 'name')->where('id',$row['seller_id'])->first();
-                $commission = SellerCommission::select('commission')->where('seller_id',$row['seller_id'])->where('category_id',$row['category_id'])->first();
+                $seller_info = Seller::select('commission', 'email', 'name')->where('id', $row['seller_id'])->first();
+                $commission = SellerCommission::select('commission')->where('seller_id', $row['seller_id'])->where('category_id', $row['category_id'])->first();
 
                 $commission_perct = isset($commission['commission']) && $commission['commission'] > 0 ? $commission['commission'] : $seller_info['commission'];
                 $commission_amt = $row['sub_total'] / 100 * $commission_perct;
                 $transfer_amt = $row['sub_total'] - $commission_amt;
 
                 /* get seller balance */
-                $balance = Seller::select('balance')->where('id',$row['seller_id'])->first();
+                $balance = Seller::select('balance')->where('id', $row['seller_id'])->first();
                 $user_wallet_balance = $balance["$balance"];
                 $amt = ($transfer_amt + $user_wallet_balance);
 
@@ -449,10 +474,9 @@ class SellerApiController extends Controller
 
                     /* send notification  */
                     $message = "Dear, " . ucwords($seller_info['name']) . " Commission for  order item  ID : #" . $row['id'] . " was transfered. Please take note of it.";
-
                 } catch (\Exception $e) {
                     DB::rollBack();
-                    Log::info("Error : ".$e->getMessage());
+                    Log::info("Error : " . $e->getMessage());
                     throw $e;
                     return CommonHelper::responseError("Something Went Wrong!");
                 }
@@ -461,15 +485,14 @@ class SellerApiController extends Controller
         } else {
             return CommonHelper::responseError("Seller(s) commission already updated");
         }
-
     }
-    public function getSellerCommission(){
+    public function getSellerCommission()
+    {
         $settings = Setting::where('variable', 'seller_commission')->first();
         if (!empty($settings) && $settings->count() !== 0) {
             return CommonHelper::responseWithData($settings);
         } else {
             return CommonHelper::responseError("Seller(s) commission not available");
         }
-
     }
 }

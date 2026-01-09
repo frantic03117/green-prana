@@ -19,17 +19,19 @@ class CreateWareHousesTable extends Migration
             $table->string('email')->nullable();
             $table->string('mobile')->nullable();
             $table->text('address')->nullable();
+            $table->text('password')->nullable();
 
-            // Exact warehouse location
-            $table->string('latitude')->nullable();
-            $table->string('longitude')->nullable();
-            // Coverage area (delivery zone)
-            $table->polygon('coverage_area')->nullable();
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
 
-            // Optional: radius-based supply (km)
+            // MUST be NOT NULL for spatial index
+            $table->polygon('coverage_area');
+
             $table->decimal('supply_radius', 8, 2)->nullable();
             $table->enum('is_active', ['inactive', 'active'])->default('active');
             $table->timestamps();
+
+            $table->spatialIndex('coverage_area');
         });
     }
 

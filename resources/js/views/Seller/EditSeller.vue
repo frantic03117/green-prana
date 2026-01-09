@@ -4,35 +4,37 @@
 
             <div class="row">
                 <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3 v-if="this.$roleSeller === this.login_user.role.name" >
-                        {{__('my_profile')}}
+                    <h3 v-if="this.$roleSeller === this.login_user.role.name">
+                        {{ __('my_profile') }}
                     </h3>
                     <h3 v-else>
-                        <template v-if="id">{{__('edit')}}</template>
-                        <template v-else>{{__('create')}}</template>
-                        {{__('seller')}}
+                        <template v-if="id">{{ __('edit') }}</template>
+                        <template v-else>{{ __('create') }}</template>
+                        {{ __('seller') }}
                     </h3>
                 </div>
                 <div class="col-12 col-md-6 order-md-2 order-first">
                     <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <router-link to="/seller" v-if="this.$roleSeller === this.login_user.role.name" >{{__('dashboard')}}</router-link>
-                                <router-link to="/dashboard" v-else>{{__('dashboard')}}</router-link>
+                                <router-link to="/seller" v-if="this.$roleSeller === this.login_user.role.name">{{
+                                    __('dashboard')
+                                }}</router-link>
+                                <router-link to="/dashboard" v-else>{{ __('dashboard') }}</router-link>
                             </li>
-                            <template v-if="this.$roleSeller === this.login_user.role.name" >
-                                <li class="breadcrumb-item" aria-current="page">{{__('my_profile')}}</li>
+                            <template v-if="this.$roleSeller === this.login_user.role.name">
+                                <li class="breadcrumb-item" aria-current="page">{{ __('my_profile') }}</li>
                             </template>
                             <template v-else>
 
                                 <li class="breadcrumb-item" aria-current="page">
-                                    <router-link to="/sellers">{{__('manage_sellers')}}</router-link>
+                                    <router-link to="/sellers">{{ __('manage_sellers') }}</router-link>
                                 </li>
 
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    <template v-if="id">{{__('edit')}}</template>
-                                    <template v-else>{{__('create')}}</template>
-                                    {{__('seller')}}
+                                    <template v-if="id">{{ __('edit') }}</template>
+                                    <template v-else>{{ __('create') }}</template>
+                                    {{ __('seller') }}
                                 </li>
                             </template>
                         </ol>
@@ -45,45 +47,56 @@
                     <form ref="my-form" @submit.prevent="saveRecord">
                         <div class="card">
                             <div class="card-header">
-                                <h4>{{__('seller_information')}} </h4>
-                                <span class="pull-right"  v-if="this.$roleSeller !== this.login_user.role.name">
-                                    <router-link to="/sellers" class="btn btn-primary" v-b-tooltip.hover title="Manage Seller">{{__('manage_seller')}}</router-link>
+                                <h4>{{ __('seller_information') }} </h4>
+                                <span class="pull-right" v-if="this.$roleSeller !== this.login_user.role.name">
+                                    <router-link to="/sellers" class="btn btn-primary" v-b-tooltip.hover
+                                        title="Manage Seller">{{
+                                            __('manage_seller') }}</router-link>
                                 </span>
                             </div>
                             <div class="card-body">
-                                <label><span class="text-danger text-xs">*</span> {{__('required_fields')}}.</label>
-                                <div class="divider" v-if="this.$roleSeller !== this.login_user.role.name"><div class="divider-text">{{__('new_seller_register_form')}}</div></div>
+                                <label><span class="text-danger text-xs">*</span> {{ __('required_fields') }}.</label>
+                                <div class="divider" v-if="this.$roleSeller !== this.login_user.role.name">
+                                    <div class="divider-text">{{ __('new_seller_register_form') }}</div>
+                                </div>
                                 <div class="row">
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label>{{__('name')}} <i class="text-danger">*</i></label>
+                                            <label>{{ __('name') }} <i class="text-danger">*</i></label>
                                             <input type="text" class="form-control" v-model="name"
-                                                   placeholder="Enter name." @focus="onInputFocus" @blur="onInputBlur">
+                                                placeholder="Enter name." @focus="onInputFocus" @blur="onInputBlur">
                                         </div>
                                     </div>
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label>{{__('email')}} <i class="text-danger">*</i></label>
+                                            <label>{{ __('email') }} <i class="text-danger">*</i></label>
                                             <input type="email" class="form-control" v-model="email"
-                                                   placeholder="Enter email." @focus="onInputFocus" @blur="onInputBlur">
+                                                placeholder="Enter email." @focus="onInputFocus" @blur="onInputBlur">
                                         </div>
                                     </div>
 
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label>{{__('mobile')}}<i class="text-danger">*</i></label>
-                                            <input type="text" class="form-control" v-model="mobile" placeholder="Enter mobile number" inputmode="numeric" @input="validateMobileNumber" @focus="onInputFocus" @blur="onInputBlur">
-                                                    <span v-if="mobilevalidationError" class="error">{{ mobilevalidationError }}</span>
+                                            <label>{{ __('mobile') }}<i class="text-danger">*</i></label>
+                                            <input type="text" class="form-control" v-model="mobile"
+                                                placeholder="Enter mobile number" inputmode="numeric"
+                                                @input="validateMobileNumber" @focus="onInputFocus" @blur="onInputBlur">
+                                            <span v-if="mobilevalidationError" class="error">{{ mobilevalidationError
+                                                }}</span>
                                         </div>
                                     </div>
 
-                                    <div class="form-group col-md-4" v-if="this.$roleSeller !== this.login_user.role.name">
+                                    <div class="form-group col-md-4"
+                                        v-if="this.$roleSeller !== this.login_user.role.name">
                                         <div class="form-group">
-                                            <label>{{__('password')}} <i v-if="!id" class="text-danger">*</i></label>
+                                            <label>{{ __('password') }} <i v-if="!id" class="text-danger">*</i></label>
                                             <div class="input-group">
-                                                <input :type="showPassword ? 'text' : 'password'"  class="form-control" v-model="password" placeholder="Enter password.">
-                                                <button type="button" v-on:click="showPassword = !showPassword" class="btn btn-primary font-bold">
-                                                    <i v-if="showPassword" class="fa fa-eye-slash" aria-hidden="true"></i>
+                                                <input :type="showPassword ? 'text' : 'password'" class="form-control"
+                                                    v-model="password" placeholder="Enter password.">
+                                                <button type="button" v-on:click="showPassword = !showPassword"
+                                                    class="btn btn-primary font-bold">
+                                                    <i v-if="showPassword" class="fa fa-eye-slash"
+                                                        aria-hidden="true"></i>
                                                     <i v-else class="fa fa-eye" aria-hidden="true"></i>
                                                 </button>
                                             </div>
@@ -91,18 +104,26 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group col-md-4" v-if="this.$roleSeller !== this.login_user.role.name">
+                                    <div class="form-group col-md-4"
+                                        v-if="this.$roleSeller !== this.login_user.role.name">
                                         <div class="form-group">
-                                            <label>{{__('confirm_password')}}<i v-if="!id" class="text-danger">*</i></label>
+                                            <label>{{ __('confirm_password') }}<i v-if="!id"
+                                                    class="text-danger">*</i></label>
                                             <div class="input-group">
-                                                <input :type="showConfirmPassword ? 'text' : 'password'" class="form-control" v-model="confirm_password" placeholder="Enter confirm password.">
-                                                <button type="button" v-on:click="showConfirmPassword = !showConfirmPassword" class="btn btn-primary font-bold">
-                                                    <i v-if="showConfirmPassword" class="fa fa-eye-slash" aria-hidden="true"></i>
+                                                <input :type="showConfirmPassword ? 'text' : 'password'"
+                                                    class="form-control" v-model="confirm_password"
+                                                    placeholder="Enter confirm password.">
+                                                <button type="button"
+                                                    v-on:click="showConfirmPassword = !showConfirmPassword"
+                                                    class="btn btn-primary font-bold">
+                                                    <i v-if="showConfirmPassword" class="fa fa-eye-slash"
+                                                        aria-hidden="true"></i>
                                                     <i v-else class="fa fa-eye" aria-hidden="true"></i>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
+
 
                                 </div>
                             </div>
@@ -110,85 +131,106 @@
 
                         <div class="card">
                             <div class="card-header">
-                                <h4> {{__('store_information')}}</h4>
+                                <h4> {{ __('store_information') }}</h4>
                             </div>
                             <div class="card-body">
                                 <div class="row">
 
-                                    <div class="form-group col-md-4">
+                                    <div class="form-group col-md-12">
                                         <div class="form-group">
-                                            <label>{{__('store_name')}} <i class="text-danger">*</i></label>
+                                            <label>{{ __('store_name') }} <i class="text-danger">*</i></label>
                                             <input type="text" class="form-control" v-model="store_name"
-                                                   placeholder="Enter store name.">
+                                                placeholder="Enter store name.">
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <label>Select Warehouse</label>
+                                        <select v-model="warehouse_id" class="form-control">
+                                            <option value="">-- Select Warehouse --</option>
+                                            <option v-for="warehouse in warehouses" :key="warehouse.id"
+                                                :value="warehouse.id">
+                                                {{ warehouse.name }}
+                                            </option>
+                                        </select>
+                                    </div>
+
                                     <div class="form-group col-md-5">
                                         <div class="form-group">
-                                            <label>{{__('category_ids')}}<i class="text-danger">*</i> <small>
-                                            </small></label>
-                                            <Select2 v-model="categories_ids"
-                                                     placeholder="select categories"
-                                                     :options="categories_options"
-                                                     :settings="{ multiple: 'multiple'}"/>
+                                            <label>{{ __('category_ids') }}<i class="text-danger">*</i> <small>
+                                                </small></label>
+                                            <Select2 v-model="categories_ids" placeholder="select categories"
+                                                :options="categories_options" :settings="{ multiple: 'multiple' }" />
                                         </div>
                                     </div>
                                     <div class="form-group col-md-3">
-                                                <label class="control-label">{{ __('product_status') }}</label><br>
-                                                <div id="status" class="btn-group">
-                                                    <label class="btn btn-primary" data-toggle-class="btn-primary"
-                                                           data-toggle-passive-class="btn-default">
-                                                        <input type="radio" v-model="status" value="1"> {{__('active')}}
-                                                    </label>
-                                                    <label class="btn btn-danger" data-toggle-class="btn-danger"
-                                                           data-toggle-passive-class="btn-default">
-                                                        <input type="radio" v-model="status" value="3">
-                                                        {{__('deactive')}}
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <label class="control-label">{{ __('product_status') }}</label><br>
+                                        <div id="status" class="btn-group">
+                                            <label class="btn btn-primary" data-toggle-class="btn-primary"
+                                                data-toggle-passive-class="btn-default">
+                                                <input type="radio" v-model="status" value="1"> {{ __('active') }}
+                                            </label>
+                                            <label class="btn btn-danger" data-toggle-class="btn-danger"
+                                                data-toggle-passive-class="btn-default">
+                                                <input type="radio" v-model="status" value="3">
+                                                {{ __('deactive') }}
+                                            </label>
+                                        </div>
+                                    </div>
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label>{{__('tax_name')}}</label>
+                                            <label>{{ __('tax_name') }}</label>
                                             <input type="text" class="form-control" v-model="tax_name"
-                                                   placeholder="Enter tax name.">
+                                                placeholder="Enter tax name.">
                                         </div>
                                     </div>
 
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label>{{__('tax_number')}}</label>
+                                            <label>{{ __('tax_number') }}</label>
                                             <input type="text" class="form-control" v-model="tax_number"
-                                                   placeholder="Enter tax number.">
+                                                placeholder="Enter tax number.">
                                         </div>
                                     </div>
 
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label>{{__('pan_number')}}<i class="text-danger">*</i></label>
+                                            <label>{{ __('pan_number') }}<i class="text-danger">*</i></label>
                                             <input type="text" class="form-control" v-model="pan_number"
-                                                   placeholder="Enter PAN number.">
+                                                placeholder="Enter PAN number.">
                                         </div>
                                     </div>
 
-                                    <div class="form-group col-md-4" v-if="this.$roleSeller !== this.login_user.role.name">
-                                        <label>{{__('commission')}}<i class="text-danger">*</i></label>
+                                    <div class="form-group col-md-4"
+                                        v-if="this.$roleSeller !== this.login_user.role.name">
+                                        <label>{{ __('commission') }}<i class="text-danger">*</i></label>
                                         <input type="number" class="form-control" v-model="commission"
-                                               placeholder="Enter commission (%)" @input="validateCommission">
+                                            placeholder="Enter commission (%)" @input="validateCommission">
 
-                                        <p v-if="commissionvalidationError" class="error">{{ commissionvalidationError }}</p>
-                                        <span class="text text-success font-size-13"> 
+                                        <p v-if="commissionvalidationError" class="error">{{ commissionvalidationError
+                                            }}</p>
+                                        <span class="text text-success font-size-13">
                                             <a href="javascript:void(0)" @click="commissionRule = true"
-                                               title="How it works">How seller commission works?</a>
+                                                title="How it works">How
+                                                seller commission works?</a>
                                         </span>
                                     </div>
                                     <br>
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label> {{__('national_identity_card')}}<i v-if="!id" class="text-danger">*</i></label>
-                                            <input type="file" class="file-input" accept="image/*,application/pdf,.doc,.docx" ref="file_national_id_card" v-if="this.$roleSeller !== this.login_user.role.name" v-on:change="handleFileNationalIdCard">
-                                            <div class="file-input-div bg-gray-100" v-if="this.$roleSeller !== this.login_user.role.name" @click="$refs.file_national_id_card.click()" @drop="dropFileNationalIdCard" @dragover="$dragoverFile" @dragleave="$dragleaveFile">
+                                            <label> {{ __('national_identity_card') }}<i v-if="!id"
+                                                    class="text-danger">*</i></label>
+                                            <input type="file" class="file-input"
+                                                accept="image/*,application/pdf,.doc,.docx" ref="file_national_id_card"
+                                                v-if="this.$roleSeller !== this.login_user.role.name"
+                                                v-on:change="handleFileNationalIdCard">
+                                            <div class="file-input-div bg-gray-100"
+                                                v-if="this.$roleSeller !== this.login_user.role.name"
+                                                @click="$refs.file_national_id_card.click()"
+                                                @drop="dropFileNationalIdCard" @dragover="$dragoverFile"
+                                                @dragleave="$dragleaveFile">
                                                 <template v-if="national_id_card && national_id_card.name !== ''">
-                                                    <label>Selected file name:- {{__('selected_file_name')}}{{ national_id_card.name }}</label>
+                                                    <label>Selected file name:- {{ __('selected_file_name') }}{{
+                                                        national_id_card.name }}</label>
                                                 </template>
                                                 <template v-else>
                                                     <label><i class="fa fa-cloud-upload-alt fa-2x"></i></label>
@@ -197,33 +239,47 @@
                                             </div>
                                             <div class="row" v-if="national_id_card_url">
                                                 <div v-if="isImage(national_id_card_url)" class="col-md-2">
-                                                    <img class="custom-image" :src="national_id_card_url" title='Identity Card' alt='Identity Card'/>
+                                                    <img class="custom-image" :src="national_id_card_url"
+                                                        title='Identity Card' alt='Identity Card' />
                                                 </div>
                                                 <div v-else class="col-md-2 mt-2">
-                                                    <a target="_blank" :href="national_id_card_url" class="badge bg-success"> <i class="fa fa-eye"></i> Identity Card</a>
+                                                    <a target="_blank" :href="national_id_card_url"
+                                                        class="badge bg-success"> <i class="fa fa-eye"></i> Identity
+                                                        Card</a>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label> {{__('address_proof')}}<i v-if="!id" class="text-danger">*</i></label>
-                                            <input type="file" class="file-input" accept="image/*,application/pdf,.doc,.docx"  ref="file_address_proof" v-if="this.$roleSeller !== this.login_user.role.name" v-on:change="handleFileAddressProof">
-                                            <div class="file-input-div bg-gray-100" v-if="this.$roleSeller !== this.login_user.role.name" @click="$refs.file_address_proof.click()" @drop="dropFileAddressProof" @dragover="$dragoverFile" @dragleave="$dragleaveFile">
-                                                <template v-if="address_proof_name == '' ">
+                                            <label> {{ __('address_proof') }}<i v-if="!id"
+                                                    class="text-danger">*</i></label>
+                                            <input type="file" class="file-input"
+                                                accept="image/*,application/pdf,.doc,.docx" ref="file_address_proof"
+                                                v-if="this.$roleSeller !== this.login_user.role.name"
+                                                v-on:change="handleFileAddressProof">
+                                            <div class="file-input-div bg-gray-100"
+                                                v-if="this.$roleSeller !== this.login_user.role.name"
+                                                @click="$refs.file_address_proof.click()" @drop="dropFileAddressProof"
+                                                @dragover="$dragoverFile" @dragleave="$dragleaveFile">
+                                                <template v-if="address_proof_name == ''">
                                                     <label><i class="fa fa-cloud-upload-alt fa-2x"></i></label>
                                                     <label>{{ __('drop_files_here_or_click_to_upload') }}</label>
                                                 </template>
                                                 <template v-else>
-                                                    <label>{{__('selected_file_name')}} {{ address_proof_name }}</label>
+                                                    <label>{{ __('selected_file_name') }} {{ address_proof_name
+                                                    }}</label>
                                                 </template>
                                             </div>
                                             <div class="row" v-if="address_proof_url">
-                                                <div  v-if="isImage(address_proof_url)"  class="col-md-2">
-                                                    <img class="custom-image" :src="address_proof_url" title='Address Proof' alt='Address Proof'/>
+                                                <div v-if="isImage(address_proof_url)" class="col-md-2">
+                                                    <img class="custom-image" :src="address_proof_url"
+                                                        title='Address Proof' alt='Address Proof' />
                                                 </div>
                                                 <div v-else class="col-md-2 mt-2">
-                                                    <a target="_blank" :href="address_proof_url" class="badge bg-success"> <i class="fa fa-eye"></i> Address Proof</a>
+                                                    <a target="_blank" :href="address_proof_url"
+                                                        class="badge bg-success"> <i class="fa fa-eye"></i> Address
+                                                        Proof</a>
                                                 </div>
                                             </div>
 
@@ -232,11 +288,15 @@
 
                                     <div class="form-group col-md-12">
 
-                                        <label for="logo"> {{__('logo')}} <i v-if="!id" class="text-danger">*</i></label>
-                                        <input type="file" accept="image/*" id="logo" class="file-input" ref="file_store_logo" v-on:change="handleFileStoreLogo">
-                                        <div class="file-input-div bg-gray-100" @click="$refs.file_store_logo.click()" @drop="dropFileStoreLogo" @dragover="$dragoverFile" @dragleave="$dragleaveFile">
+                                        <label for="logo"> {{ __('logo') }} <i v-if="!id"
+                                                class="text-danger">*</i></label>
+                                        <input type="file" accept="image/*" id="logo" class="file-input"
+                                            ref="file_store_logo" v-on:change="handleFileStoreLogo">
+                                        <div class="file-input-div bg-gray-100" @click="$refs.file_store_logo.click()"
+                                            @drop="dropFileStoreLogo" @dragover="$dragoverFile"
+                                            @dragleave="$dragleaveFile">
                                             <template v-if="store_logo && store_logo.name !== ''">
-                                                <label>{{__('selected_file_name')}}{{ store_logo.name }}</label>
+                                                <label>{{ __('selected_file_name') }}{{ store_logo.name }}</label>
                                             </template>
                                             <template v-else>
                                                 <label><i class="fa fa-cloud-upload-alt fa-2x"></i></label>
@@ -246,7 +306,8 @@
 
                                         <div class="row" v-if="store_logo_url">
                                             <div class="col-md-2">
-                                                <img class="custom-image" :src="store_logo_url" title='Store Logo' alt='Store Logo'/>
+                                                <img class="custom-image" :src="store_logo_url" title='Store Logo'
+                                                    alt='Store Logo' />
                                             </div>
                                         </div>
 
@@ -256,25 +317,23 @@
                                     <div class="col-md-12" v-if="id && this.$roleSeller !== this.login_user.role.name">
                                         <div class="row">
                                             <div class="form-group col-md-5">
-                                                <label class="control-label"> {{__('status')}} <i class="text-danger">*</i></label><br>
-                                                <b-form-radio-group
-                                                    v-model="status"
-                                                    :options="[
+                                                <label class="control-label"> {{ __('status') }} <i
+                                                        class="text-danger">*</i></label><br>
+                                                <b-form-radio-group v-model="status" :options="[
                                                     { text: ' Registered', 'value': 0 },
                                                     { text: ' Approved', 'value': 1 },
                                                     { text: ' Not-Approved', 'value': 2 },
                                                     { text: ' Deactive', 'value': 3 },
-                                                ]"
-                                                    buttons
-                                                    button-variant="outline-primary"
-                                                    required
-                                                ></b-form-radio-group>
+                                                ]" buttons button-variant="outline-primary"
+                                                    required></b-form-radio-group>
                                             </div>
-                                            <div v-if="[2,3].includes(status)" class="form-group col-md-4">
+                                            <div v-if="[2, 3].includes(status)" class="form-group col-md-4">
 
                                                 <label for="remark">Remark <i class="text-danger">*</i></label>
                                                 <div class="form-floating">
-                                                    <textarea class="form-control" name="remark" id="remark" required v-model="remark" placeholder="Add a remark of this status..." spellcheck="true"></textarea>
+                                                    <textarea class="form-control" name="remark" id="remark" required
+                                                        v-model="remark" placeholder="Add a remark of this status..."
+                                                        spellcheck="true"></textarea>
                                                     <label for="remark">Add a remark of this status...</label>
                                                 </div>
 
@@ -284,18 +343,13 @@
 
                                     <div class="form-group col-md-12">
 
-                                        <label> {{__('store_description')}}</label>
-                                        <editor
-                                            placeholder="Enter store description"
-                                            v-model="store_description"
-                                            
-                                            :init="{
-                                                            height:400,
-                                                            plugins: this.$editorPlugins ,
-                                                            toolbar: this.$editorToolbar,
-                                                            font_size_formats: this.$editorFont_size_formats,
-                                                        }"
-                                        />
+                                        <label> {{ __('store_description') }}</label>
+                                        <editor placeholder="Enter store description" v-model="store_description" :init="{
+                                            height: 400,
+                                            plugins: this.$editorPlugins,
+                                            toolbar: this.$editorToolbar,
+                                            font_size_formats: this.$editorFont_size_formats,
+                                        }" />
 
                                     </div>
                                 </div>
@@ -304,157 +358,153 @@
 
                         <div class="card">
                             <div class="card-header">
-                                <h4> {{__('store_location_information')}}</h4>
+                                <h4> {{ __('store_location_information') }}</h4>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="form-group col-md-4">
-                                        <label for="city_name">{{__('select_or_search_city')}}<i class="text-danger">*</i></label>
-                                       
-                                         <Select2 v-model="city_id"
-                                                     placeholder="select cities"
-                                                     :options="cities_options"
-                                                     :settings="{ multiple: 'multiple'}"/>
+                                        <label for="city_name">{{ __('select_or_search_city') }}<i
+                                                class="text-danger">*</i></label>
+                                        <Select2 v-model="city_id" placeholder="select cities" :options="cities_options"
+                                            :settings="{ multiple: 'multiple' }" />
                                     </div>
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label> {{__('state')}}</label>
-                                            <input type="text" class="form-control" v-model="state" readonly placeholder="Enter state">
+                                            <label> {{ __('state') }}</label>
+                                            <input type="text" class="form-control" v-model="state" readonly
+                                                placeholder="Enter state">
                                         </div>
                                     </div>
 
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label> {{__('street')}}</label>
-                                            <input type="text" class="form-control" v-model="street"
-                                                   readonly placeholder="Enter street.">
+                                            <label>Supply Radius</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" v-model="supply_radius"
+                                                    placeholder="Enter supply_radius.">
+                                                <button type="button" @click="drawSupplyRadius"
+                                                    class="btn btn-primary">Draw</button>
+                                            </div>
+
                                         </div>
                                     </div>
 
                                     <div class="form-group col-md-4">
-                                        <label for="location">{{__('search_location')}}</label>
-
-
-
+                                        <label for="location">{{ __('search_location') }}</label>
                                         <div class="input-group">
-                                            <GmapAutocomplete type="search" class="form-control" placeholder="Search you location on map."
-                                                              @place_changed="setPlace"
-                                                              :options="{ fields: ['formatted_address', 'geometry', 'name'], strictBounds: false}"
-                                                              id="location">
+                                            <GmapAutocomplete type="search" class="form-control"
+                                                placeholder="Search you location on map." @place_changed="setPlace"
+                                                :options="{ fields: ['formatted_address', 'geometry', 'name'], strictBounds: false }"
+                                                id="location">
                                             </GmapAutocomplete>
 
-                                            <b-button type="button" variant="primary" class="search_location_btn" v-b-tooltip.hover  title="Add current location" @click="getCurrentLocation">
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 0 24 24" width="48px" fill="#FFFFFF">
+                                            <b-button type="button" variant="primary" class="search_location_btn"
+                                                v-b-tooltip.hover title="Add current location"
+                                                @click="getCurrentLocation">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="48px"
+                                                    viewBox="0 0 24 24" width="48px" fill="#FFFFFF">
                                                     <title>current-location</title>
-                                                    <path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                                                    <path d="M0 0h24v24H0V0z" fill="none" />
+                                                    <path
+                                                        d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
                                                 </svg>
-
-
-
                                             </b-button>
                                         </div>
 
-                                        <span class="text-danger d-block font-size-13"> {{__('only_search_location_when_update_is_necessary')}}</span>
-                                        <span class="text text-primary font-size-13"> {{__('search_your_seller_name_and_you_will_get_the_location_points_latitude_longitude_below')}}</span>
+                                        <span class="text-danger d-block font-size-13">
+                                            {{ __('only_search_location_when_update_is_necessary') }}</span>
+                                        <span class="text text-primary font-size-13">
+                                            {{
+                                                __('search_your_seller_name_and_you_will_get_the_location_points_latitude_longitude_below')
+                                            }}</span>
                                     </div>
 
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label> {{__('latitude')}}<i class="text-danger">*</i></label>
-                                            <input type="text" class="form-control" v-model="latitude" readonly placeholder="Enter latitude.">
+                                            <label> {{ __('latitude') }}<i class="text-danger">*</i></label>
+                                            <input type="text" class="form-control" v-model="latitude" readonly
+                                                placeholder="Enter latitude.">
                                         </div>
                                     </div>
 
                                     <div class="form-group col-md-4">
                                         <div class="form-group">
-                                            <label> {{__('longitude')}}<i class="text-danger">*</i></label>
-                                            <input type="text" class="form-control" v-model="longitude" readonly placeholder="Enter longitude.">
+                                            <label> {{ __('longitude') }}<i class="text-danger">*</i></label>
+                                            <input type="text" class="form-control" v-model="longitude" readonly
+                                                placeholder="Enter longitude.">
                                         </div>
                                     </div>
 
                                     <div class="col-md-12 mb-3">
-                                        <div v-if="formatted_address" class="text-danger">{{__('draf_and_click_marker_to_your_shop_proper_location')}}</div>
+                                        <div v-if="formatted_address" class="text-danger">
+                                            {{ __('draf_and_click_marker_to_your_shop_proper_location') }}</div>
                                         <div id="map" style="position: relative; overflow: hidden;">
-                                            <GmapMap
-                                                :center="center"
-                                                :zoom="13"
-                                                :mapTypeControl=true
-                                                style="width: 100%; height: 400px; margin-top: 20px"
-                                                ref="mapRef"
-                                                @click="handleMapClick"
-                                            >
-                                                <GmapMarker
-                                                    :key="index"
-                                                    v-for="(m, index) in markers"
-                                                    :position="m.position"
-                                                    :clickable="true"
-                                                    :draggable="true"
-                                                    @drag="updateCoordinates"
-                                                    @click="updateCoordinates"
-                                                />
+                                            <GmapMap :center="center" :zoom="13" :mapTypeControl=true
+                                                style="width: 100%; height: 400px; margin-top: 20px" ref="mapRef"
+                                                @click="handleMapClick">
+                                                <GmapMarker :key="index" v-for="(m, index) in markers"
+                                                    :position="m.position" :clickable="true" :draggable="true"
+                                                    @drag="updateCoordinates" @click="updateCoordinates" />
                                                 <!--                                                    @click="center = m.position"-->
-                                                <gmap-info-window
-                                                    :options="{
-                                                                  maxWidth: 300,
-                                                                  pixelOffset: { width: 0, height: -35 }
-                                                                }"
-                                                    :position="infoWindow.position"
-                                                    :opened="infoWindow.open"
-                                                    @closeclick="infoWindow.open=false">
+                                                <gmap-info-window :options="{
+                                                    maxWidth: 300,
+                                                    pixelOffset: { width: 0, height: -35 }
+                                                }" :position="infoWindow.position" :opened="infoWindow.open"
+                                                    @closeclick="infoWindow.open = false">
                                                     <div v-html="infoWindow.template"></div>
                                                 </gmap-info-window>
                                             </GmapMap>
                                         </div>
                                         <div v-if="formatted_address">
                                             <span class="title font-weight-bolder"><b>{{
-                                                    place_name
-                                                }}</b> - {{ formatted_address }}</span>
+                                                place_name
+                                                    }}</b> - {{ formatted_address }}</span>
                                         </div>
                                     </div>
-
-
-
                                 </div>
                             </div>
-                           
+
                         </div>
 
                         <div class="card" v-if="this.$roleSeller !== this.login_user.role.name">
                             <div class="card-header">
-                                <h4> {{__('seller_bank_information')}}</h4>
+                                <h4> {{ __('seller_bank_information') }}</h4>
                             </div>
                             <div class="card-body">
                                 <div class="row">
 
                                     <div class="form-group col-md-3">
                                         <div class="form-group">
-                                            <label>{{__('bank_name')}}<i class="text-danger">*</i></label>
+                                            <label>{{ __('bank_name') }}<i class="text-danger">*</i></label>
                                             <input type="text" class="form-control" v-model="bank_name"
-                                                   placeholder="Enter bank name." required>
+                                                placeholder="Enter bank name." required>
                                         </div>
                                     </div>
 
                                     <div class="form-group col-md-3">
                                         <div class="form-group">
-                                            <label> {{__('account_number')}}<i class="text-danger">*</i></label>
-                                            <input type="number" class="form-control" v-model="account_number" placeholder="Enter account number." @input="validateAccountNumber" required> 
-                                            <span v-if="account_numbervalidationError" class="error">{{ account_numbervalidationError }}</span>
+                                            <label> {{ __('account_number') }}<i class="text-danger">*</i></label>
+                                            <input type="number" class="form-control" v-model="account_number"
+                                                placeholder="Enter account number." @input="validateAccountNumber"
+                                                required>
+                                            <span v-if="account_numbervalidationError" class="error">{{
+                                                account_numbervalidationError }}</span>
                                         </div>
                                     </div>
 
                                     <div class="form-group col-md-3">
                                         <div class="form-group">
-                                            <label>{{__('bank_ifsc_code')}}<i class="text-danger">*</i></label>
+                                            <label>{{ __('bank_ifsc_code') }}<i class="text-danger">*</i></label>
                                             <input type="text" class="form-control" v-model="ifsc_code"
-                                                   placeholder="Enter bank's IFSC code." required>
+                                                placeholder="Enter bank's IFSC code." required>
                                         </div>
                                     </div>
 
                                     <div class="form-group col-md-3">
                                         <div class="form-group">
-                                            <label> {{__('bank_account_name')}}<i class="text-danger">*</i></label>
+                                            <label> {{ __('bank_account_name') }}<i class="text-danger">*</i></label>
                                             <input type="text" class="form-control valid" v-model="account_name"
-                                                   placeholder="Enter bank account name." required>
+                                                placeholder="Enter bank account name." required>
                                         </div>
                                     </div>
                                 </div>
@@ -463,23 +513,18 @@
 
                         <div class="card">
                             <div class="card-header">
-                                <h4>{{__('other_setting')}}</h4>
+                                <h4>{{ __('other_setting') }}</h4>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="form-group col-md-3">
                                         <div class="form-group">
-                                            <label class="control-label"> {{__('require_product_approval')}}</label><br>
-                                            <b-form-radio-group
-                                                v-model="require_products_approval"
-                                                :options="[
-                                                                { text: ' Yes', 'value': 1 },
-                                                                { text: ' No', 'value': 0 },
-                                                            ]"
-                                                buttons
-                                                button-variant="outline-primary"
-                                                required
-                                            ></b-form-radio-group>
+                                            <label class="control-label"> {{ __('require_product_approval')
+                                            }}</label><br>
+                                            <b-form-radio-group v-model="require_products_approval" :options="[
+                                                { text: ' Yes', 'value': 1 },
+                                                { text: ' No', 'value': 0 },
+                                            ]" buttons button-variant="outline-primary" required></b-form-radio-group>
                                         </div>
                                     </div>
                                     <!-- <div class="form-group col-md-3">
@@ -500,44 +545,33 @@
 
                                     <div class="form-group col-md-3" v-if="store_settings.self_pickup_mode == 1">
                                         <div class="form-group">
-                                            <label class="control-label"> {{__('door_step_mode')}}</label><br>
-                                            <b-form-radio-group
-                                                v-model="door_step_mode"
-                                                :options="[
-                                                                { text: ' Yes', 'value': 1 },
-                                                                { text: ' No', 'value': 0 },
-                                                            ]"
-                                                buttons
-                                                button-variant="outline-primary"
-                                                required
-                                            ></b-form-radio-group>
+                                            <label class="control-label"> {{ __('door_step_mode') }}</label><br>
+                                            <b-form-radio-group v-model="door_step_mode" :options="[
+                                                { text: ' Yes', 'value': 1 },
+                                                { text: ' No', 'value': 0 },
+                                            ]" buttons button-variant="outline-primary" required></b-form-radio-group>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-group col-md-3" v-if="store_settings.self_pickup_mode == 1">
                                         <div class="form-group">
-                                            <label class="control-label"> {{__('self_pickup_mode')}}</label><br>
-                                            <b-form-radio-group
-                                                v-model="self_pickup_mode"
-                                                :options="[
-                                                                { text: ' Yes', 'value': 1 },
-                                                                { text: ' No', 'value': 0 },
-                                                            ]"
-                                                buttons
-                                                button-variant="outline-primary"
-                                                required
-                                            ></b-form-radio-group>
+                                            <label class="control-label"> {{ __('self_pickup_mode') }}</label><br>
+                                            <b-form-radio-group v-model="self_pickup_mode" :options="[
+                                                { text: ' Yes', 'value': 1 },
+                                                { text: ' No', 'value': 0 },
+                                            ]" buttons button-variant="outline-primary" required></b-form-radio-group>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
-                                
+
                                 <!-- Self Pickup Configuration Section -->
-                                <div v-if="store_settings.self_pickup_mode == 1 && self_pickup_mode == 1" class="row mt-4">
+                                <div v-if="store_settings.self_pickup_mode == 1 && self_pickup_mode == 1"
+                                    class="row mt-4">
                                     <div class="col-12">
-                                        <h5 class="text-primary">{{__('self_pickup_configuration')}}</h5>
+                                        <h5 class="text-primary">{{ __('self_pickup_configuration') }}</h5>
                                     </div>
-                                    
+
                                     <!-- Map Section for Pickup Location -->
                                     <div class="form-group col-md-12">
                                         <div class="row">
@@ -546,86 +580,87 @@
                                                 <!-- Map View -->
                                                 <div class="form-group">
                                                     <div id="pickup_map" style="position: relative; overflow: hidden;">
-                                                        <GmapMap
-                                                            :zoom="13"
-                                                            :center="pickupCenter"
-                                                            :mapTypeControl=true
+                                                        <GmapMap :zoom="13" :center="pickupCenter" :mapTypeControl=true
                                                             style="width: 100%; height: 400px; margin-top: 5px"
-                                                            ref="pickupMapRef"
-                                                        >
-                                                            <GmapMarker
-                                                                :key="index"
-                                                                v-for="(m, index) in pickupMarkers"
+                                                            ref="pickupMapRef">
+                                                            <GmapMarker :key="index" v-for="(m, index) in pickupMarkers"
                                                                 :position="google && m.position"
-                                                                @click="pickupCenter = m.position"
-                                                                :clickable="true"
-                                                                :draggable="true"
-                                                                @dragend="onPickupMarkerDragEnd"
-                                                            />
-                                                            <gmap-info-window
-                                                                :options="{
-                                                                      maxWidth: 300,
-                                                                      pixelOffset: { width: 0, height: -35 }
-                                                                    }"
-                                                                :position="pickupInfoWindow.position"
+                                                                @click="pickupCenter = m.position" :clickable="true"
+                                                                :draggable="true" @dragend="onPickupMarkerDragEnd" />
+                                                            <gmap-info-window :options="{
+                                                                maxWidth: 300,
+                                                                pixelOffset: { width: 0, height: -35 }
+                                                            }" :position="pickupInfoWindow.position"
                                                                 :opened="pickupInfoWindow.open"
-                                                                @closeclick="pickupInfoWindow.open=false">
+                                                                @closeclick="pickupInfoWindow.open = false">
                                                                 <div v-html="pickupInfoWindow.template"></div>
                                                             </gmap-info-window>
                                                         </GmapMap>
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <!-- Right Side - All Details (50%) -->
                                             <div class="col-md-6">
                                                 <!-- Search Input -->
                                                 <div class="form-group">
                                                     <label for="pickup_city_name">{{ __('search_location') }}</label>
                                                     <GmapAutocomplete type="search" class="form-control"
-                                                                      placeholder="Search Pickup Location on map."
-                                                                      @place_changed="setPickupPlace"
-                                                                      :options="{ fields: ['address_components','formatted_address', 'geometry', 'name','place_id','plus_code','types'], strictBounds: false }"
-                                                                      id="pickup_city_name">
+                                                        placeholder="Search Pickup Location on map."
+                                                        @place_changed="setPickupPlace"
+                                                        :options="{ fields: ['address_components', 'formatted_address', 'geometry', 'name', 'place_id', 'plus_code', 'types'], strictBounds: false }"
+                                                        id="pickup_city_name">
                                                     </GmapAutocomplete>
                                                     <!-- <input type="hidden" v-model="pickup_formatted_address"> -->
-                                                    <span class="text text-primary">{{ __('search_your_pickup_location_and_to_find_coordinates') }}</span>
+                                                    <span class="text text-primary">{{
+                                                        __('search_your_pickup_location_and_to_find_coordinates')
+                                                        }}</span>
                                                 </div>
-                                                
+
                                                 <!-- Pickup Store Address -->
                                                 <div class="form-group">
-                                                    <label>{{__('pickup_store_address')}} <i class="text-danger">*</i></label>
-                                                    <textarea class="form-control" v-model="pickup_store_address" 
-                                                              rows="2" :placeholder="__('enter_pickup_store_address')"></textarea>
+                                                    <label>{{ __('pickup_store_address') }} <i
+                                                            class="text-danger">*</i></label>
+                                                    <textarea class="form-control" v-model="pickup_store_address"
+                                                        rows="2"
+                                                        :placeholder="__('enter_pickup_store_address')"></textarea>
                                                 </div>
-                                                
+
                                                 <!-- Coordinates -->
                                                 <div class="form-group">
-                                                    <label for="pickup_latitude">{{ __('latitude') }} <span class="text-danger text-sm">*</span></label>
-                                                    <input type="text" class="form-control" name="pickup_latitude" id="pickup_latitude"
-                                                           v-model="pickup_latitude" placeholder="Enter Latitude." required readonly>
+                                                    <label for="pickup_latitude">{{ __('latitude') }} <span
+                                                            class="text-danger text-sm">*</span></label>
+                                                    <input type="text" class="form-control" name="pickup_latitude"
+                                                        id="pickup_latitude" v-model="pickup_latitude"
+                                                        placeholder="Enter Latitude." required readonly>
                                                 </div>
-                                                
+
                                                 <div class="form-group">
-                                                    <label for="pickup_longitude">{{ __('longitude') }}<span class="text-danger text-sm">*</span></label>
-                                                    <input type="text" class="form-control" name="pickup_longitude" id="pickup_longitude"
-                                                           v-model="pickup_longitude" placeholder="Enter Longitude." required readonly>
+                                                    <label for="pickup_longitude">{{ __('longitude') }}<span
+                                                            class="text-danger text-sm">*</span></label>
+                                                    <input type="text" class="form-control" name="pickup_longitude"
+                                                        id="pickup_longitude" v-model="pickup_longitude"
+                                                        placeholder="Enter Longitude." required readonly>
                                                 </div>
-                                                
+
                                                 <!-- Store Timings -->
                                                 <div class="form-group">
-                                                    <label>{{__('store_timings')}} <i class="text-danger">*</i></label>
+                                                    <label>{{ __('store_timings') }} <i
+                                                            class="text-danger">*</i></label>
                                                     <div class="row">
                                                         <div class="col-md-6">
-                                                            <label class="form-label">{{__('opening_time')}}</label>
-                                                            <input type="time" class="form-control" v-model="storeTimings.opening_time" required>
+                                                            <label class="form-label">{{ __('opening_time') }}</label>
+                                                            <input type="time" class="form-control"
+                                                                v-model="storeTimings.opening_time" required>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <label class="form-label">{{__('closing_time')}}</label>
-                                                            <input type="time" class="form-control" v-model="storeTimings.closing_time" required>
+                                                            <label class="form-label">{{ __('closing_time') }}</label>
+                                                            <input type="time" class="form-control"
+                                                                v-model="storeTimings.closing_time" required>
                                                         </div>
                                                     </div>
-                                                    <small class="text-muted">{{__('store_timings_description')}}</small>
+                                                    <small class="text-muted">{{ __('store_timings_description')
+                                                    }}</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -634,15 +669,16 @@
                             </div>
                             <div class="card-footer">
                                 <template v-if="id">
-                                    <b-button type="submit" variant="primary" :disabled="isLoading">  {{__('update')}}
+                                    <b-button type="submit" variant="primary" :disabled="isLoading"> {{ __('update') }}
                                         <b-spinner v-if="isLoading" small label="Spinning"></b-spinner>
                                     </b-button>
                                 </template>
                                 <template v-else>
-                                    <b-button type="submit" variant="primary" :disabled="isLoading"> {{__('save')}}
+                                    <b-button type="submit" variant="primary" :disabled="isLoading"> {{ __('save') }}
                                         <b-spinner v-if="isLoading" small label="Spinning"></b-spinner>
                                     </b-button>
-                                    <button type="button" class="btn btn-danger" @click="clearForm()"> {{__('clear')}}</button>
+                                    <button type="button" class="btn btn-danger" @click="clearForm()">
+                                        {{ __('clear') }}</button>
                                 </template>
                             </div>
                         </div>
@@ -655,17 +691,17 @@
         <b-modal v-model="commissionRule" size="lg" title="How commission (Admin commission) will get credited?">
             <b-container fluid>
                 <ol>
-                   
+
                     <li>
-                        Formula for commision (Admin commission) is <b>Sub total (Excluding delivery charge) / 100 * 
-                        commission percentage</b>
+                        Formula for commision (Admin commission) is <b>Sub total (Excluding delivery charge) / 100 *
+                            commission percentage</b>
                     </li>
                     <li>
                         For example sub total is 1378 and commission is 20% then 1378 / 100 X 20 = 275.6 so 1378
                         - 275.6 = 1102.4 will get credited into seller's wallet.
                     </li>
                     <li>
-                       275.6  is commission for Admin and 1102.4 is earning of seller .
+                        275.6 is commission for Admin and 1102.4 is earning of seller .
                     </li>
                     <li>
                         If Order status is delivered then only seller will get earning.
@@ -678,23 +714,23 @@
                         Ex - 2. Order placed on 11-Aug-21 and product return days are set to 7 so 11-Aug + 7 days =
                         18-Aug seller earning will get credited when admin is logged in admin panel.
                     </li>
-                    
+
                 </ol>
             </b-container>
             <template #modal-footer>
-                <b-button variant="secondary" size="sm" class="float-right" @click="commissionRule=false">Close
+                <b-button variant="secondary" size="sm" class="float-right" @click="commissionRule = false">Close
                 </b-button>
             </template>
         </b-modal>
     </div>
 </template>
 <script>
-import {VuejsDatatableFactory} from 'vuejs-datatable';
+import { VuejsDatatableFactory } from 'vuejs-datatable';
 import axios from "axios";
 import Select2 from 'v-select2-component';
 
 import Multiselect from 'vue-multiselect';
-import {gmapApi} from 'vue2-google-maps';
+import { gmapApi } from 'vue2-google-maps';
 import Editor from '@tinymce/tinymce-vue';
 
 import Auth from '../../Auth.js';
@@ -709,18 +745,18 @@ export default {
     data: function () {
         return {
             login_user: Auth.user,
-
+            isEditMode: false,
             isLoading: false,
-            center: {lat: 0, lng: 0},
-            map:"",
-            drawingManager:"",
+            center: { lat: 0, lng: 0 },
+            map: "",
+            drawingManager: "",
 
             currentPlace: null,
             markers: [],
             place_name: "",
             formatted_address: "",
             infoWindow: {
-                position: {lat: 0, lng: 0},
+                position: { lat: 0, lng: 0 },
                 open: false,
                 template: ''
             },
@@ -731,19 +767,25 @@ export default {
             email: "",
             mobile: "",
             store_url: "",
-
+            supply_radius: 0,
             password: "",
             showPassword: false,
             confirm_password: "",
-            showConfirmPassword:false, 
+            showConfirmPassword: false,
 
+            mapObject: null,   // native google map
+            supplyCircle: null, // google.maps.Circle,
+
+            warehouse_id: "",
+            warehouses: [],
+            coverage_area: [],
             store_name: "",
             street: "",
             pincode_id: "",
             city_id: [],
             categories_ids: [],
             state: "",
-            remark:"",
+            remark: "",
             account_number: "",
             ifsc_code: "",
             bank_name: "",
@@ -784,7 +826,7 @@ export default {
             account_numbervalidationError: null,
             isFormLoaded: false, // Flag to prevent form refilling
             isUserTyping: false, // Flag to track if user is actively typing
-            
+
             // Self Pickup fields
             self_pickup_mode: 0,
             door_step_mode: 1,
@@ -792,23 +834,23 @@ export default {
             pickup_latitude: "",
             pickup_longitude: "",
             pickup_store_timings: "",
-            
+
             // Pickup map properties
-            pickupCenter: {lat: 0, lng: 0},
+            pickupCenter: { lat: 0, lng: 0 },
             pickupMarkers: [],
             pickupInfoWindow: {
-                position: {lat: 0, lng: 0},
+                position: { lat: 0, lng: 0 },
                 open: false,
                 template: ''
             },
             pickupCurrentPlace: null,
-            
+
             // Store timings (single time range)
             storeTimings: {
                 opening_time: '09:00',
                 closing_time: '18:00'
             },
-            
+
             // Store settings for watcher
             store_settings: {
                 one_seller_cart: 0,
@@ -824,43 +866,51 @@ export default {
                 this.door_step_mode = 1;
             }
         },
-        
+
         // Validation: When self pickup mode is enabled, at least one delivery mode should be enabled
         'self_pickup_mode'(newValue) {
             if (this.store_settings.self_pickup_mode == 1 && newValue == 0 && this.door_step_mode == 0) {
                 this.door_step_mode = 1;
             }
         },
-        
+
         'door_step_mode'(newValue) {
             if (this.store_settings.self_pickup_mode == 1 && newValue == 0 && this.self_pickup_mode == 0) {
                 this.self_pickup_mode = 1;
             }
-        }
+        },
+        // supply_radius(newVal) {
+        //     if (this.isEditMode) return; // 🔥 STOP overwrite on edit
+
+        //     if (newVal > 0 && this.latitude && this.longitude) {
+        //         this.drawSupplyRadius();
+        //     }
+        // }
     },
     created: function () {
         this.getCategories();
         this.getCities();
         this.getSellerCommission();
         this.getStoreSettings();
-
+        this.fetchWarehouses();
         this.id = this.$route.params.id;
-        if(this.$roleSeller === this.login_user.role.name){
+        if (this.$roleSeller === this.login_user.role.name) {
             this.id = this.login_user.seller.id;
         }
 
         if (this.id) {
             this.getSeller();
+            this.isEditMode = true;
         }
     },
     computed: {
         categories_options: function () {
             var temp = [];
-            if(this.categories.length !== 0 ) {
+            if (this.categories.length !== 0) {
                 this.categories.forEach(category => {
                     //Only Main Categories
                     if (category.parent_id == 0) {
-                        temp.push({id: category.id, text: category.name})
+                        temp.push({ id: category.id, text: category.name })
                     }
                 });
             }
@@ -868,9 +918,9 @@ export default {
         },
         cities_options: function () {
             var temp = [];
-            if(this.cities.length !== 0 ) {
+            if (this.cities.length !== 0) {
                 this.cities.forEach(city => {
-                        temp.push({id: city.id, text: city.name +'-'+ city.zone})
+                    temp.push({ id: city.id, text: city.name + '-' + city.zone })
                 });
             }
             return temp;
@@ -878,6 +928,107 @@ export default {
         google: gmapApi
     },
     methods: {
+        circleToPolygon(center, radiusKm, points = 36) {
+            const earthRadius = 6371; // km
+            const lat = center.lat * Math.PI / 180;
+            const lng = center.lng * Math.PI / 180;
+            const d = radiusKm / earthRadius;
+
+            const polygon = [];
+
+            for (let i = 0; i <= points; i++) {
+                const bearing = (i * 2 * Math.PI) / points;
+
+                const lat2 = Math.asin(
+                    Math.sin(lat) * Math.cos(d) +
+                    Math.cos(lat) * Math.sin(d) * Math.cos(bearing)
+                );
+
+                const lng2 = lng + Math.atan2(
+                    Math.sin(bearing) * Math.sin(d) * Math.cos(lat),
+                    Math.cos(d) - Math.sin(lat) * Math.sin(lat2)
+                );
+
+                polygon.push({
+                    lat: lat2 * 180 / Math.PI,
+                    lng: lng2 * 180 / Math.PI
+                });
+            }
+
+            return polygon;
+        },
+        fitCoverageBounds() {
+            if (!this.mapObject || !this.coverage_area.length) return;
+
+            const bounds = new google.maps.LatLngBounds();
+
+            this.coverage_area.forEach(p => {
+                bounds.extend(new google.maps.LatLng(p.lat, p.lng));
+            });
+
+            this.mapObject.fitBounds(bounds);
+        },
+
+
+        getMapObject() {
+            if (!this.mapObject && this.$refs.mapRef) {
+                this.$refs.mapRef.$mapPromise.then(map => {
+                    this.mapObject = map;
+                });
+            }
+        },
+        fetchWarehouses() {
+            axios.get(this.$apiUrl + "/warehouse")
+                .then(res => {
+                    this.warehouses = res.data.data;
+                })
+                .catch(() => {
+                    this.$swal.fire("Error", "Failed to load warehouses", "error");
+                });
+        },
+        drawSupplyRadius() {
+            this.getMapObject();
+
+            if (!this.mapObject) {
+                this.showError("Map not ready yet");
+                return;
+            }
+
+            if (!this.latitude || !this.longitude || !this.supply_radius) {
+                this.showError("Select location and supply radius first");
+                return;
+            }
+
+            if (this.supplyCircle) {
+                this.supplyCircle.setMap(null);
+            }
+
+            const center = {
+                lat: Number(this.latitude),
+                lng: Number(this.longitude),
+            };
+
+            this.supplyCircle = new google.maps.Circle({
+                map: this.mapObject,
+                center: center,
+                radius: Number(this.supply_radius) * 1000,
+                strokeColor: "#007bff",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: "#007bff",
+                fillOpacity: 0.25,
+            });
+
+            this.mapObject.fitBounds(this.supplyCircle.getBounds());
+
+            // 🔥 NEW: Save coverage_area polygon
+            this.coverage_area = this.circleToPolygon(
+                center,
+                Number(this.supply_radius),
+                36
+            );
+
+        },
         getCities() {
             this.isLoading = true
             axios.get(this.$apiUrl + '/cities')
@@ -886,15 +1037,15 @@ export default {
                     let data = response.data;
                     this.cities = data.data
                 }).catch(error => {
-                this.isLoading = false;
-                if (error?.request?.statusText) {
-                    this.showError(error.request.statusText);
-                }else if (error.message) {
-                    this.showError(error.message);
-                } else {
-                    this.showError(__('something_went_wrong'));
-                }
-            });
+                    this.isLoading = false;
+                    if (error?.request?.statusText) {
+                        this.showError(error.request.statusText);
+                    } else if (error.message) {
+                        this.showError(error.message);
+                    } else {
+                        this.showError(__('something_went_wrong'));
+                    }
+                });
         },
         getCategories() {
 
@@ -905,15 +1056,15 @@ export default {
                     let data = response.data;
                     this.categories = data.data;
                 }).catch(error => {
-                this.isLoading = false;
-                if (error?.request?.statusText) {
-                    this.showError(error.request.statusText);
-                }else if (error.message) {
-                    this.showError(error.message);
-                } else {
-                    this.showError(__('something_went_wrong'));
-                }
-            });
+                    this.isLoading = false;
+                    if (error?.request?.statusText) {
+                        this.showError(error.request.statusText);
+                    } else if (error.message) {
+                        this.showError(error.message);
+                    } else {
+                        this.showError(__('something_went_wrong'));
+                    }
+                });
         },
         getSellerCommission() {
             axios.get(this.$sellerApiUrl + '/seller_commission')
@@ -922,13 +1073,13 @@ export default {
                     this.commission = data.data.value;
                 });
         },
-        
+
         getStoreSettings() {
             axios.get(this.$apiUrl + '/store_settings')
                 .then((response) => {
                     let data = response.data.data;
                     this.store_settings = data.store_settingsObject;
-                    
+
                     // Load store settings values
                     data.store_settings.forEach((item) => {
                         if (item.variable === 'one_seller_cart') {
@@ -950,28 +1101,28 @@ export default {
                 const marker = {
                     lat: this.currentPlace.geometry.location.lat(),
                     lng: this.currentPlace.geometry.location.lng(),
-                    draggable:true,
+                    draggable: true,
                 };
-                this.markers.push({position: marker});
+                this.markers.push({ position: marker });
                 this.center = marker;
 
                 this.latitude = this.currentPlace.geometry.location.lat();
                 this.longitude = this.currentPlace.geometry.location.lng();
 
                 let addressArr = this.currentPlace.formatted_address.split(",");
-                this.street = addressArr[0]+" "+addressArr[1];
+                this.street = addressArr[0] + " " + addressArr[1];
 
                 this.place_name = this.currentPlace.name;
                 this.formatted_address = this.currentPlace.formatted_address;
 
-                this.infoWindow.position = {lat: this.latitude, lng: this.longitude}
+                this.infoWindow.position = { lat: this.latitude, lng: this.longitude }
                 this.infoWindow.template = `<b>${this.place_name}</b><br>${this.formatted_address}`
                 this.infoWindow.open = true;
                 this.currentPlace = null;
             }
         },
 
-        getCurrentLocation(){
+        getCurrentLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {
                     this.latitude = position.coords.latitude;
@@ -983,25 +1134,25 @@ export default {
                 this.showError("Geolocation is not supported by this browser.");
             }
         },
-        handleMapClick(place){
+        handleMapClick(place) {
             this.latitude = place.latLng.lat();
             this.longitude = place.latLng.lng();
             let latlng = place.latLng;
             this.mapConfig(latlng);
         },
-        mapConfig(latlng){
+        mapConfig(latlng) {
             let vm = this;
             let geocoder = new google.maps.Geocoder;
-            geocoder.geocode({'location': latlng}, function(results, status) {
+            geocoder.geocode({ 'location': latlng }, function (results, status) {
                 if (status === 'OK') {
                     if (results[1]) {
                         let clikedPlace = results[1];
 
                         let addressArr = clikedPlace.formatted_address.split(",");
-                        vm.street = addressArr[0]+" "+addressArr[1];
+                        vm.street = addressArr[0] + " " + addressArr[1];
                         vm.place_name = addressArr[1];
                         vm.formatted_address = clikedPlace.formatted_address;
-                        vm.infoWindow.position = {lat: vm.latitude, lng: vm.longitude}
+                        vm.infoWindow.position = { lat: vm.latitude, lng: vm.longitude }
                         vm.infoWindow.template = `<b>${vm.place_name}</b><br>${vm.formatted_address}`
                         vm.infoWindow.open = true;
                         vm.currentPlace = null;
@@ -1010,9 +1161,9 @@ export default {
                         const marker = {
                             lat: parseFloat(vm.latitude),
                             lng: parseFloat(vm.longitude),
-                            draggable:true,
+                            draggable: true,
                         }
-                        vm.markers.push({position: marker});
+                        vm.markers.push({ position: marker });
                         vm.center = marker;
 
                     } else {
@@ -1024,6 +1175,10 @@ export default {
 
         updateCoordinates(location) {
             this.handleMapClick(location);
+            // 🔥 update radius position live
+            if (this.supply_radius > 0) {
+                this.drawSupplyRadius();
+            }
         },
         setCityId() {
             this.state = this.city.state;
@@ -1079,7 +1234,7 @@ export default {
             }
         },
         validateCommission() {
-          if (this.commission < 1 || this.commission > 100) {
+            if (this.commission < 1 || this.commission > 100) {
                 this.commissionvalidationError = "Percentage must be between 1 and 100.";
                 this.commission = null;
             } else {
@@ -1087,14 +1242,14 @@ export default {
             }
         },
         validateAccountNumber() {
-          if (this.account_number < 0) {
+            if (this.account_number < 0) {
                 this.account_numbervalidationError = "Account Number must be numeric value.";
-                this.account_number= null;
+                this.account_number = null;
             } else {
                 this.account_numbervalidationError = null;
             }
         },
-        
+
         clearForm() {
             // Reset all form fields
             this.name = "";
@@ -1122,6 +1277,7 @@ export default {
             this.longitude = "";
             this.store_description = "";
             this.require_products_approval = 0;
+            this.supply_radius = 0;
             // this.customer_privacy = 0;
             this.view_order_otp = 0;
             this.assign_delivery_boy = 0;
@@ -1139,21 +1295,33 @@ export default {
             this.formatted_address = "";
             this.markers = [];
             this.infoWindow.open = false;
-            
+
             // Reset validation errors
             this.mobilevalidationError = null;
             this.commissionvalidationError = null;
             this.account_numbervalidationError = null;
-            
+
             // Reset form loaded flag
             this.isFormLoaded = false;
         },
-        
+
         onInputFocus() {
             // Set flag when user starts typing
             this.isUserTyping = true;
         },
-        
+        fitPolygonBounds() {
+            if (!this.mapObject || !this.polygonPath.length) return;
+
+            const bounds = new google.maps.LatLngBounds();
+
+            this.polygonPath.forEach(p => {
+                bounds.extend(new google.maps.LatLng(p.lat, p.lng));
+            });
+
+            this.mapObject.fitBounds(bounds);
+        },
+
+
         onInputBlur() {
             // Reset flag when user stops typing (with a small delay)
             setTimeout(() => {
@@ -1165,7 +1333,7 @@ export default {
             if (this.isFormLoaded || this.isUserTyping) {
                 return;
             }
-            
+
             axios.get(this.$apiUrl + '/sellers/edit/' + this.id)
                 .then((response) => {
                     this.isLoading = false
@@ -1173,7 +1341,7 @@ export default {
                     if (data.status === 1) {
                         // Set flag to prevent refilling
                         this.isFormLoaded = true;
-                        
+
                         this.record = data.data
                         this.admin_id = this.record.admin.id ?? this.record.admin_id;
                         this.name = this.record.admin.username ?? this.record.name;
@@ -1181,7 +1349,6 @@ export default {
 
                         this.mobile = this.record.mobile;
                         this.store_url = this.record.store_url;
-
                         this.password = "";
                         this.confirm_password = "";
 
@@ -1189,7 +1356,7 @@ export default {
                         this.street = this.record.street;
                         this.pincode_id = "";
                         this.city_id = this.record.city_id?.split(",");
-                        this.categories_ids = this.record.categories?.split(",");       
+                        this.categories_ids = this.record.categories?.split(",");
                         this.state = this.record.state;
                         this.remark = this.record.remark;
                         this.account_number = this.record.account_number;
@@ -1202,6 +1369,8 @@ export default {
                         this.pan_number = this.record.pan_number;
                         this.latitude = this.record.latitude;
                         this.longitude = this.record.longitude;
+                        this.supply_radius = this.record.supply_radius;
+                        this.warehouse_id = this.record.warehouse_id;
 
                         this.place_name = this.record.place_name;
                         this.formatted_address = this.record.formatted_address;
@@ -1212,14 +1381,14 @@ export default {
                         this.view_order_otp = this.record.view_order_otp;
                         this.assign_delivery_boy = this.record.assign_delivery_boy;
                         this.change_order_status_delivered = this.record.change_order_status_delivered;
-                        
+
                         // Self Pickup fields
                         this.self_pickup_mode = (this.record.self_pickup_mode === null || this.record.self_pickup_mode === undefined) ? 0 : this.record.self_pickup_mode;
                         this.door_step_mode = (this.record.door_step_mode === null || this.record.door_step_mode === undefined) ? 1 : this.record.door_step_mode;
                         this.pickup_store_address = this.record.pickup_store_address || "";
                         this.pickup_latitude = this.record.pickup_latitude || "";
                         this.pickup_longitude = this.record.pickup_longitude || "";
-                        
+
                         // Load store timings
                         if (this.record.pickup_store_timings) {
                             try {
@@ -1241,7 +1410,7 @@ export default {
                                 console.log('Error parsing store timings:', e);
                             }
                         }
-                        
+
                         // Set pickup map marker if coordinates exist
                         if (this.pickup_latitude && this.pickup_longitude) {
                             this.pickupCenter = {
@@ -1260,7 +1429,7 @@ export default {
                             };
                             this.pickupInfoWindow.template = `<b>Pickup Location</b><br>${this.pickup_store_address}`;
                         }
-                        
+
                         this.status = this.record.status;
                         this.store_logo = this.record.store_logo;
 
@@ -1272,12 +1441,17 @@ export default {
                         const marker = {
                             lat: parseFloat(this.latitude),
                             lng: parseFloat(this.longitude),
-                            draggable:true,
+                            draggable: true,
                         }
-                        this.markers.push({position: marker});
+                        this.markers.push({ position: marker });
                         this.center = marker;
-
-                        this.infoWindow.position = {lat: parseFloat(this.latitude), lng: parseFloat(this.longitude)}
+                        if (this.record.coverage_area?.length) {
+                            this.coverage_area = this.record.coverage_area.map(p => ({
+                                lat: Number(p.lat),
+                                lng: Number(p.lng),
+                            }));
+                        }
+                        this.infoWindow.position = { lat: parseFloat(this.latitude), lng: parseFloat(this.longitude) }
                         this.infoWindow.template = `<b>${this.place_name}</b><br>${this.formatted_address}`
                         this.infoWindow.open = true;
 
@@ -1291,7 +1465,7 @@ export default {
                     this.isLoading = false;
                     if (error?.request?.statusText) {
                         this.showError(error.request.statusText);
-                    }else if (error.message) {
+                    } else if (error.message) {
                         this.showError(error.message);
                     } else {
                         this.showError(__('something_went_wrong'));
@@ -1329,6 +1503,8 @@ export default {
             formData.append('pan_number', this.pan_number);
             formData.append('latitude', this.latitude);
             formData.append('longitude', this.longitude);
+            formData.append('supply_radius', this.supply_radius);
+            formData.append('warehouse_id', this.warehouse_id);
 
             formData.append('place_name', this.place_name);
             formData.append('formatted_address', this.formatted_address);
@@ -1340,7 +1516,7 @@ export default {
             formData.append('view_order_otp', this.view_order_otp);
             formData.append('assign_delivery_boy', this.assign_delivery_boy);
             formData.append('change_order_status_delivered', this.change_order_status_delivered);
-            
+
             // Self Pickup fields
             formData.append('self_pickup_mode', this.self_pickup_mode);
             formData.append('door_step_mode', this.door_step_mode);
@@ -1348,11 +1524,12 @@ export default {
             formData.append('pickup_latitude', this.pickup_latitude);
             formData.append('pickup_longitude', this.pickup_longitude);
             formData.append('pickup_store_timings', JSON.stringify(this.storeTimings));
-            
+
             formData.append('status', this.status);
             formData.append('store_logo', this.store_logo);
             formData.append('national_id_card', this.national_id_card);
             formData.append('address_proof', this.address_proof);
+            formData.append('coverage_area', JSON.stringify(this.coverage_area));
 
             let url = this.$apiUrl + '/sellers/save';
             if (this.id) {
@@ -1368,10 +1545,10 @@ export default {
                     setTimeout(
                         function () {
                             vm.$swal.close();
-                            if(vm.$roleSeller === vm.login_user.role.name){
-                                vm.$router.push({path: '/seller/profile'})
-                            }else{
-                                vm.$router.push({path: '/sellers'})
+                            if (vm.$roleSeller === vm.login_user.role.name) {
+                                vm.$router.push({ path: '/seller/profile' })
+                            } else {
+                                vm.$router.push({ path: '/sellers' })
                             }
                             vm.isLoading = false;
                             //vm.showSuccess(data.message);
@@ -1384,7 +1561,7 @@ export default {
             }).catch(error => {
                 if (error?.request?.statusText) {
                     this.showError(error.request.statusText);
-                }else if (error.message) {
+                } else if (error.message) {
                     this.showError(error.message);
                 } else {
                     this.showError(__('something_went_wrong'));
@@ -1392,46 +1569,46 @@ export default {
                 vm.isLoading = false;
             });
         },
-        
+
         // Self Pickup methods (similar to EditCity.vue)
         setPickupPlace(place) {
             this.pickupCurrentPlace = place;
             this.addPickupMarker();
         },
-        
+
         addPickupMarker() {
             if (this.pickupCurrentPlace) {
                 const marker = {
                     lat: this.pickupCurrentPlace.geometry.location.lat(),
                     lng: this.pickupCurrentPlace.geometry.location.lng(),
                 };
-                this.pickupMarkers = [{position: marker}];
+                this.pickupMarkers = [{ position: marker }];
                 this.pickupCenter = marker;
                 this.pickup_latitude = this.pickupCurrentPlace.geometry.location.lat();
                 this.pickup_longitude = this.pickupCurrentPlace.geometry.location.lng();
-                
+
                 // Auto-fill the pickup store address with the full formatted address
                 this.pickup_store_address = this.pickupCurrentPlace.formatted_address;
-                
-                this.pickupInfoWindow.position = {lat: this.pickup_latitude, lng: this.pickup_longitude};
+
+                this.pickupInfoWindow.position = { lat: this.pickup_latitude, lng: this.pickup_longitude };
                 this.pickupInfoWindow.template = `<b>${this.pickupCurrentPlace.name}</b><br>${this.pickup_store_address}`;
                 this.pickupInfoWindow.open = true;
                 this.pickupCurrentPlace = null;
             }
         },
-        
+
         onPickupMarkerDragEnd(event) {
             const lat = event.latLng.lat();
             const lng = event.latLng.lng();
-            
+
             this.pickup_latitude = lat.toString();
             this.pickup_longitude = lng.toString();
-            
+
             // Update marker position
             this.pickupMarkers = [{
                 position: { lat: lat, lng: lng }
             }];
-            
+
             // Update info window
             this.pickupInfoWindow.position = { lat: lat, lng: lng };
             this.pickupInfoWindow.template = `<b>Selected Location</b><br>Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
@@ -1445,4 +1622,3 @@ export default {
 <style scoped>
 @import "../../../../node_modules/vue-multiselect/dist/vue-multiselect.min.css";
 </style>
-

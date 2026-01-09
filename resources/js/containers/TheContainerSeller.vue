@@ -7,8 +7,8 @@
                         <div class="logo">
                             <router-link to="/seller"
                                 style="display: flex; align-items: center; justify-content: flex-start;">
-                                <img class="container-logo" v-if="$appLogo != ''" :src="$storageUrl + $appLogo" alt='Logo'
-                                    srcset="" />
+                                <img class="container-logo" v-if="$appLogo != ''" :src="$storageUrl + $appLogo"
+                                    alt='Logo' srcset="" />
                                 <img class="container-logo" v-else :src="$baseUrl + '/images/logo.png'" alt='Logo'
                                     srcset="" />
                                 {{ $appName }}
@@ -38,8 +38,8 @@
                                     </a>
                                     <ul class="submenu" :class="{ 'active': subIsActive(item) }">
                                         <template v-for="sub in item.submenu">
-                                            <li class="submenu-item" :class="{ 'active': isActive(sub.url) }"
-                                                :key="sub.key">
+                                            <li :key="sub.key" class="submenu-item"
+                                                :class="{ 'active': isActive(sub.url) }">
                                                 <router-link :to="sub.url">
                                                     {{ sub.name }}
                                                 </router-link>

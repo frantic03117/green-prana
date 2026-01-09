@@ -710,6 +710,42 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -728,6 +764,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       login_user: _Auth_js__WEBPACK_IMPORTED_MODULE_6__["default"].user,
+      isEditMode: false,
       isLoading: false,
       center: {
         lat: 0,
@@ -753,10 +790,19 @@ __webpack_require__.r(__webpack_exports__);
       email: "",
       mobile: "",
       store_url: "",
+      supply_radius: 0,
       password: "",
       showPassword: false,
       confirm_password: "",
       showConfirmPassword: false,
+      mapObject: null,
+      // native google map
+      supplyCircle: null,
+      // google.maps.Circle,
+
+      warehouse_id: "",
+      warehouses: [],
+      coverage_area: [],
       store_name: "",
       street: "",
       pincode_id: "",
@@ -856,19 +902,26 @@ __webpack_require__.r(__webpack_exports__);
       if (this.store_settings.self_pickup_mode == 1 && newValue == 0 && this.self_pickup_mode == 0) {
         this.self_pickup_mode = 1;
       }
-    }
+    } // supply_radius(newVal) {
+    //     if (this.isEditMode) return; // 🔥 STOP overwrite on edit
+    //     if (newVal > 0 && this.latitude && this.longitude) {
+    //         this.drawSupplyRadius();
+    //     }
+    // }
   },
   created: function created() {
     this.getCategories();
     this.getCities();
     this.getSellerCommission();
     this.getStoreSettings();
+    this.fetchWarehouses();
     this.id = this.$route.params.id;
     if (this.$roleSeller === this.login_user.role.name) {
       this.id = this.login_user.seller.id;
     }
     if (this.id) {
       this.getSeller();
+      this.isEditMode = true;
     }
   },
   computed: {
@@ -902,64 +955,138 @@ __webpack_require__.r(__webpack_exports__);
     google: vue2_google_maps__WEBPACK_IMPORTED_MODULE_4__.gmapApi
   },
   methods: {
-    getCities: function getCities() {
+    circleToPolygon: function circleToPolygon(center, radiusKm) {
+      var points = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 36;
+      var earthRadius = 6371; // km
+      var lat = center.lat * Math.PI / 180;
+      var lng = center.lng * Math.PI / 180;
+      var d = radiusKm / earthRadius;
+      var polygon = [];
+      for (var i = 0; i <= points; i++) {
+        var bearing = i * 2 * Math.PI / points;
+        var lat2 = Math.asin(Math.sin(lat) * Math.cos(d) + Math.cos(lat) * Math.sin(d) * Math.cos(bearing));
+        var lng2 = lng + Math.atan2(Math.sin(bearing) * Math.sin(d) * Math.cos(lat), Math.cos(d) - Math.sin(lat) * Math.sin(lat2));
+        polygon.push({
+          lat: lat2 * 180 / Math.PI,
+          lng: lng2 * 180 / Math.PI
+        });
+      }
+      return polygon;
+    },
+    fitCoverageBounds: function fitCoverageBounds() {
+      if (!this.mapObject || !this.coverage_area.length) return;
+      var bounds = new google.maps.LatLngBounds();
+      this.coverage_area.forEach(function (p) {
+        bounds.extend(new google.maps.LatLng(p.lat, p.lng));
+      });
+      this.mapObject.fitBounds(bounds);
+    },
+    getMapObject: function getMapObject() {
       var _this = this;
+      if (!this.mapObject && this.$refs.mapRef) {
+        this.$refs.mapRef.$mapPromise.then(function (map) {
+          _this.mapObject = map;
+        });
+      }
+    },
+    fetchWarehouses: function fetchWarehouses() {
+      var _this2 = this;
+      axios__WEBPACK_IMPORTED_MODULE_1___default().get(this.$apiUrl + "/warehouse").then(function (res) {
+        _this2.warehouses = res.data.data;
+      })["catch"](function () {
+        _this2.$swal.fire("Error", "Failed to load warehouses", "error");
+      });
+    },
+    drawSupplyRadius: function drawSupplyRadius() {
+      this.getMapObject();
+      if (!this.mapObject) {
+        this.showError("Map not ready yet");
+        return;
+      }
+      if (!this.latitude || !this.longitude || !this.supply_radius) {
+        this.showError("Select location and supply radius first");
+        return;
+      }
+      if (this.supplyCircle) {
+        this.supplyCircle.setMap(null);
+      }
+      var center = {
+        lat: Number(this.latitude),
+        lng: Number(this.longitude)
+      };
+      this.supplyCircle = new google.maps.Circle({
+        map: this.mapObject,
+        center: center,
+        radius: Number(this.supply_radius) * 1000,
+        strokeColor: "#007bff",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#007bff",
+        fillOpacity: 0.25
+      });
+      this.mapObject.fitBounds(this.supplyCircle.getBounds());
+
+      // 🔥 NEW: Save coverage_area polygon
+      this.coverage_area = this.circleToPolygon(center, Number(this.supply_radius), 36);
+    },
+    getCities: function getCities() {
+      var _this3 = this;
       this.isLoading = true;
       axios__WEBPACK_IMPORTED_MODULE_1___default().get(this.$apiUrl + '/cities').then(function (response) {
-        _this.isLoading = false;
+        _this3.isLoading = false;
         var data = response.data;
-        _this.cities = data.data;
+        _this3.cities = data.data;
       })["catch"](function (error) {
         var _error$request;
-        _this.isLoading = false;
+        _this3.isLoading = false;
         if (error !== null && error !== void 0 && (_error$request = error.request) !== null && _error$request !== void 0 && _error$request.statusText) {
-          _this.showError(error.request.statusText);
+          _this3.showError(error.request.statusText);
         } else if (error.message) {
-          _this.showError(error.message);
+          _this3.showError(error.message);
         } else {
-          _this.showError(__('something_went_wrong'));
+          _this3.showError(__('something_went_wrong'));
         }
       });
     },
     getCategories: function getCategories() {
-      var _this2 = this;
+      var _this4 = this;
       this.isLoading = true;
       axios__WEBPACK_IMPORTED_MODULE_1___default().get(this.$apiUrl + '/categories/main').then(function (response) {
-        _this2.isLoading = false;
+        _this4.isLoading = false;
         var data = response.data;
-        _this2.categories = data.data;
+        _this4.categories = data.data;
       })["catch"](function (error) {
         var _error$request2;
-        _this2.isLoading = false;
+        _this4.isLoading = false;
         if (error !== null && error !== void 0 && (_error$request2 = error.request) !== null && _error$request2 !== void 0 && _error$request2.statusText) {
-          _this2.showError(error.request.statusText);
+          _this4.showError(error.request.statusText);
         } else if (error.message) {
-          _this2.showError(error.message);
+          _this4.showError(error.message);
         } else {
-          _this2.showError(__('something_went_wrong'));
+          _this4.showError(__('something_went_wrong'));
         }
       });
     },
     getSellerCommission: function getSellerCommission() {
-      var _this3 = this;
+      var _this5 = this;
       axios__WEBPACK_IMPORTED_MODULE_1___default().get(this.$sellerApiUrl + '/seller_commission').then(function (response) {
         var data = response.data;
-        _this3.commission = data.data.value;
+        _this5.commission = data.data.value;
       });
     },
     getStoreSettings: function getStoreSettings() {
-      var _this4 = this;
+      var _this6 = this;
       axios__WEBPACK_IMPORTED_MODULE_1___default().get(this.$apiUrl + '/store_settings').then(function (response) {
         var data = response.data.data;
-        _this4.store_settings = data.store_settingsObject;
+        _this6.store_settings = data.store_settingsObject;
 
         // Load store settings values
         data.store_settings.forEach(function (item) {
           if (item.variable === 'one_seller_cart') {
-            _this4.store_settings.one_seller_cart = item.value === '1' ? 1 : 0;
+            _this6.store_settings.one_seller_cart = item.value === '1' ? 1 : 0;
           }
           if (item.variable === 'self_pickup_mode') {
-            _this4.store_settings.self_pickup_mode = item.value === '1' ? 1 : 0;
+            _this6.store_settings.self_pickup_mode = item.value === '1' ? 1 : 0;
           }
         });
       });
@@ -995,13 +1122,13 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     getCurrentLocation: function getCurrentLocation() {
-      var _this5 = this;
+      var _this7 = this;
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
-          _this5.latitude = position.coords.latitude;
-          _this5.longitude = position.coords.longitude;
-          var latlng = new google.maps.LatLng(_this5.latitude, _this5.longitude);
-          _this5.mapConfig(latlng);
+          _this7.latitude = position.coords.latitude;
+          _this7.longitude = position.coords.longitude;
+          var latlng = new google.maps.LatLng(_this7.latitude, _this7.longitude);
+          _this7.mapConfig(latlng);
         });
       } else {
         this.showError("Geolocation is not supported by this browser.");
@@ -1051,6 +1178,10 @@ __webpack_require__.r(__webpack_exports__);
     },
     updateCoordinates: function updateCoordinates(location) {
       this.handleMapClick(location);
+      // 🔥 update radius position live
+      if (this.supply_radius > 0) {
+        this.drawSupplyRadius();
+      }
     },
     setCityId: function setCityId() {
       this.state = this.city.state;
@@ -1145,6 +1276,7 @@ __webpack_require__.r(__webpack_exports__);
       this.longitude = "";
       this.store_description = "";
       this.require_products_approval = 0;
+      this.supply_radius = 0;
       // this.customer_privacy = 0;
       this.view_order_otp = 0;
       this.assign_delivery_boy = 0;
@@ -1175,71 +1307,81 @@ __webpack_require__.r(__webpack_exports__);
       // Set flag when user starts typing
       this.isUserTyping = true;
     },
+    fitPolygonBounds: function fitPolygonBounds() {
+      if (!this.mapObject || !this.polygonPath.length) return;
+      var bounds = new google.maps.LatLngBounds();
+      this.polygonPath.forEach(function (p) {
+        bounds.extend(new google.maps.LatLng(p.lat, p.lng));
+      });
+      this.mapObject.fitBounds(bounds);
+    },
     onInputBlur: function onInputBlur() {
-      var _this6 = this;
+      var _this8 = this;
       // Reset flag when user stops typing (with a small delay)
       setTimeout(function () {
-        _this6.isUserTyping = false;
+        _this8.isUserTyping = false;
       }, 1000);
     },
     getSeller: function getSeller() {
-      var _this7 = this;
+      var _this9 = this;
       // Prevent multiple calls and form refilling
       if (this.isFormLoaded || this.isUserTyping) {
         return;
       }
       axios__WEBPACK_IMPORTED_MODULE_1___default().get(this.$apiUrl + '/sellers/edit/' + this.id).then(function (response) {
-        _this7.isLoading = false;
+        _this9.isLoading = false;
         var data = response.data;
         if (data.status === 1) {
-          var _this7$record$admin$i, _this7$record$admin$u, _this7$record$admin$e, _this7$record$city_id, _this7$record$categor;
+          var _this9$record$admin$i, _this9$record$admin$u, _this9$record$admin$e, _this9$record$city_id, _this9$record$categor, _this9$record$coverag;
           // Set flag to prevent refilling
-          _this7.isFormLoaded = true;
-          _this7.record = data.data;
-          _this7.admin_id = (_this7$record$admin$i = _this7.record.admin.id) !== null && _this7$record$admin$i !== void 0 ? _this7$record$admin$i : _this7.record.admin_id;
-          _this7.name = (_this7$record$admin$u = _this7.record.admin.username) !== null && _this7$record$admin$u !== void 0 ? _this7$record$admin$u : _this7.record.name;
-          _this7.email = (_this7$record$admin$e = _this7.record.admin.email) !== null && _this7$record$admin$e !== void 0 ? _this7$record$admin$e : _this7.record.email;
-          _this7.mobile = _this7.record.mobile;
-          _this7.store_url = _this7.record.store_url;
-          _this7.password = "";
-          _this7.confirm_password = "";
-          _this7.store_name = _this7.record.store_name;
-          _this7.street = _this7.record.street;
-          _this7.pincode_id = "";
-          _this7.city_id = (_this7$record$city_id = _this7.record.city_id) === null || _this7$record$city_id === void 0 ? void 0 : _this7$record$city_id.split(",");
-          _this7.categories_ids = (_this7$record$categor = _this7.record.categories) === null || _this7$record$categor === void 0 ? void 0 : _this7$record$categor.split(",");
-          _this7.state = _this7.record.state;
-          _this7.remark = _this7.record.remark;
-          _this7.account_number = _this7.record.account_number;
-          _this7.ifsc_code = _this7.record.bank_ifsc_code;
-          _this7.bank_name = _this7.record.bank_name;
-          _this7.account_name = _this7.record.account_name;
-          _this7.commission = _this7.record.commission;
-          _this7.tax_name = _this7.record.tax_name;
-          _this7.tax_number = _this7.record.tax_number;
-          _this7.pan_number = _this7.record.pan_number;
-          _this7.latitude = _this7.record.latitude;
-          _this7.longitude = _this7.record.longitude;
-          _this7.place_name = _this7.record.place_name;
-          _this7.formatted_address = _this7.record.formatted_address;
-          _this7.store_description = _this7.record.store_description;
-          _this7.require_products_approval = _this7.record.require_products_approval;
+          _this9.isFormLoaded = true;
+          _this9.record = data.data;
+          _this9.admin_id = (_this9$record$admin$i = _this9.record.admin.id) !== null && _this9$record$admin$i !== void 0 ? _this9$record$admin$i : _this9.record.admin_id;
+          _this9.name = (_this9$record$admin$u = _this9.record.admin.username) !== null && _this9$record$admin$u !== void 0 ? _this9$record$admin$u : _this9.record.name;
+          _this9.email = (_this9$record$admin$e = _this9.record.admin.email) !== null && _this9$record$admin$e !== void 0 ? _this9$record$admin$e : _this9.record.email;
+          _this9.mobile = _this9.record.mobile;
+          _this9.store_url = _this9.record.store_url;
+          _this9.password = "";
+          _this9.confirm_password = "";
+          _this9.store_name = _this9.record.store_name;
+          _this9.street = _this9.record.street;
+          _this9.pincode_id = "";
+          _this9.city_id = (_this9$record$city_id = _this9.record.city_id) === null || _this9$record$city_id === void 0 ? void 0 : _this9$record$city_id.split(",");
+          _this9.categories_ids = (_this9$record$categor = _this9.record.categories) === null || _this9$record$categor === void 0 ? void 0 : _this9$record$categor.split(",");
+          _this9.state = _this9.record.state;
+          _this9.remark = _this9.record.remark;
+          _this9.account_number = _this9.record.account_number;
+          _this9.ifsc_code = _this9.record.bank_ifsc_code;
+          _this9.bank_name = _this9.record.bank_name;
+          _this9.account_name = _this9.record.account_name;
+          _this9.commission = _this9.record.commission;
+          _this9.tax_name = _this9.record.tax_name;
+          _this9.tax_number = _this9.record.tax_number;
+          _this9.pan_number = _this9.record.pan_number;
+          _this9.latitude = _this9.record.latitude;
+          _this9.longitude = _this9.record.longitude;
+          _this9.supply_radius = _this9.record.supply_radius;
+          _this9.warehouse_id = _this9.record.warehouse_id;
+          _this9.place_name = _this9.record.place_name;
+          _this9.formatted_address = _this9.record.formatted_address;
+          _this9.store_description = _this9.record.store_description;
+          _this9.require_products_approval = _this9.record.require_products_approval;
           // this.customer_privacy = this.record.customer_privacy;
-          _this7.view_order_otp = _this7.record.view_order_otp;
-          _this7.assign_delivery_boy = _this7.record.assign_delivery_boy;
-          _this7.change_order_status_delivered = _this7.record.change_order_status_delivered;
+          _this9.view_order_otp = _this9.record.view_order_otp;
+          _this9.assign_delivery_boy = _this9.record.assign_delivery_boy;
+          _this9.change_order_status_delivered = _this9.record.change_order_status_delivered;
 
           // Self Pickup fields
-          _this7.self_pickup_mode = _this7.record.self_pickup_mode === null || _this7.record.self_pickup_mode === undefined ? 0 : _this7.record.self_pickup_mode;
-          _this7.door_step_mode = _this7.record.door_step_mode === null || _this7.record.door_step_mode === undefined ? 1 : _this7.record.door_step_mode;
-          _this7.pickup_store_address = _this7.record.pickup_store_address || "";
-          _this7.pickup_latitude = _this7.record.pickup_latitude || "";
-          _this7.pickup_longitude = _this7.record.pickup_longitude || "";
+          _this9.self_pickup_mode = _this9.record.self_pickup_mode === null || _this9.record.self_pickup_mode === undefined ? 0 : _this9.record.self_pickup_mode;
+          _this9.door_step_mode = _this9.record.door_step_mode === null || _this9.record.door_step_mode === undefined ? 1 : _this9.record.door_step_mode;
+          _this9.pickup_store_address = _this9.record.pickup_store_address || "";
+          _this9.pickup_latitude = _this9.record.pickup_latitude || "";
+          _this9.pickup_longitude = _this9.record.pickup_longitude || "";
 
           // Load store timings
-          if (_this7.record.pickup_store_timings) {
+          if (_this9.record.pickup_store_timings) {
             try {
-              var parsedTimings = JSON.parse(_this7.record.pickup_store_timings);
+              var parsedTimings = JSON.parse(_this9.record.pickup_store_timings);
               // Handle both old array format and new object format
               if (Array.isArray(parsedTimings)) {
                 // Convert old format to new format (use first day's timings)
@@ -1247,13 +1389,13 @@ __webpack_require__.r(__webpack_exports__);
                   return day.is_open;
                 });
                 if (firstDay) {
-                  _this7.storeTimings = {
+                  _this9.storeTimings = {
                     opening_time: firstDay.opening_time || '09:00',
                     closing_time: firstDay.closing_time || '18:00'
                   };
                 }
               } else {
-                _this7.storeTimings = parsedTimings;
+                _this9.storeTimings = parsedTimings;
               }
             } catch (e) {
               console.log('Error parsing store timings:', e);
@@ -1261,63 +1403,71 @@ __webpack_require__.r(__webpack_exports__);
           }
 
           // Set pickup map marker if coordinates exist
-          if (_this7.pickup_latitude && _this7.pickup_longitude) {
-            _this7.pickupCenter = {
-              lat: parseFloat(_this7.pickup_latitude),
-              lng: parseFloat(_this7.pickup_longitude)
+          if (_this9.pickup_latitude && _this9.pickup_longitude) {
+            _this9.pickupCenter = {
+              lat: parseFloat(_this9.pickup_latitude),
+              lng: parseFloat(_this9.pickup_longitude)
             };
-            _this7.pickupMarkers = [{
+            _this9.pickupMarkers = [{
               position: {
-                lat: parseFloat(_this7.pickup_latitude),
-                lng: parseFloat(_this7.pickup_longitude)
+                lat: parseFloat(_this9.pickup_latitude),
+                lng: parseFloat(_this9.pickup_longitude)
               }
             }];
-            _this7.pickupInfoWindow.position = {
-              lat: parseFloat(_this7.pickup_latitude),
-              lng: parseFloat(_this7.pickup_longitude)
+            _this9.pickupInfoWindow.position = {
+              lat: parseFloat(_this9.pickup_latitude),
+              lng: parseFloat(_this9.pickup_longitude)
             };
-            _this7.pickupInfoWindow.template = "<b>Pickup Location</b><br>".concat(_this7.pickup_store_address);
+            _this9.pickupInfoWindow.template = "<b>Pickup Location</b><br>".concat(_this9.pickup_store_address);
           }
-          _this7.status = _this7.record.status;
-          _this7.store_logo = _this7.record.store_logo;
-          _this7.store_logo_url = _this7.$storageUrl + _this7.record.logo;
-          _this7.national_id_card_url = _this7.$storageUrl + _this7.record.national_identity_card;
-          _this7.address_proof_url = _this7.$storageUrl + _this7.record.address_proof;
+          _this9.status = _this9.record.status;
+          _this9.store_logo = _this9.record.store_logo;
+          _this9.store_logo_url = _this9.$storageUrl + _this9.record.logo;
+          _this9.national_id_card_url = _this9.$storageUrl + _this9.record.national_identity_card;
+          _this9.address_proof_url = _this9.$storageUrl + _this9.record.address_proof;
           var marker = {
-            lat: parseFloat(_this7.latitude),
-            lng: parseFloat(_this7.longitude),
+            lat: parseFloat(_this9.latitude),
+            lng: parseFloat(_this9.longitude),
             draggable: true
           };
-          _this7.markers.push({
+          _this9.markers.push({
             position: marker
           });
-          _this7.center = marker;
-          _this7.infoWindow.position = {
-            lat: parseFloat(_this7.latitude),
-            lng: parseFloat(_this7.longitude)
+          _this9.center = marker;
+          if ((_this9$record$coverag = _this9.record.coverage_area) !== null && _this9$record$coverag !== void 0 && _this9$record$coverag.length) {
+            _this9.coverage_area = _this9.record.coverage_area.map(function (p) {
+              return {
+                lat: Number(p.lat),
+                lng: Number(p.lng)
+              };
+            });
+          }
+          _this9.infoWindow.position = {
+            lat: parseFloat(_this9.latitude),
+            lng: parseFloat(_this9.longitude)
           };
-          _this7.infoWindow.template = "<b>".concat(_this7.place_name, "</b><br>").concat(_this7.formatted_address);
-          _this7.infoWindow.open = true;
+          _this9.infoWindow.template = "<b>".concat(_this9.place_name, "</b><br>").concat(_this9.formatted_address);
+          _this9.infoWindow.open = true;
         } else {
-          _this7.showError(data.message);
+          _this9.showError(data.message);
           setTimeout(function () {
-            _this7.$router.back();
+            _this9.$router.back();
           }, 1000);
         }
       })["catch"](function (error) {
         var _error$request3;
-        _this7.isLoading = false;
+        _this9.isLoading = false;
         if (error !== null && error !== void 0 && (_error$request3 = error.request) !== null && _error$request3 !== void 0 && _error$request3.statusText) {
-          _this7.showError(error.request.statusText);
+          _this9.showError(error.request.statusText);
         } else if (error.message) {
-          _this7.showError(error.message);
+          _this9.showError(error.message);
         } else {
-          _this7.showError(__('something_went_wrong'));
+          _this9.showError(__('something_went_wrong'));
         }
       });
     },
     saveRecord: function saveRecord() {
-      var _this8 = this;
+      var _this10 = this;
       this.isLoading = true;
       var vm = this;
       var formData = new FormData();
@@ -1348,6 +1498,8 @@ __webpack_require__.r(__webpack_exports__);
       formData.append('pan_number', this.pan_number);
       formData.append('latitude', this.latitude);
       formData.append('longitude', this.longitude);
+      formData.append('supply_radius', this.supply_radius);
+      formData.append('warehouse_id', this.warehouse_id);
       formData.append('place_name', this.place_name);
       formData.append('formatted_address', this.formatted_address);
       formData.append('store_description', this.store_description);
@@ -1368,6 +1520,7 @@ __webpack_require__.r(__webpack_exports__);
       formData.append('store_logo', this.store_logo);
       formData.append('national_id_card', this.national_id_card);
       formData.append('address_proof', this.address_proof);
+      formData.append('coverage_area', JSON.stringify(this.coverage_area));
       var url = this.$apiUrl + '/sellers/save';
       if (this.id) {
         url = this.$apiUrl + '/sellers/update';
@@ -1401,11 +1554,11 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         var _error$request4;
         if (error !== null && error !== void 0 && (_error$request4 = error.request) !== null && _error$request4 !== void 0 && _error$request4.statusText) {
-          _this8.showError(error.request.statusText);
+          _this10.showError(error.request.statusText);
         } else if (error.message) {
-          _this8.showError(error.message);
+          _this10.showError(error.message);
         } else {
-          _this8.showError(__('something_went_wrong'));
+          _this10.showError(__('something_went_wrong'));
         }
         vm.isLoading = false;
       });
@@ -1487,7 +1640,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_multiselect_dist_vue_multiselect_min_css__WEBPACK_IMPORTED_MODULE_1__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2247,7 +2400,7 @@ var render = function () {
                   _vm._v(" "),
                   _c("div", { staticClass: "card-body" }, [
                     _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "form-group col-md-4" }, [
+                      _c("div", { staticClass: "form-group col-md-12" }, [
                         _c("div", { staticClass: "form-group" }, [
                           _c("label", [
                             _vm._v(_vm._s(_vm.__("store_name")) + " "),
@@ -2281,6 +2434,63 @@ var render = function () {
                             },
                           }),
                         ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-md-4" }, [
+                        _c("label", [_vm._v("Select Warehouse")]),
+                        _vm._v(" "),
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.warehouse_id,
+                                expression: "warehouse_id",
+                              },
+                            ],
+                            staticClass: "form-control",
+                            on: {
+                              change: function ($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function (o) {
+                                    return o.selected
+                                  })
+                                  .map(function (o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.warehouse_id = $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              },
+                            },
+                          },
+                          [
+                            _c("option", { attrs: { value: "" } }, [
+                              _vm._v("-- Select Warehouse --"),
+                            ]),
+                            _vm._v(" "),
+                            _vm._l(_vm.warehouses, function (warehouse) {
+                              return _c(
+                                "option",
+                                {
+                                  key: warehouse.id,
+                                  domProps: { value: warehouse.id },
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                                            " +
+                                      _vm._s(warehouse.name) +
+                                      "\n                                        "
+                                  ),
+                                ]
+                              )
+                            }),
+                          ],
+                          2
+                        ),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "form-group col-md-5" }, [
@@ -2358,7 +2568,7 @@ var render = function () {
                                 _vm._v(
                                   " " +
                                     _vm._s(_vm.__("active")) +
-                                    "\n                                                "
+                                    "\n                                        "
                                 ),
                               ]
                             ),
@@ -2393,9 +2603,9 @@ var render = function () {
                                   },
                                 }),
                                 _vm._v(
-                                  "\n                                                    " +
+                                  "\n                                            " +
                                     _vm._s(_vm.__("deactive")) +
-                                    "\n                                                "
+                                    "\n                                        "
                                 ),
                               ]
                             ),
@@ -2561,7 +2771,11 @@ var render = function () {
                                       },
                                     },
                                   },
-                                  [_vm._v("How seller commission works?")]
+                                  [
+                                    _vm._v(
+                                      "How\n                                            seller commission works?"
+                                    ),
+                                  ]
                                 ),
                               ]
                             ),
@@ -2671,7 +2885,9 @@ var render = function () {
                                             _c("i", {
                                               staticClass: "fa fa-eye",
                                             }),
-                                            _vm._v(" Identity Card"),
+                                            _vm._v(
+                                              " Identity\n                                                    Card"
+                                            ),
                                           ]
                                         ),
                                       ]
@@ -2779,7 +2995,9 @@ var render = function () {
                                             _c("i", {
                                               staticClass: "fa fa-eye",
                                             }),
-                                            _vm._v(" Address Proof"),
+                                            _vm._v(
+                                              " Address\n                                                    Proof"
+                                            ),
                                           ]
                                         ),
                                       ]
@@ -3077,33 +3295,44 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "form-group col-md-4" }, [
                         _c("div", { staticClass: "form-group" }, [
-                          _c("label", [_vm._v(" " + _vm._s(_vm.__("street")))]),
+                          _c("label", [_vm._v("Supply Radius")]),
                           _vm._v(" "),
-                          _c("input", {
-                            directives: [
+                          _c("div", { staticClass: "input-group" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.supply_radius,
+                                  expression: "supply_radius",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                type: "text",
+                                placeholder: "Enter supply_radius.",
+                              },
+                              domProps: { value: _vm.supply_radius },
+                              on: {
+                                input: function ($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.supply_radius = $event.target.value
+                                },
+                              },
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "button",
                               {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.street,
-                                expression: "street",
+                                staticClass: "btn btn-primary",
+                                attrs: { type: "button" },
+                                on: { click: _vm.drawSupplyRadius },
                               },
-                            ],
-                            staticClass: "form-control",
-                            attrs: {
-                              type: "text",
-                              readonly: "",
-                              placeholder: "Enter street.",
-                            },
-                            domProps: { value: _vm.street },
-                            on: {
-                              input: function ($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.street = $event.target.value
-                              },
-                            },
-                          }),
+                              [_vm._v("Draw")]
+                            ),
+                          ]),
                         ]),
                       ]),
                       _vm._v(" "),
@@ -3173,6 +3402,7 @@ var render = function () {
                                         fill: "none",
                                       },
                                     }),
+                                    _vm._v(" "),
                                     _c("path", {
                                       attrs: {
                                         d: "M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z",
@@ -3191,7 +3421,7 @@ var render = function () {
                           { staticClass: "text-danger d-block font-size-13" },
                           [
                             _vm._v(
-                              " " +
+                              "\n                                        " +
                                 _vm._s(
                                   _vm.__(
                                     "only_search_location_when_update_is_necessary"
@@ -3206,7 +3436,7 @@ var render = function () {
                           { staticClass: "text text-primary font-size-13" },
                           [
                             _vm._v(
-                              " " +
+                              "\n                                        " +
                                 _vm._s(
                                   _vm.__(
                                     "search_your_seller_name_and_you_will_get_the_location_points_latitude_longitude_below"
@@ -3295,11 +3525,12 @@ var render = function () {
                         _vm.formatted_address
                           ? _c("div", { staticClass: "text-danger" }, [
                               _vm._v(
-                                _vm._s(
-                                  _vm.__(
-                                    "draf_and_click_marker_to_your_shop_proper_location"
+                                "\n                                        " +
+                                  _vm._s(
+                                    _vm.__(
+                                      "draf_and_click_marker_to_your_shop_proper_location"
+                                    )
                                   )
-                                )
                               ),
                             ])
                           : _vm._e(),
@@ -4104,7 +4335,7 @@ var render = function () {
                               },
                               [
                                 _vm._v(
-                                  "  " +
+                                  " " +
                                     _vm._s(_vm.__("update")) +
                                     "\n                                    "
                                 ),
@@ -4153,7 +4384,12 @@ var render = function () {
                                   },
                                 },
                               },
-                              [_vm._v(" " + _vm._s(_vm.__("clear")))]
+                              [
+                                _vm._v(
+                                  "\n                                    " +
+                                    _vm._s(_vm.__("clear"))
+                                ),
+                              ]
                             ),
                           ],
                     ],
@@ -4213,7 +4449,7 @@ var render = function () {
                 ),
                 _c("b", [
                   _vm._v(
-                    "Sub total (Excluding delivery charge) / 100 * \n                    commission percentage"
+                    "Sub total (Excluding delivery charge) / 100 *\n                        commission percentage"
                   ),
                 ]),
               ]),
@@ -4226,7 +4462,7 @@ var render = function () {
               _vm._v(" "),
               _c("li", [
                 _vm._v(
-                  "\n                   275.6  is commission for Admin and 1102.4 is earning of seller .\n                "
+                  "\n                    275.6 is commission for Admin and 1102.4 is earning of seller .\n                "
                 ),
               ]),
               _vm._v(" "),

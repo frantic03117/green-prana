@@ -73,6 +73,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -86,6 +102,7 @@ __webpack_require__.r(__webpack_exports__);
       address: "",
       latitude: null,
       longitude: null,
+      isLoading: false,
       center: {
         lat: 20.5937,
         lng: 78.9629
@@ -103,6 +120,13 @@ __webpack_require__.r(__webpack_exports__);
         template: ""
       }
     };
+  },
+  mounted: function mounted() {
+    if (this.$route.params.id) {
+      this.isEdit = true;
+      this.warehouseId = this.$route.params.id;
+      this.fetchWarehouse();
+    }
   },
   methods: {
     /* ===============================
@@ -183,6 +207,7 @@ __webpack_require__.r(__webpack_exports__);
        SAVE WAREHOUSE
     =============================== */
     saveWarehouse: function saveWarehouse() {
+      var _this = this;
       var payload = {
         name: this.name,
         email: this.email,
@@ -192,8 +217,52 @@ __webpack_require__.r(__webpack_exports__);
         longitude: this.longitude,
         coverage_area: this.polygonPath
       };
-      axios__WEBPACK_IMPORTED_MODULE_0___default().post("/warehouses", payload).then(function () {
-        alert("Warehouse saved successfully");
+      var url = this.$apiUrl + '/warehouse';
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post(url, payload).then(function (res) {
+        _this.$router.push({
+          path: '/warehouses'
+        });
+        _this.isLoading = false;
+        _this.$swal.fire("Success", res.data.message, "success");
+      })["catch"](function (error) {
+        _this.isLoading = false;
+        console.error("Error saving price:", error);
+        _this.$swal.fire("Error", "Something went wrong", "error");
+      });
+    },
+    fetchWarehouse: function fetchWarehouse() {
+      var _this2 = this;
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.$apiUrl + "/warehouse/".concat(this.warehouseId)).then(function (res) {
+        var w = res.data.data;
+        _this2.name = w.name;
+        _this2.email = w.email;
+        _this2.mobile = w.mobile;
+        _this2.radius = w.supply_radius;
+        _this2.latitude = Number(w.latitude);
+        _this2.longitude = Number(w.longitude);
+
+        // Marker
+        _this2.markers = [{
+          position: {
+            lat: _this2.latitude,
+            lng: _this2.longitude
+          }
+        }];
+        _this2.center = {
+          lat: _this2.latitude,
+          lng: _this2.longitude
+        };
+        _this2.zoom = 14;
+
+        // Polygon
+        _this2.polygonPath = w.coverage_area.map(function (p) {
+          return {
+            lat: Number(p.lat),
+            lng: Number(p.lng)
+          };
+        });
+      })["catch"](function () {
+        _this2.$swal.fire("Error", "Failed to load warehouse", "error");
       });
     }
   }
@@ -351,218 +420,271 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "container" },
-    [
-      _c("h3", [_vm._v("Create Warehouse")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "row mb-3" }, [
-        _c("div", { staticClass: "col-md-4" }, [
-          _c("label", [_vm._v("Warehouse Name")]),
+  return _c("div", { staticClass: "container" }, [
+    _c(
+      "div",
+      { staticClass: "page-heading" },
+      [
+        _c("div", { staticClass: "row" }, [
+          _vm._m(0),
           _vm._v(" "),
-          _c("input", {
-            directives: [
+          _c("div", { staticClass: "col-12 col-md-6 order-md-2 order-first" }, [
+            _c(
+              "nav",
               {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.name,
-                expression: "name",
+                staticClass: "breadcrumb-header float-start float-lg-end",
+                attrs: { "aria-label": "breadcrumb" },
               },
-            ],
-            staticClass: "form-control",
-            attrs: { name: "name", id: "name" },
-            domProps: { value: _vm.name },
-            on: {
-              input: function ($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.name = $event.target.value
-              },
-            },
-          }),
+              [
+                _c("ol", { staticClass: "breadcrumb" }, [
+                  _c(
+                    "li",
+                    { staticClass: "breadcrumb-item" },
+                    [
+                      _c("router-link", { attrs: { to: "/dashboard" } }, [
+                        _vm._v(_vm._s(_vm.__("dashboard"))),
+                      ]),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "li",
+                    {
+                      staticClass: "breadcrumb-item active",
+                      attrs: { "aria-current": "page" },
+                    },
+                    [_vm._v("Create Warehouse")]
+                  ),
+                ]),
+              ]
+            ),
+          ]),
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-md-4" }, [
-          _c("label", [_vm._v("Warehouse Email")]),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.email,
-                expression: "email",
-              },
-            ],
-            staticClass: "form-control",
-            attrs: { name: "email", id: "email" },
-            domProps: { value: _vm.email },
-            on: {
-              input: function ($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.email = $event.target.value
-              },
-            },
-          }),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-4" }, [
-          _c("label", [_vm._v("Warehouse Mobile")]),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.mobile,
-                expression: "mobile",
-              },
-            ],
-            staticClass: "form-control",
-            attrs: { name: "mobile", id: "mobile" },
-            domProps: { value: _vm.mobile },
-            on: {
-              input: function ($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.mobile = $event.target.value
-              },
-            },
-          }),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-4" }, [
-          _c("label", [_vm._v("Warehouse Password")]),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.password,
-                expression: "password",
-              },
-            ],
-            staticClass: "form-control",
-            attrs: { name: "password" },
-            domProps: { value: _vm.password },
-            on: {
-              input: function ($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.password = $event.target.value
-              },
-            },
-          }),
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "col-md-4" },
-          [
-            _c("label", [_vm._v("Search Warehouse Location")]),
+        _c("div", { staticClass: "row mb-3" }, [
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("label", [_vm._v("Warehouse Name")]),
             _vm._v(" "),
-            _c("GmapAutocomplete", {
-              staticClass: "form-control",
-              attrs: { placeholder: "Search address" },
-              on: { place_changed: _vm.setPlace },
-            }),
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-4" }, [
-          _c("label", [_vm._v("Delivery Radius (KM)")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "input-group " }, [
             _c("input", {
               directives: [
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.radius,
-                  expression: "radius",
+                  value: _vm.name,
+                  expression: "name",
                 },
               ],
               staticClass: "form-control",
-              attrs: { type: "number" },
-              domProps: { value: _vm.radius },
+              attrs: { name: "name", id: "name" },
+              domProps: { value: _vm.name },
               on: {
                 input: function ($event) {
                   if ($event.target.composing) {
                     return
                   }
-                  _vm.radius = $event.target.value
+                  _vm.name = $event.target.value
                 },
               },
             }),
-            _vm._v(" "),
-            _c(
-              "button",
-              { staticClass: "btn btn-primary", on: { click: _vm.drawRadius } },
-              [_vm._v("\n                    Draw Radius\n                ")]
-            ),
           ]),
-        ]),
-      ]),
-      _vm._v(" "),
-      _c(
-        "GmapMap",
-        {
-          staticStyle: { width: "100%", height: "500px" },
-          attrs: { center: _vm.center, zoom: _vm.zoom },
-          on: { click: _vm.handleMapClick },
-        },
-        [
-          _vm._l(_vm.markers, function (m, index) {
-            return _c("GmapMarker", {
-              key: index,
-              attrs: { position: m.position, draggable: true },
-              on: { dragend: _vm.updateCoordinates },
-            })
-          }),
           _vm._v(" "),
-          _vm.polygonPath.length
-            ? _c("GmapPolygon", { attrs: { paths: _vm.polygonPath } })
-            : _vm._e(),
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("label", [_vm._v("Warehouse Email")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.email,
+                  expression: "email",
+                },
+              ],
+              staticClass: "form-control",
+              attrs: { name: "email", id: "email" },
+              domProps: { value: _vm.email },
+              on: {
+                input: function ($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.email = $event.target.value
+                },
+              },
+            }),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("label", [_vm._v("Warehouse Mobile")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.mobile,
+                  expression: "mobile",
+                },
+              ],
+              staticClass: "form-control",
+              attrs: { name: "mobile", id: "mobile" },
+              domProps: { value: _vm.mobile },
+              on: {
+                input: function ($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.mobile = $event.target.value
+                },
+              },
+            }),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("label", [_vm._v("Warehouse Password")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.password,
+                  expression: "password",
+                },
+              ],
+              staticClass: "form-control",
+              attrs: { name: "password" },
+              domProps: { value: _vm.password },
+              on: {
+                input: function ($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.password = $event.target.value
+                },
+              },
+            }),
+          ]),
           _vm._v(" "),
           _c(
-            "GmapInfoWindow",
-            {
-              attrs: {
-                position: _vm.infoWindow.position,
-                opened: _vm.infoWindow.open,
-              },
-            },
+            "div",
+            { staticClass: "col-md-4" },
             [
-              _c("div", {
-                domProps: { innerHTML: _vm._s(_vm.infoWindow.template) },
+              _c("label", [_vm._v("Search Warehouse Location")]),
+              _vm._v(" "),
+              _c("GmapAutocomplete", {
+                staticClass: "form-control",
+                attrs: { placeholder: "Search address" },
+                on: { place_changed: _vm.setPlace },
               }),
-            ]
+            ],
+            1
           ),
-        ],
-        2
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-success mt-3",
-          on: { click: _vm.saveWarehouse },
-        },
-        [_vm._v("\n        Save Warehouse\n    ")]
-      ),
-    ],
-    1
-  )
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("label", [_vm._v("Delivery Radius (KM)")]),
+            _vm._v(" "),
+            _c("div", { staticClass: "input-group " }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.radius,
+                    expression: "radius",
+                  },
+                ],
+                staticClass: "form-control",
+                attrs: { type: "number" },
+                domProps: { value: _vm.radius },
+                on: {
+                  input: function ($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.radius = $event.target.value
+                  },
+                },
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-primary",
+                  on: { click: _vm.drawRadius },
+                },
+                [
+                  _vm._v(
+                    "\n                        Draw Radius\n                    "
+                  ),
+                ]
+              ),
+            ]),
+          ]),
+        ]),
+        _vm._v(" "),
+        _c(
+          "GmapMap",
+          {
+            staticStyle: { width: "100%", height: "500px" },
+            attrs: { center: _vm.center, zoom: _vm.zoom },
+            on: { click: _vm.handleMapClick },
+          },
+          [
+            _vm._l(_vm.markers, function (m, index) {
+              return _c("GmapMarker", {
+                key: index,
+                attrs: { position: m.position, draggable: true },
+                on: { dragend: _vm.updateCoordinates },
+              })
+            }),
+            _vm._v(" "),
+            _vm.polygonPath.length
+              ? _c("GmapPolygon", { attrs: { paths: _vm.polygonPath } })
+              : _vm._e(),
+            _vm._v(" "),
+            _c(
+              "GmapInfoWindow",
+              {
+                attrs: {
+                  position: _vm.infoWindow.position,
+                  opened: _vm.infoWindow.open,
+                },
+              },
+              [
+                _c("div", {
+                  domProps: { innerHTML: _vm._s(_vm.infoWindow.template) },
+                }),
+              ]
+            ),
+          ],
+          2
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-success mt-3",
+            on: { click: _vm.saveWarehouse },
+          },
+          [_vm._v("\n            Save Warehouse\n        ")]
+        ),
+      ],
+      1
+    ),
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-12 col-md-6 order-md-1 order-last" }, [
+      _c("h3", [_vm._v(" Create Warehouse")]),
+    ])
+  },
+]
 render._withStripped = true
 
 

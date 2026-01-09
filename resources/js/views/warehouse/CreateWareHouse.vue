@@ -1,60 +1,76 @@
 <template>
     <div class="container">
 
-        <h3>Create Warehouse</h3>
-
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label>Warehouse Name</label>
-                <input v-model="name" name="name" id="name" class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label>Warehouse Email</label>
-                <input v-model="email" name="email" id="email" class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label>Warehouse Mobile</label>
-                <input v-model="mobile" name="mobile" id="mobile" class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label>Warehouse Password</label>
-                <input v-model="password" name="password" class="form-control" />
+        <div class="page-heading">
+            <div class="row">
+                <div class="col-12 col-md-6 order-md-1 order-last">
+                    <h3> Create Warehouse</h3>
+                </div>
+                <div class="col-12 col-md-6 order-md-2 order-first">
+                    <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><router-link to="/dashboard">{{ __('dashboard') }}</router-link>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Create Warehouse</li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
 
-            <div class="col-md-4">
-                <label>Search Warehouse Location</label>
-                <GmapAutocomplete class="form-control" placeholder="Search address" @place_changed="setPlace" />
-            </div>
+            <div class="row mb-3">
 
-            <div class="col-md-4">
-                <label>Delivery Radius (KM)</label>
-                <div class="input-group ">
-                    <input type="number" v-model="radius" class="form-control" />
-                    <button class="btn btn-primary" @click="drawRadius">
-                        Draw Radius
-                    </button>
+                <div class="col-md-4">
+                    <label>Warehouse Name</label>
+                    <input v-model="name" name="name" id="name" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label>Warehouse Email</label>
+                    <input v-model="email" name="email" id="email" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label>Warehouse Mobile</label>
+                    <input v-model="mobile" name="mobile" id="mobile" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label>Warehouse Password</label>
+                    <input v-model="password" name="password" class="form-control" />
                 </div>
 
+                <div class="col-md-4">
+                    <label>Search Warehouse Location</label>
+                    <GmapAutocomplete class="form-control" placeholder="Search address" @place_changed="setPlace" />
+                </div>
+
+                <div class="col-md-4">
+                    <label>Delivery Radius (KM)</label>
+                    <div class="input-group ">
+                        <input type="number" v-model="radius" class="form-control" />
+                        <button class="btn btn-primary" @click="drawRadius">
+                            Draw Radius
+                        </button>
+                    </div>
+
+                </div>
             </div>
+
+
+
+            <GmapMap :center="center" :zoom="zoom" style="width:100%; height:500px" @click="handleMapClick">
+                <GmapMarker v-for="(m, index) in markers" :key="index" :position="m.position" :draggable="true"
+                    @dragend="updateCoordinates" />
+
+                <GmapPolygon v-if="polygonPath.length" :paths="polygonPath" />
+
+                <GmapInfoWindow :position="infoWindow.position" :opened="infoWindow.open">
+                    <div v-html="infoWindow.template"></div>
+                </GmapInfoWindow>
+            </GmapMap>
+
+            <button class="btn btn-success mt-3" @click="saveWarehouse">
+                Save Warehouse
+            </button>
+
         </div>
-
-
-
-        <GmapMap :center="center" :zoom="zoom" style="width:100%; height:500px" @click="handleMapClick">
-            <GmapMarker v-for="(m, index) in markers" :key="index" :position="m.position" :draggable="true"
-                @dragend="updateCoordinates" />
-
-            <GmapPolygon v-if="polygonPath.length" :paths="polygonPath" />
-
-            <GmapInfoWindow :position="infoWindow.position" :opened="infoWindow.open">
-                <div v-html="infoWindow.template"></div>
-            </GmapInfoWindow>
-        </GmapMap>
-
-        <button class="btn btn-success mt-3" @click="saveWarehouse">
-            Save Warehouse
-        </button>
-
     </div>
 </template>
 
@@ -72,7 +88,7 @@ export default {
             address: "",
             latitude: null,
             longitude: null,
-
+            isLoading: false,
             center: { lat: 20.5937, lng: 78.9629 },
             zoom: 5,
 
@@ -86,6 +102,13 @@ export default {
                 template: "",
             },
         };
+    },
+    mounted() {
+        if (this.$route.params.id) {
+            this.isEdit = true;
+            this.warehouseId = this.$route.params.id;
+            this.fetchWarehouse();
+        }
     },
 
     methods: {
@@ -199,11 +222,55 @@ export default {
                 longitude: this.longitude,
                 coverage_area: this.polygonPath,
             };
-
-            axios.post("/warehouses", payload).then(() => {
-                alert("Warehouse saved successfully");
-            });
+            let url = this.$apiUrl + '/warehouse';
+            axios.post(url, payload).then((res) => {
+                this.$router.push({ path: '/warehouses' });
+                this.isLoading = false;
+                this.$swal.fire("Success", res.data.message, "success");
+            }).catch((error) => {
+                this.isLoading = false;
+                console.error("Error saving price:", error);
+                this.$swal.fire("Error", "Something went wrong", "error");
+            })
         },
+        fetchWarehouse() {
+            axios.get(this.$apiUrl + `/warehouse/${this.warehouseId}`)
+                .then(res => {
+                    const w = res.data.data;
+
+                    this.name = w.name;
+                    this.email = w.email;
+                    this.mobile = w.mobile;
+                    this.radius = w.supply_radius;
+
+                    this.latitude = Number(w.latitude);
+                    this.longitude = Number(w.longitude);
+
+                    // Marker
+                    this.markers = [{
+                        position: {
+                            lat: this.latitude,
+                            lng: this.longitude,
+                        }
+                    }];
+
+                    this.center = {
+                        lat: this.latitude,
+                        lng: this.longitude,
+                    };
+                    this.zoom = 14;
+
+                    // Polygon
+                    this.polygonPath = w.coverage_area.map(p => ({
+                        lat: Number(p.lat),
+                        lng: Number(p.lng),
+                    }));
+                })
+                .catch(() => {
+                    this.$swal.fire("Error", "Failed to load warehouse", "error");
+                });
+        },
+
     },
 };
 </script>

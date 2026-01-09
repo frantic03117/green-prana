@@ -75,6 +75,12 @@ Route::middleware('auth:api')->group(function () {
         Route::get('seller_categories', [\App\Http\Controllers\API\CategoryApiController::class, 'getSellerCategories']);
         Route::get('/check-slug/{slug}', [\App\Http\Controllers\API\CategoryApiController::class,  'checkSlug']);
     });
+    Route::group(['prefix' => 'warehouse'], function () {
+        Route::get('/', [\App\Http\Controllers\API\WareHouseController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\API\WareHouseController::class, 'store']);
+        Route::put('/{id}', [\App\Http\Controllers\API\WareHouseController::class, 'update']);
+        Route::get('/{id}', [\App\Http\Controllers\API\WareHouseController::class, 'show']);
+    });
 
     Route::group(['prefix' => 'subcategories'], function () {
         Route::get('/{id?}', [\App\Http\Controllers\API\SubCategoryApiController::class, 'index']);

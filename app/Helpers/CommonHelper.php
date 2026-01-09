@@ -36,16 +36,17 @@ use App\Models\SmsTemplate;
 use App\Helpers\TwilioHelper;
 use DateTime;
 use DateTimeZone;
-use DB;
 use Faker\Provider\Address;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
-use Response;
+
 use Illuminate\Validation\Rule;
 use App\Models\RatingImages;
 use App\Models\ProductRating;
@@ -85,8 +86,8 @@ class CommonHelper
 
     public static function getColumnComment($tableName, $columnName)
     {
-        $databaseName = \DB::connection()->getDatabaseName();
-        $comments = \DB::select("SELECT COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$databaseName' AND TABLE_NAME = '$tableName' AND COLUMN_NAME = '$columnName'");
+        $databaseName = DB::connection()->getDatabaseName();
+        $comments = DB::select("SELECT COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$databaseName' AND TABLE_NAME = '$tableName' AND COLUMN_NAME = '$columnName'");
         return $comments[0]->COLUMN_COMMENT;
     }
 
@@ -107,7 +108,7 @@ class CommonHelper
         if (empty($slug)) {
             return 'n-a';
         }
-        $total = \DB::select(\DB::raw("SELECT COUNT(id) AS total_slugs FROM $table WHERE $field  LIKE '$slug%'"));
+        $total = DB::select(DB::raw("SELECT COUNT(id) AS total_slugs FROM $table WHERE $field  LIKE '$slug%'"));
 
         return ($total[0]->total_slugs > 0) ? ($slug . '-' . $total[0]->total_slugs) : $slug;
     }
@@ -1551,7 +1552,7 @@ class CommonHelper
             $query = str_replace('orders.active_status = order_status_lists.id', 'orders.active_status = order_status_lists.id AND orders.order_type = "selfpickup"', $query);
         }
 
-        $statusQuery = OrderStatusList::select('order_status_lists.id', 'order_status_lists.status', \DB::raw($query));
+        $statusQuery = OrderStatusList::select('order_status_lists.id', 'order_status_lists.status', DB::raw($query));
 
         if ($order_type == 'doorstep') {
             $statusQuery = $statusQuery->whereBetween('order_status_lists.id', [1, 8]);
@@ -1796,7 +1797,7 @@ class CommonHelper
         $status_ids = OrderStatusList::get()->pluck('id')->toArray();
         $mail_statuses = array_fill(0, count($status_ids), 1);
         $mobile_statuses = $mail_statuses;
-        self::saveMailSetting($user_id, $user_type, $status_ids, $mail_statuses, $mobile_statuses);
+        self::saveMailSetting($user_id, $user_type, $status_ids, $mail_statuses, $mobile_statuses, false);
     }
 
     public static function sendMail($to, $subject, $data)

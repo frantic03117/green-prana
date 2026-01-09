@@ -251,6 +251,7 @@ const StockManager = () => import("../views/Seller/StockManager.vue");
 
 
 const CreateWareHouse = () => import('../views/warehouse/CreateWareHouse.vue');
+const ListWareHouse = () => import('../views/warehouse/ListWarehouses.vue');
 
 let router = new Router({
     mode: "history",
@@ -470,7 +471,26 @@ function configRoutes() {
                     },
                 },
                 {
+                    path: "/warehouse",
+                    name: "warehouse_list",
+                    component: ListWareHouse,
+                    meta: {
+                        role: adminRoles,
+                        title: 'Warehouse List'
+                    },
+                },
+                {
                     path: "/warehouse/create",
+                    name: "warehouse_create",
+                    component: CreateWareHouse,
+                    meta: {
+                        role: adminRoles,
+
+                        title: 'Warehouse Register'
+                    },
+                },
+                {
+                    path: "/warehouse/edit/:id",
                     name: "warehouse_create",
                     component: CreateWareHouse,
                     meta: {

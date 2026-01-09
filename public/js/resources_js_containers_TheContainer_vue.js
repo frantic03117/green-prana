@@ -155,21 +155,19 @@ __webpack_require__.r(__webpack_exports__);
         i ? (t.style.height = g * f + "px", t.style.paddingTop = y * f + "px", t.style.paddingBottom = m * f + "px", t.style.marginTop = u * f + "px", t.style.marginBottom = h * f + "px") : (t.style.height = n - g * f + "px", t.style.paddingTop = a - y * f + "px", t.style.paddingBottom = s - m * f + "px", t.style.marginTop = r - u * f + "px", t.style.marginBottom = d - h * f + "px"), f >= e ? (t.style.height = "", t.style.paddingTop = "", t.style.paddingBottom = "", t.style.marginTop = "", t.style.marginBottom = "", t.style.overflow = "", i || (t.style.display = "none"), "function" == typeof o && o()) : window.requestAnimationFrame(l);
       });
     }
-    var sidebarItems = document.querySelectorAll('.sidebar-item.has-sub');
-    var _loop = function _loop() {
-      var sidebarItem = sidebarItems[i];
-      sidebarItems[i].querySelector('.sidebar-link').addEventListener('click', function (e) {
-        var _submenu$classList, _submenu$classList2, _submenu$classList3;
-        e.preventDefault();
-        var submenu = sidebarItem.querySelector('.submenu');
-        if (submenu !== null && submenu !== void 0 && (_submenu$classList = submenu.classList) !== null && _submenu$classList !== void 0 && _submenu$classList.contains('active')) submenu.style.display = "block";
-        if (submenu.style.display == "none") submenu === null || submenu === void 0 ? void 0 : (_submenu$classList2 = submenu.classList) === null || _submenu$classList2 === void 0 ? void 0 : _submenu$classList2.add('active');else submenu === null || submenu === void 0 ? void 0 : (_submenu$classList3 = submenu.classList) === null || _submenu$classList3 === void 0 ? void 0 : _submenu$classList3.remove('active');
-        slideToggle(submenu, 300);
-      });
-    };
-    for (var i = 0; i < sidebarItems.length; i++) {
-      _loop();
-    }
+    // let sidebarItems = document.querySelectorAll('.sidebar-item.has-sub');
+    // for (var i = 0; i < sidebarItems.length; i++) {
+    //     let sidebarItem = sidebarItems[i];
+    //     sidebarItems[i].querySelector('.sidebar-link').addEventListener('click', function (e) {
+    //         e.preventDefault();
+
+    //         let submenu = sidebarItem.querySelector('.submenu');
+    //         if (submenu?.classList?.contains('active')) submenu.style.display = "block"
+    //         if (submenu.style.display == "none") submenu?.classList?.add('active')
+    //         else submenu?.classList?.remove('active')
+    //         slideToggle(submenu, 300)
+    //     })
+    // }
     window.addEventListener('DOMContentLoaded', function (event) {
       var w = window.innerWidth;
       if (w < 1200) {
@@ -210,6 +208,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      openMenus: [],
       lang: 'en',
       search: '',
       isLoading: false,
@@ -309,14 +308,20 @@ __webpack_require__.r(__webpack_exports__);
           url: '/product_order',
           permission: 'manage_product_order'
         }]
-      },
-      // {
-      //     name: __('stock_management'),
-      //     icon: 'cubes',
-      //     url: '/stock_record',
-      //     permission: 'stock_management',
-      // },
-      {
+      }, {
+        name: 'Warehouses',
+        icon: 'grid-fill',
+        permission: null,
+        submenu: [{
+          name: 'warehouse_create',
+          icon: 'grid-fill',
+          url: '/warehouses/create'
+        }, {
+          name: 'warehouse_list',
+          icon: 'grid-fill',
+          url: '/warehouses'
+        }]
+      }, {
         name: __('sellers'),
         icon: 'male',
         permission: 'seller_list',
@@ -705,6 +710,15 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    toggleMenu: function toggleMenu(index) {
+      if (this.openMenus.includes(index)) {
+        this.openMenus = this.openMenus.filter(function (i) {
+          return i !== index;
+        });
+      } else {
+        this.openMenus.push(index);
+      }
+    },
     filterItem: function filterItem() {
       var filter = this.search;
       $(".sidebar-menu li:not(.sidebar-search)").each(function (index, element) {
@@ -750,10 +764,16 @@ __webpack_require__.r(__webpack_exports__);
         return false;
       }
       return item.submenu.some(function (submenu) {
+        // Role based
         if (submenu.role) {
-          return _this2.$role('Super Admin') && (item.name === 'Role' || item.name === 'System Users');
+          return _this2.$role('Super Admin');
         }
-        return submenu.permission && _this2.$can(submenu.permission);
+
+        // ✅ NO permission = PUBLIC
+        if (!submenu.permission) {
+          return true;
+        }
+        return _this2.$can(submenu.permission);
       });
     },
     checkPermissions: function checkPermissions() {
