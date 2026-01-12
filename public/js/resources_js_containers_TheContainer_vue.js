@@ -155,19 +155,21 @@ __webpack_require__.r(__webpack_exports__);
         i ? (t.style.height = g * f + "px", t.style.paddingTop = y * f + "px", t.style.paddingBottom = m * f + "px", t.style.marginTop = u * f + "px", t.style.marginBottom = h * f + "px") : (t.style.height = n - g * f + "px", t.style.paddingTop = a - y * f + "px", t.style.paddingBottom = s - m * f + "px", t.style.marginTop = r - u * f + "px", t.style.marginBottom = d - h * f + "px"), f >= e ? (t.style.height = "", t.style.paddingTop = "", t.style.paddingBottom = "", t.style.marginTop = "", t.style.marginBottom = "", t.style.overflow = "", i || (t.style.display = "none"), "function" == typeof o && o()) : window.requestAnimationFrame(l);
       });
     }
-    // let sidebarItems = document.querySelectorAll('.sidebar-item.has-sub');
-    // for (var i = 0; i < sidebarItems.length; i++) {
-    //     let sidebarItem = sidebarItems[i];
-    //     sidebarItems[i].querySelector('.sidebar-link').addEventListener('click', function (e) {
-    //         e.preventDefault();
-
-    //         let submenu = sidebarItem.querySelector('.submenu');
-    //         if (submenu?.classList?.contains('active')) submenu.style.display = "block"
-    //         if (submenu.style.display == "none") submenu?.classList?.add('active')
-    //         else submenu?.classList?.remove('active')
-    //         slideToggle(submenu, 300)
-    //     })
-    // }
+    var sidebarItems = document.querySelectorAll('.sidebar-item.has-sub');
+    var _loop = function _loop() {
+      var sidebarItem = sidebarItems[i];
+      sidebarItems[i].querySelector('.sidebar-link').addEventListener('click', function (e) {
+        var _submenu$classList, _submenu$classList2, _submenu$classList3;
+        e.preventDefault();
+        var submenu = sidebarItem.querySelector('.submenu');
+        if (submenu !== null && submenu !== void 0 && (_submenu$classList = submenu.classList) !== null && _submenu$classList !== void 0 && _submenu$classList.contains('active')) submenu.style.display = "block";
+        if (submenu.style.display == "none") submenu === null || submenu === void 0 ? void 0 : (_submenu$classList2 = submenu.classList) === null || _submenu$classList2 === void 0 ? void 0 : _submenu$classList2.add('active');else submenu === null || submenu === void 0 ? void 0 : (_submenu$classList3 = submenu.classList) === null || _submenu$classList3 === void 0 ? void 0 : _submenu$classList3.remove('active');
+        slideToggle(submenu, 300);
+      });
+    };
+    for (var i = 0; i < sidebarItems.length; i++) {
+      _loop();
+    }
     window.addEventListener('DOMContentLoaded', function (event) {
       var w = window.innerWidth;
       if (w < 1200) {
@@ -310,16 +312,18 @@ __webpack_require__.r(__webpack_exports__);
         }]
       }, {
         name: 'Warehouses',
-        icon: 'grid-fill',
-        permission: null,
+        icon: 'male',
+        permission: 'seller_list',
         submenu: [{
           name: 'warehouse_create',
           icon: 'grid-fill',
-          url: '/warehouses/create'
+          url: '/warehouse/create',
+          permission: 'seller_create'
         }, {
           name: 'warehouse_list',
           icon: 'grid-fill',
-          url: '/warehouses'
+          url: '/warehouse',
+          permission: 'seller_create'
         }]
       }, {
         name: __('sellers'),
@@ -386,6 +390,11 @@ __webpack_require__.r(__webpack_exports__);
           url: '/popup',
           permission: 'new_offer_image_list'
         }]
+      }, {
+        name: __('point_of_sale'),
+        icon: 'calculator',
+        url: '/point_of_sale',
+        permission: 'seller_list'
       }, {
         name: __('promo_code'),
         icon: 'gift',

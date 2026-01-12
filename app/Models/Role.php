@@ -16,9 +16,11 @@ class Role extends Model
     public static $roleAdmin = 2;
     public static $roleSeller = 3;
     public static $roleDeliveryBoy = 4;
+    public static $roleWarehouse = 5;
 
     public static $roleNameSuperAdmin = "Super Admin";
     public static $roleNameAdmin = "Admin";
     public static $roleNameSeller = "Seller";
     public static $roleNameDeliveryBoy = "Delivery Boy";
+    public static $roleNameWarehouse = "Warehouse";
 }

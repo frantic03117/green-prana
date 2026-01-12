@@ -471,6 +471,16 @@ function configRoutes() {
                     },
                 },
                 {
+                    path: "point_of_sale",
+                    name: "SellerPointOfSale",
+                    component: SellerPointOfSale,
+                    meta: {
+                        permission: 'order_list',
+                        role: sellerRoles,
+                        title: 'Point of Sale'
+                    },
+                },
+                {
                     path: "/warehouse",
                     name: "warehouse_list",
                     component: ListWareHouse,

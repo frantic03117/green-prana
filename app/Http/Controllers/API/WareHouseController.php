@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Helpers\CommonHelper;
 use App\Models\WareHouse;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -146,7 +148,12 @@ class WareHouseController extends Controller
                 $request->supply_radius,
                 $request->is_active ?? 'active',
             ]);
-
+            $data['username'] = $request->name;
+            $data['email'] = $request->email;
+            $data['password'] = bcrypt($request->password);
+            $data['role_id'] = '5';
+            $data['created_by'] = 0;
+            $admin = Admin::create($data);
             DB::commit();
 
             return response()->json([

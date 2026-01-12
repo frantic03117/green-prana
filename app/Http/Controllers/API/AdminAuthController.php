@@ -37,7 +37,6 @@ class AdminAuthController extends Controller
             'email' => 'email|required',
             'password' => 'required'
         ]);
-
         if ($validator->fails()) {
             return CommonHelper::responseError($validator->errors()->first());
         }
@@ -62,7 +61,7 @@ class AdminAuthController extends Controller
         if (!Hash::check(request()->password, $user->password)) {
             return CommonHelper::responseError('Email/Password is wrong!');
         }
-        $otherRoleIds = array(Role::$roleSuperAdmin, Role::$roleSeller, Role::$roleDeliveryBoy);
+        $otherRoleIds = array(Role::$roleSuperAdmin, Role::$roleSeller, Role::$roleDeliveryBoy, Role::$roleWarehouse, Role::$roleAdmin);
         // return response()->json(['data' => in_array($user->role_id, $otherRoleIds)], 500);
 
         if (!in_array($user->role_id, $otherRoleIds)) {
