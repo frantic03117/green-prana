@@ -24,21 +24,15 @@
                         <div class="d-flex align-items-center">
                             <div class="w-100">
                                 <div class="pos-tabs-wrapper d-flex">
-                                    <button
-                                        v-for="(tab, index) in tabs"
-                                        :key="index"
-                                        class="pos-tab"
+                                    <button v-for="(tab, index) in tabs" :key="index" class="pos-tab"
                                         :class="{ 'active': activeTabIndex === index && !viewingPreviousOrder }"
-                                        @click="switchTab(index)"
-                                    >
+                                        @click="switchTab(index)">
                                         <span>Bill {{ index + 1 }}</span>
-                                        <span v-if="tabs.length > 1" class="pos-tab-close" @click.stop="closeTab(index)">×</span>
+                                        <span v-if="tabs.length > 1" class="pos-tab-close"
+                                            @click.stop="closeTab(index)">×</span>
                                     </button>
-                                    <button
-                                        v-if="tabs.length < 5"
-                                        class="btn btn-sm btn-outline-primary ms-2"
-                                        @click="addNewTab"
-                                    >
+                                    <button v-if="tabs.length < 5" class="btn btn-sm btn-outline-primary ms-2"
+                                        @click="addNewTab">
                                         <i class="fas fa-plus"></i>Hold Bill & Create Another
                                     </button>
                                 </div>
@@ -46,9 +40,7 @@
                         </div>
                     </div>
                     <div class="col-lg-4 d-flex justify-content-end align-items-center">
-                        <button
-                            v-if="previousOrders.length > 0"
-                            class="btn"
+                        <button v-if="previousOrders.length > 0" class="btn"
                             :class="{ 'btn-primary': viewingPreviousOrder, 'btn-outline-primary': !viewingPreviousOrder }"
                             @click="togglePreviousBill">
                             <i class="fas fa-receipt"></i> Previous Bill
@@ -87,7 +79,8 @@
                         <div class="d-flex">
                             <!-- Category Filter -->
                             <div class="me-2">
-                                <select class="form-select" style="min-width: 200px;" v-model="selectedCategory" @change="getProducts">
+                                <select class="form-select" style="min-width: 200px;" v-model="selectedCategory"
+                                    @change="getProducts">
                                     <option value="">{{ __('all_categories') }}</option>
                                     <option v-for="category in categories" :key="category.id" :value="category.id">
                                         {{ category.name }}
@@ -97,13 +90,8 @@
 
                             <!-- Search Input -->
                             <div class="input-group">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    v-model="searchTerm"
-                                    placeholder="Search products"
-                                    @input="debounceSearch"
-                                >
+                                <input type="text" class="form-control" v-model="searchTerm"
+                                    placeholder="Search products" @input="debounceSearch">
                             </div>
                         </div>
                     </div>
@@ -130,21 +118,23 @@
                                     <div class="product-info">
                                         <!-- Product title with variant info row -->
                                         <div class="product-name-measure-row d-flex align-items-baseline mb-2">
-                                            <h5 class="product-title mb-0" @click="navigateToProduct(product.id)">{{ product.name }}</h5>
+                                            <h5 class="product-title mb-0" @click="navigateToProduct(product.id)">{{
+                                                product.name }}</h5>
 
                                             <!-- Single variant display next to name -->
-                                            <div v-if="product.variants && product.variants.length === 1" class="single-variant ms-2">
-                                                <span class="variant-info">{{ product.variants[0].measurement }} {{ product.variants[0].measurement_unit_name }}</span>
+                                            <div v-if="product.variants && product.variants.length === 1"
+                                                class="single-variant ms-2">
+                                                <span class="variant-info">{{ product.variants[0].measurement }} {{
+                                                    product.variants[0].measurement_unit_name }}</span>
                                             </div>
 
                                             <!-- Multiple variants dropdown next to name -->
-                                            <div v-else-if="product.variants && product.variants.length > 1" class="ms-2">
-                                                <select class="form-select form-select-sm mini-select short-select" v-model="product.selectedVariantId">
-                                                    <option
-                                                        v-for="variant in product.variants"
-                                                        :key="variant.id"
-                                                        :value="variant.id"
-                                                    >
+                                            <div v-else-if="product.variants && product.variants.length > 1"
+                                                class="ms-2">
+                                                <select class="form-select form-select-sm mini-select short-select"
+                                                    v-model="product.selectedVariantId">
+                                                    <option v-for="variant in product.variants" :key="variant.id"
+                                                        :value="variant.id">
                                                         {{ variant.measurement }} {{ variant.measurement_unit_name }}
                                                     </option>
                                                 </select>
@@ -152,13 +142,17 @@
                                         </div>
 
                                         <!-- Price and add button row - Multiple variants -->
-                                        <div v-if="product.variants && product.variants.length > 1" class="product-actions">
+                                        <div v-if="product.variants && product.variants.length > 1"
+                                            class="product-actions">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="product-price mb-0">
                                                     <template v-if="getSelectedVariant(product)">
-                                                        <span v-if="getSelectedVariant(product).discounted_price > 0" class="discounted">
-                                                            {{ $currency }} {{ getSelectedVariant(product).discounted_price }}
-                                                            <small class="original-price">{{ $currency }} {{ getSelectedVariant(product).price }}</small>
+                                                        <span v-if="getSelectedVariant(product).discounted_price > 0"
+                                                            class="discounted">
+                                                            {{ $currency }} {{
+                                                            getSelectedVariant(product).discounted_price }}
+                                                            <small class="original-price">{{ $currency }} {{
+                                                                getSelectedVariant(product).price }}</small>
                                                         </span>
                                                         <span v-else>
                                                             {{ $currency }} {{ getSelectedVariant(product).price }}
@@ -169,23 +163,23 @@
                                                 <div v-if="isProductOutOfStock(product)" class="out-of-stock">
                                                     <span class="badge bg-danger">{{ __('out_of_stock') }}</span>
                                                 </div>
-                                                <button
-                                                    v-else
-                                                    class="btn btn-primary btn-sm"
-                                                    @click.stop="addSelectedVariantToCart(product)"
-                                                >
-                                                     {{ __('add_to_cart') }}
+                                                <button v-else class="btn btn-primary btn-sm"
+                                                    @click.stop="addSelectedVariantToCart(product)">
+                                                    {{ __('add_to_cart') }}
                                                 </button>
                                             </div>
                                         </div>
 
                                         <!-- Price and add button row - Single variant -->
-                                        <div v-else-if="product.variants && product.variants.length === 1" class="product-actions">
+                                        <div v-else-if="product.variants && product.variants.length === 1"
+                                            class="product-actions">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="product-price mb-0">
-                                                    <span v-if="product.variants[0].discounted_price > 0" class="discounted">
+                                                    <span v-if="product.variants[0].discounted_price > 0"
+                                                        class="discounted">
                                                         {{ $currency }} {{ product.variants[0].discounted_price }}
-                                                        <small class="original-price">{{ $currency }} {{ product.variants[0].price }}</small>
+                                                        <small class="original-price">{{ $currency }} {{
+                                                            product.variants[0].price }}</small>
                                                     </span>
                                                     <span v-else>
                                                         {{ $currency }} {{ product.variants[0].price }}
@@ -194,11 +188,8 @@
                                                 <div v-if="isProductOutOfStock(product)" class="out-of-stock">
                                                     <span class="badge bg-danger">{{ __('out_of_stock') }}</span>
                                                 </div>
-                                                <button
-                                                    v-else
-                                                    class="btn btn-primary btn-sm"
-                                                    @click.stop="addVariantToCart(product, product.variants[0])"
-                                                >
+                                                <button v-else class="btn btn-primary btn-sm"
+                                                    @click.stop="addVariantToCart(product, product.variants[0])">
                                                     {{ __('add_to_cart') }}
                                                 </button>
                                             </div>
@@ -223,7 +214,8 @@
                         <div class="d-flex justify-content-between align-items-center mt-4">
                             <div class="d-flex align-items-center">
                                 <span>{{ __('show') }}</span>
-                                <select class="form-select form-select-sm mx-2" v-model="perPage" @change="changePerPage">
+                                <select class="form-select form-select-sm mx-2" v-model="perPage"
+                                    @change="changePerPage">
                                     <option value="9">9</option>
                                     <option value="12">12</option>
                                     <option value="24">24</option>
@@ -237,7 +229,8 @@
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
-                                <li v-for="page in paginationRange" :key="page" class="page-item" :class="{ active: page === currentPage }">
+                                <li v-for="page in paginationRange" :key="page" class="page-item"
+                                    :class="{ active: page === currentPage }">
                                     <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page }}</a>
                                 </li>
                                 <li class="page-item" :class="{ disabled: currentPage === totalPages }">
@@ -270,23 +263,14 @@
                         <div class="row mb-3">
                             <div class="col-8">
                                 <div class="search-select">
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        v-model="customerSearchTerm"
-                                        @input="searchCustomers"
-                                        placeholder="Search customer"
-                                    />
+                                    <input type="text" class="form-control" v-model="customerSearchTerm"
+                                        @input="searchCustomers" placeholder="Search customer" />
                                     <div class="search-results" v-if="showCustomerResults && filteredUsers.length > 0">
                                         <div class="search-option" @click="selectCashSale()">
                                             {{ __('cash_sale') }}
                                         </div>
-                                        <div
-                                            v-for="user in filteredUsers"
-                                            :key="user.id + '-' + user.user_type"
-                                            class="search-option"
-                                            @click="selectUser(user)"
-                                        >
+                                        <div v-for="user in filteredUsers" :key="user.id + '-' + user.user_type"
+                                            class="search-option" @click="selectUser(user)">
                                             {{ user.name }}
                                         </div>
                                     </div>
@@ -333,12 +317,14 @@
                             <div class="cart-items">
                                 <div class="cart-item" v-for="(item, index) in cart" :key="index">
                                     <div class="item-image">
-                                        <img :src="item.image || '/assets/img/placeholder.png'" :alt="item.name" class="img-fluid rounded">
+                                        <img :src="item.image || '/assets/img/placeholder.png'" :alt="item.name"
+                                            class="img-fluid rounded">
                                     </div>
                                     <div class="item-details">
                                         <h5>{{ item.name }}</h5>
                                         <p class="variant-info">
-                                            <strong>{{ item.variant ? `${item.variant.measurement} ${item.variant.measurement_unit_name}` : item.variant_name }}</strong>
+                                            <strong>{{ item.variant ? `${item.variant.measurement}
+                                                ${item.variant.measurement_unit_name}` : item.variant_name }}</strong>
                                         </p>
                                         <div class="price">
                                             {{ $currency }} {{ item.price }}
@@ -346,9 +332,12 @@
                                     </div>
                                     <div class="item-quantity">
                                         <div class="input-group">
-                                            <button class="btn btn-outline-secondary" @click="decreaseQuantity(index)">-</button>
-                                            <input type="number" class="form-control text-center" v-model="item.quantity" min="1" @change="updateCartItem(index)" >
-                                            <button class="btn btn-outline-secondary" @click="increaseQuantity(index, item)">+</button>
+                                            <button class="btn btn-outline-secondary"
+                                                @click="decreaseQuantity(index)">-</button>
+                                            <input type="number" class="form-control text-center"
+                                                v-model="item.quantity" min="1" @change="updateCartItem(index)">
+                                            <button class="btn btn-outline-secondary"
+                                                @click="increaseQuantity(index, item)">+</button>
                                         </div>
                                     </div>
                                     <div class="item-total">
@@ -369,13 +358,15 @@
                                 </div>
 
                                 <!-- Display discount if applied -->
-                                <div v-if="discount.amount > 0 || discount.percentage > 0" class="d-flex justify-content-between mb-2 text-danger">
+                                <div v-if="discount.amount > 0 || discount.percentage > 0"
+                                    class="d-flex justify-content-between mb-2 text-danger">
                                     <span>{{ __('discount') }}:</span>
                                     <span>-{{ $currency }} {{ calculateDiscountAmount().toFixed(2) }}</span>
                                 </div>
 
                                 <!-- Display additional charges if any -->
-                                <div v-for="(charge, index) in additionalCharges" :key="index" class="d-flex justify-content-between mb-2">
+                                <div v-for="(charge, index) in additionalCharges" :key="index"
+                                    class="d-flex justify-content-between mb-2">
                                     <span>{{ charge.charge_name }}:</span>
                                     <span>{{ $currency }} {{ parseFloat(charge.amount).toFixed(2) }}</span>
                                 </div>
@@ -388,7 +379,8 @@
 
                             <div class="mt-4">
                                 <div class="mb-3">
-                                    <label for="paymentMethod" class="form-label">{{ __('select_payment_method') }}</label>
+                                    <label for="paymentMethod" class="form-label">{{ __('select_payment_method')
+                                        }}</label>
                                     <select id="paymentMethod" class="form-select" v-model="paymentMethod">
                                         <option value="cash">{{ __('cash') }}</option>
                                         <option value="upi">{{ __('upi') }}</option>
@@ -397,19 +389,13 @@
                                 </div>
 
                                 <div class="d-flex gap-2">
-                                    <button
-                                        class="btn btn-outline-primary flex-grow-1"
-                                        @click="placeOrderAndPrint"
-                                        :disabled="cart.length === 0"
-                                    >
+                                    <button class="btn btn-outline-primary flex-grow-1" @click="placeOrderAndPrint"
+                                        :disabled="cart.length === 0">
                                         <i class="fas fa-print me-1"></i> {{ __('save_and_print_bill') }}
                                     </button>
 
-                                    <button
-                                        class="btn btn-primary flex-grow-1"
-                                        @click="placeOrder(false)"
-                                        :disabled="cart.length === 0"
-                                    >
+                                    <button class="btn btn-primary flex-grow-1" @click="placeOrder(false)"
+                                        :disabled="cart.length === 0">
                                         {{ __('place_order') }}
                                     </button>
                                 </div>
@@ -422,7 +408,8 @@
         </div>
 
         <!-- Register User Modal -->
-        <div class="modal fade" id="registerUserModal" tabindex="-1" aria-labelledby="registerUserModalLabel" aria-hidden="true">
+        <div class="modal fade" id="registerUserModal" tabindex="-1" aria-labelledby="registerUserModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -440,36 +427,46 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="closeRegisterModal">{{ __('cancel') }}</button>
-                        <button type="button" class="btn btn-primary" @click="registerUser">{{ __('register') }}</button>
+                        <button type="button" class="btn btn-secondary" @click="closeRegisterModal">{{ __('cancel')
+                            }}</button>
+                        <button type="button" class="btn btn-primary" @click="registerUser">{{ __('register')
+                            }}</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Product Details Modal -->
-        <div class="modal fade" id="productDetailsModal" tabindex="-1" aria-labelledby="productDetailsModalLabel" aria-hidden="true">
+        <div class="modal fade" id="productDetailsModal" tabindex="-1" aria-labelledby="productDetailsModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="productDetailsModalLabel">{{ selectedProduct ? selectedProduct.name : '' }}</h5>
+                        <h5 class="modal-title" id="productDetailsModalLabel">{{ selectedProduct ? selectedProduct.name
+                            : '' }}
+                        </h5>
                         <button type="button" class="btn-close" @click="closeProductDetailsModal"></button>
                     </div>
                     <div class="modal-body" v-if="selectedProduct">
                         <div class="row">
                             <div class="col-md-5">
-                                <img :src="selectedProduct.image_url" :alt="selectedProduct.name" class="img-fluid rounded">
+                                <img :src="selectedProduct.image_url" :alt="selectedProduct.name"
+                                    class="img-fluid rounded">
                             </div>
                             <div class="col-md-7">
                                 <h4>{{ selectedProduct.name }}</h4>
                                 <p>{{ selectedProduct.description }}</p>
 
-                                <div class="form-group mt-3" v-if="selectedProduct.variants && selectedProduct.variants.length > 0">
+                                <div class="form-group mt-3"
+                                    v-if="selectedProduct.variants && selectedProduct.variants.length > 0">
                                     <label for="variant" class="form-label">{{ __('variant') }}</label>
                                     <select id="variant" class="form-select" v-model="selectedVariant">
-                                        <option v-for="variant in selectedProduct.variants" :key="variant.id" :value="variant">
+                                        <option v-for="variant in selectedProduct.variants" :key="variant.id"
+                                            :value="variant">
                                             {{ variant.measurement }} {{ variant.measurement_unit_name }}
-                                            - {{ $currency }} {{ variant.discounted_price > 0 ? variant.discounted_price : variant.price }}
+                                            - {{ $currency }} {{ variant.discounted_price > 0 ? variant.discounted_price
+                                            :
+                                            variant.price }}
                                         </option>
                                     </select>
                                 </div>
@@ -477,8 +474,10 @@
                                 <div class="mt-3">
                                     <label for="quantity" class="form-label">{{ __('quantity') }}</label>
                                     <div class="input-group">
-                                        <button class="btn btn-outline-secondary" @click="productQuantity > 1 ? productQuantity-- : 1">-</button>
-                                        <input type="number" class="form-control text-center" id="quantity" v-model="productQuantity" min="1">
+                                        <button class="btn btn-outline-secondary"
+                                            @click="productQuantity > 1 ? productQuantity-- : 1">-</button>
+                                        <input type="number" class="form-control text-center" id="quantity"
+                                            v-model="productQuantity" min="1">
                                         <button class="btn btn-outline-secondary" @click="productQuantity++">+</button>
                                     </div>
                                 </div>
@@ -496,7 +495,8 @@
         </div>
 
         <!-- Add Discount Modal -->
-        <div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+        <div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -507,34 +507,22 @@
                         <div class="mb-3">
                             <label for="discountPercentage" class="form-label">{{ __('discount_percentage') }}</label>
                             <div class="input-group">
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="discountPercentage"
-                                    v-model.number="discount.percentage"
-                                    min="0"
-                                    max="100"
-                                    step="1"
-                                    @input="validateDiscountInput('percentage', $event)"
-                                >
+                                <input type="number" class="form-control" id="discountPercentage"
+                                    v-model.number="discount.percentage" min="0" max="100" step="1"
+                                    @input="validateDiscountInput('percentage', $event)">
                                 <span class="input-group-text">%</span>
                             </div>
-                            <small class="text-muted">{{ __('subtotal') }}: {{ $currency }} {{ calculateSubtotal().toFixed(2) }}</small>
+                            <small class="text-muted">{{ __('subtotal') }}: {{ $currency }} {{
+                                calculateSubtotal().toFixed(2)
+                                }}</small>
                         </div>
                         <div class="mb-3">
                             <label for="discountAmount" class="form-label">{{ __('discount_amount') }}</label>
                             <div class="input-group">
                                 <span class="input-group-text">{{ $currency }}</span>
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="discountAmount"
-                                    v-model.number="discount.amount"
-                                    min="0"
-                                    :max="calculateSubtotal()"
-                                    step="0.01"
-                                    @input="validateDiscountInput('amount', $event)"
-                                >
+                                <input type="number" class="form-control" id="discountAmount"
+                                    v-model.number="discount.amount" min="0" :max="calculateSubtotal()" step="0.01"
+                                    @input="validateDiscountInput('amount', $event)">
                             </div>
                             <small class="text-muted">{{ __('discount_amount_not_exceed_total') }}</small>
                         </div>
@@ -544,16 +532,20 @@
                         </p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('cancel') }}</button>
-                        <button type="button" class="btn btn-danger" @click="clearDiscount">{{ __('clear_discount') }}</button>
-                        <button type="button" class="btn btn-primary" @click="applyDiscount">{{ __('apply_discount') }}</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('cancel')
+                            }}</button>
+                        <button type="button" class="btn btn-danger" @click="clearDiscount">{{ __('clear_discount')
+                            }}</button>
+                        <button type="button" class="btn btn-primary" @click="applyDiscount">{{ __('apply_discount')
+                            }}</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Add Additional Charge Modal -->
-        <div class="modal fade" id="additionalChargeModal" tabindex="-1" aria-labelledby="additionalChargeModalLabel" aria-hidden="true">
+        <div class="modal fade" id="additionalChargeModal" tabindex="-1" aria-labelledby="additionalChargeModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -566,7 +558,8 @@
                                 <div class="col-12">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <label class="form-label">{{ __('charge') }} #{{ index + 1 }}</label>
-                                        <button v-if="index > 0" type="button" class="btn btn-sm btn-outline-danger" @click="removeAdditionalCharge(index)">
+                                        <button v-if="index > 0" type="button" class="btn btn-sm btn-outline-danger"
+                                            @click="removeAdditionalCharge(index)">
                                             <i class="fas fa-trash me-1"></i>{{ __('remove') }}
                                         </button>
                                     </div>
@@ -575,28 +568,40 @@
                             <div class="row g-2">
                                 <div class="col-md-6">
                                     <label for="chargeName" class="form-label">{{ __('charge_name') }}</label>
-                                    <input type="text" class="form-control" placeholder="Enter Charge Name" v-model="charge.charge_name" required>
-                                    <div v-if="chargeErrors[index] && chargeErrors[index].name" class="text-danger mt-1">{{ chargeErrors[index].name }}</div>
+                                    <input type="text" class="form-control" placeholder="Enter Charge Name"
+                                        v-model="charge.charge_name" required>
+                                    <div v-if="chargeErrors[index] && chargeErrors[index].name"
+                                        class="text-danger mt-1">{{
+                                        chargeErrors[index].name }}</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="chargeAmount" class="form-label">{{ __('amount') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text">{{ $currency }}</span>
-                                        <input type="number" class="form-control" v-model="charge.amount" min="0" step="0.01" required>
+                                        <input type="number" class="form-control" v-model="charge.amount" min="0"
+                                            step="0.01" required>
                                     </div>
-                                    <div v-if="chargeErrors[index] && chargeErrors[index].amount" class="text-danger mt-1">{{ chargeErrors[index].amount }}</div>
+                                    <div v-if="chargeErrors[index] && chargeErrors[index].amount"
+                                        class="text-danger mt-1">{{
+                                        chargeErrors[index].amount }}</div>
                                 </div>
                             </div>
                         </div>
 
-                        <button type="button" class="btn btn-outline-success w-100 mt-2" @click.stop.prevent="addNewCharge">
+                        <button type="button" class="btn btn-outline-success w-100 mt-2"
+                            @click.stop.prevent="addNewCharge">
                             <i class="fas fa-plus me-1"></i>{{ __('add_another_charge') }}
                         </button>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('cancel') }}</button>
-                        <button type="button" class="btn btn-danger" @click="clearAdditionalCharges">{{ __('clear_all_charges') }}</button>
-                        <button type="button" class="btn btn-primary" @click="applyAdditionalCharges">{{ __('apply_charges') }}</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('cancel')
+                            }}</button>
+                        <button type="button" class="btn btn-danger" @click="clearAdditionalCharges">{{
+                            __('clear_all_charges')
+                            }}</button>
+                        <button type="button" class="btn btn-primary" @click="applyAdditionalCharges">{{
+                            __('apply_charges')
+                            }}</button>
                     </div>
                 </div>
             </div>
@@ -641,7 +646,7 @@ export default {
             // Tab System Data
             tabs: [{
                 id: 'tab-' + Date.now(),
-            cart: [],
+                cart: [],
                 selectedUser: null,
                 discount: {
                     percentage: 0,
@@ -975,30 +980,30 @@ export default {
                 name: this.newUser.name,
                 mobile: this.newUser.mobile
             })
-            .then(response => {
-                if (response.data.status) {
+                .then(response => {
+                    if (response.data.status) {
+                        this.$swal.fire({
+                            title: this.__('success'),
+                            text: this.__('user_registered_successfully'),
+                            icon: 'success'
+                        });
+
+                        // Add the new user to the list and select them
+                        this.users.unshift(response.data.data);
+                        this.selectedUser = response.data.data;
+
+                        // Reset form and close modal
+                        this.newUser = { name: '', mobile: '' };
+                        this.closeRegisterModal();
+                    }
+                })
+                .catch(error => {
                     this.$swal.fire({
-                        title: this.__('success'),
-                        text: this.__('user_registered_successfully'),
-                        icon: 'success'
+                        title: this.__('error'),
+                        text: error.response?.data?.message || this.__('something_went_wrong'),
+                        icon: 'error'
                     });
-
-                    // Add the new user to the list and select them
-                    this.users.unshift(response.data.data);
-                    this.selectedUser = response.data.data;
-
-                    // Reset form and close modal
-                    this.newUser = { name: '', mobile: '' };
-                    this.closeRegisterModal();
-                }
-            })
-            .catch(error => {
-                this.$swal.fire({
-                    title: this.__('error'),
-                    text: error.response?.data?.message || this.__('something_went_wrong'),
-                    icon: 'error'
                 });
-            });
         },
 
         // Cart Methods
@@ -1058,7 +1063,7 @@ export default {
             this.saveTabsToStorage();
         },
 
-                                increaseQuantity(index, item) {
+        increaseQuantity(index, item) {
             // For unlimited stock products, just increase quantity
             if (item.is_unlimited_stock) {
                 item.quantity += 1;
@@ -1089,7 +1094,7 @@ export default {
             }
         },
 
-                                updateCartItem(index) {
+        updateCartItem(index) {
             const item = this.cart[index];
 
             // Ensure quantity is at least 1
@@ -1202,7 +1207,7 @@ export default {
         clearDiscount() {
             // Check if there was actually a discount to clear
             const hadDiscount = this.discount.amount > 0 || this.discount.percentage > 0;
-            
+
             this.discount = {
                 percentage: 0,
                 amount: 0
@@ -1264,7 +1269,7 @@ export default {
         clearAdditionalCharges() {
             // Check if there were actually charges to clear
             const hadCharges = this.additionalCharges.length > 0;
-            
+
             this.tempAdditionalCharges = [];
             this.chargeErrors = [];
             this.additionalCharges = [];
@@ -1294,12 +1299,12 @@ export default {
 
             this.tempAdditionalCharges.forEach((charge, index) => {
                 if (!charge.charge_name.trim()) {
-                    this.$set(this.chargeErrors, index, {...this.chargeErrors[index], name: 'Charge name is required'});
+                    this.$set(this.chargeErrors, index, { ...this.chargeErrors[index], name: 'Charge name is required' });
                     hasError = true;
                 }
 
                 if (!charge.amount || charge.amount <= 0) {
-                    this.$set(this.chargeErrors, index, {...this.chargeErrors[index], amount: 'Amount must be greater than 0'});
+                    this.$set(this.chargeErrors, index, { ...this.chargeErrors[index], amount: 'Amount must be greater than 0' });
                     hasError = true;
                 }
             });
@@ -1418,7 +1423,7 @@ export default {
 
             return selectedVariant.stock <= 0 || selectedVariant.status === 0;
         },
-                                        addVariantToCart(product, variant) {
+        addVariantToCart(product, variant) {
             if (this.isProductOutOfStock(product)) {
                 toastr.error(this.__('out_of_stock'));
                 return;
@@ -1683,7 +1688,7 @@ export default {
                 return;
             }
 
-                                    // First, check stock availability for all items
+            // First, check stock availability for all items
             for (const item of this.getActiveTab.cart) {
                 // Skip stock validation for unlimited stock products
                 if (item.is_unlimited_stock) {
@@ -1959,9 +1964,9 @@ export default {
         formatDate(dateString) {
             if (!dateString) return '';
             const date = new Date(dateString);
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         },
-                printInvoice(orderId) {
+        printInvoice(orderId) {
             const baseUrl = window.location.origin;
             const invoiceUrl = `${baseUrl}/pos/invoice/${orderId}`;
 
@@ -2038,14 +2043,14 @@ export default {
                 axios.get('/api/seller/pos/users', {
                     params: { search: this.customerSearchTerm.trim() }
                 })
-                .then(response => {
-                    if (response.data.status) {
-                        this.filteredUsers = response.data.data;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error searching customers:', error);
-                });
+                    .then(response => {
+                        if (response.data.status) {
+                            this.filteredUsers = response.data.data;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error searching customers:', error);
+                    });
             }, 300);
         },
 
@@ -2098,16 +2103,18 @@ export default {
 </script>
 
 <style>
- .sidebar-wrapper{
+.sidebar-wrapper {
     display: none !important;
- }
- header{
+}
+
+header {
     display: none !important;
- }
- #main{
+}
+
+#main {
     padding: 0px 10px 10px 10px !important;
     margin: 0px !important;
- }
+}
 </style>
 
 <style scoped>
@@ -2453,10 +2460,12 @@ export default {
         transform: scale(1);
         opacity: 1;
     }
+
     50% {
         transform: scale(1.05);
         opacity: 0.8;
     }
+
     100% {
         transform: scale(1);
         opacity: 1;
@@ -2487,7 +2496,7 @@ export default {
     max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .search-option {
