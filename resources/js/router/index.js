@@ -252,6 +252,7 @@ const StockManager = () => import("../views/Seller/StockManager.vue");
 
 const CreateWareHouse = () => import('../views/warehouse/CreateWareHouse.vue');
 const ListWareHouse = () => import('../views/warehouse/ListWarehouses.vue');
+const WarehouseStock = () => import('../views/warehouse/WarehouseStock.vue');
 
 let router = new Router({
     mode: "history",
@@ -471,12 +472,12 @@ function configRoutes() {
                     },
                 },
                 {
-                    path: "point_of_sale",
+                    path: "point-of-sale",
                     name: "SellerPointOfSale",
                     component: SellerPointOfSale,
                     meta: {
                         permission: 'order_list',
-                        role: sellerRoles,
+                        role: adminRoles,
                         title: 'Point of Sale'
                     },
                 },
@@ -487,6 +488,15 @@ function configRoutes() {
                     meta: {
                         role: adminRoles,
                         title: 'Warehouse List'
+                    },
+                },
+                {
+                    path: "/warehouse/stock/:id",
+                    name: "warehouse_stock",
+                    component: WarehouseStock,
+                    meta: {
+                        role: adminRoles,
+                        title: 'Warehouse Stock'
                     },
                 },
                 {

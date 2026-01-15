@@ -32,6 +32,9 @@
                         </span>
                     </td>
                     <td>
+                        <button class="btn btn-light-info btn-sm me-1" @click="viewWarehouseStock(warehouse.id)">
+                            Stock
+                        </button>
                         <button class="btn btn-sm btn-primary me-1" @click="viewWarehouse(warehouse)">
                             View
                         </button>
@@ -130,7 +133,9 @@ export default {
         editWarehouse(id) {
             this.$router.push({ path: `/warehouse/edit/${id}` });
         },
-
+        viewWarehouseStock(id) {
+            this.$router.push({ path: `/warehouse/stock/${id}` });
+        },
         /* ===============================
            DELETE
         =============================== */

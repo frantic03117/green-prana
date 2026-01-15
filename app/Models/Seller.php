@@ -163,4 +163,8 @@ class Seller extends Model
             ];
         }, $points);
     }
+    public function stockLogs()
+    {
+        return $this->morphMany(StockLog::class, 'stockable');
+    }
 }

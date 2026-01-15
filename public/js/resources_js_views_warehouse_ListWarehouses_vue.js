@@ -73,6 +73,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -139,6 +142,11 @@ __webpack_require__.r(__webpack_exports__);
     editWarehouse: function editWarehouse(id) {
       this.$router.push({
         path: "/warehouse/edit/".concat(id)
+      });
+    },
+    viewWarehouseStock: function viewWarehouseStock(id) {
+      this.$router.push({
+        path: "/warehouse/stock/".concat(id)
       });
     },
     /* ===============================
@@ -371,6 +379,23 @@ var render = function () {
                 ]),
                 _vm._v(" "),
                 _c("td", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-light-info btn-sm me-1",
+                      on: {
+                        click: function ($event) {
+                          return _vm.viewWarehouseStock(warehouse.id)
+                        },
+                      },
+                    },
+                    [
+                      _vm._v(
+                        "\n                        Stock\n                    "
+                      ),
+                    ]
+                  ),
+                  _vm._v(" "),
                   _c(
                     "button",
                     {

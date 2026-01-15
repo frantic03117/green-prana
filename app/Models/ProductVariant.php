@@ -59,6 +59,15 @@ class ProductVariant extends Model
             'seller_id'
         );
     }
+    public function warehouses()
+    {
+        return $this->belongsToMany(
+            WareHouse::class,
+            'seller_products',
+            'variant_id',
+            'warehouse_id'
+        );
+    }
 
     public function product()
     {

@@ -24,4 +24,8 @@ class WareHouse extends Model
     {
         return $this->coverage_area;
     }
+    public function stockLogs()
+    {
+        return $this->morphMany(StockLog::class, 'stockable');
+    }
 }

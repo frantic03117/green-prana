@@ -283,6 +283,26 @@ class ProductApisController extends Controller
                 });
             }
         }
+        if ($request->filled('warehouse_id')) {
+
+            $assigned = filter_var(
+                $request->get('assigned', true),
+                FILTER_VALIDATE_BOOLEAN
+            );
+
+            if ($assigned) {
+                // ✅ Assigned to warehouse
+                $pv->whereHas('warehouses', function ($q) use ($request) {
+                    $q->where('warehouses.id', $request->warehouse_id);
+                });
+            } else {
+                // ❌ Not assigned to warehouse
+                $pv->whereDoesntHave('warehouses', function ($q) use ($request) {
+                    $q->where('warehouses.id', $request->warehouse_id);
+                });
+            }
+        }
+
 
         // =========================
         // Sorting
