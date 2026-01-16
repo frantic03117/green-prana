@@ -12,6 +12,7 @@ class SellerProduct extends Model
         'seller_id',
         'product_id',
         'variant_id',
+        'warehouse_id',
         'price',
         'status',
         'stock_quantity',

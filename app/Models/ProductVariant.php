@@ -68,6 +68,10 @@ class ProductVariant extends Model
             'warehouse_id'
         );
     }
+    public function sellerProducts()
+    {
+        return $this->hasMany(SellerProduct::class, 'variant_id');
+    }
 
     public function product()
     {

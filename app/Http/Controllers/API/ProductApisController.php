@@ -18,11 +18,13 @@ use App\Models\Unit;
 use App\Models\Role;
 use App\Models\Section;
 use App\Models\SellerProduct;
+use App\Models\StockLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
@@ -207,6 +209,17 @@ class ProductApisController extends Controller
         if ($request->filled('product_id')) {
             $pv->where('product_id', $request->product_id);
         }
+        if ($request->filled('search')) {
+            $search = trim(mb_strtolower($request->search));
+
+            $pv->where(function ($q) use ($search) {
+
+                $q->whereHas('product', function ($qp) use ($search) {
+                    $qp->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                });
+            });
+        }
+
 
         // =========================
         // Filter: Status
@@ -293,16 +306,27 @@ class ProductApisController extends Controller
             if ($assigned) {
                 // ✅ Assigned to warehouse
                 $pv->whereHas('warehouses', function ($q) use ($request) {
-                    $q->where('warehouses.id', $request->warehouse_id);
+                    $q->where('ware_houses.id', $request->warehouse_id);
                 });
             } else {
                 // ❌ Not assigned to warehouse
                 $pv->whereDoesntHave('warehouses', function ($q) use ($request) {
-                    $q->where('warehouses.id', $request->warehouse_id);
+                    $q->where('ware_houses.id', $request->warehouse_id);
                 });
             }
         }
+        $pv->with([
+            'sellerProducts' => function ($q) use ($request) {
 
+                if ($request->filled('seller_id')) {
+                    $q->where('seller_id', $request->seller_id);
+                }
+
+                if ($request->filled('warehouse_id')) {
+                    $q->where('warehouse_id', $request->warehouse_id);
+                }
+            }
+        ]);
 
         // =========================
         // Sorting
@@ -324,6 +348,7 @@ class ProductApisController extends Controller
         // Transform paginated data
         // =========================
         $paginated->getCollection()->transform(function ($v) {
+            $sellerProduct = $v->sellerProducts->first();
             return [
                 'id'                 => $v->product->id,
                 'product_id'         => $v->product->id,
@@ -346,7 +371,7 @@ class ProductApisController extends Controller
                 'discounted_price'   => $v->discounted_price,
                 'measurement'        => $v->measurement,
                 'pv_status'          => $v->pv_status,
-                'stock'              => $v->stock_quantity,
+                'stock'              => $sellerProduct?->stock_quantity ?? 0,
                 'stock_unit_id'      => $v->stock_unit_id,
                 'short_code'         => $v->unit?->short_code,
                 'stock_unit'         => $v->unit?->short_code,
@@ -381,6 +406,98 @@ class ProductApisController extends Controller
             });
 
         return CommonHelper::responseWithData($data);
+    }
+    public function add_stock(Request $request)
+    {
+        // return response()->json(['data' => $request->all()]);
+        $validate = Validator::make($request->all(), [
+            'stock_added' => 'required|min:1'
+        ]);
+        if ($validate->fails()) {
+            return response()->json(['data' =>  null, 'status' => false]);
+        }
+        DB::transaction(function () use ($request) {
+
+            /* ---------------------------
+         | 1. Save Stock Log
+         |----------------------------*/
+            $stockLog = StockLog::create([
+                'date'           => $request->date,
+                'type'           => 'in',
+                'reference_no'   => uniqid('STK-'),
+                'stockable_id'   => $request->stockable_id,
+                'stockable_type' => $request->stockable_type,
+                'product_id'     => $request->product_id,
+                'variant_id'     => $request->variant_id,
+                'stock_added'    => $request->stock_added,
+                'base_unit_price' => $request->base_unit_price ?? 0,
+                'amount'         => $request->stock_added * ($request->base_unit_price ?? 0),
+                // 'created_by'     => auth()->user()->id ?? null
+            ]);
+            // return response()->json($stockLog);
+            /* ---------------------------
+         | 2. Find SellerProduct
+         |----------------------------*/
+            $sellerProductQuery = SellerProduct::where('product_id', $request->product_id)
+                ->where('variant_id', $request->variant_id);
+
+            // Seller stock
+            if ($request->stockable_type === \App\Models\Seller::class) {
+                $sellerProductQuery->where('seller_id', $request->stockable_id);
+            }
+
+            // Warehouse stock
+            if ($request->stockable_type === \App\Models\Warehouse::class) {
+                $sellerProductQuery->where('warehouse_id', $request->stockable_id);
+            }
+
+            // 👇 DO NOT fail
+            $sellerProduct = $sellerProductQuery->first();
+
+            /* --------------------------------
+            | Create if not exists
+            |--------------------------------*/
+            if (!$sellerProduct) {
+
+                if ($request->type !== 'add') {
+                    throw new \Exception('Cannot remove stock that does not exist');
+                }
+
+                $sellerProduct = SellerProduct::create([
+                    'product_id'     => $request->product_id,
+                    'variant_id'     => $request->variant_id,
+                    'seller_id'      => $request->stockable_type === \App\Models\Seller::class
+                        ? $request->stockable_id
+                        : null,
+                    'warehouse_id'   => $request->stockable_type === \App\Models\Warehouse::class
+                        ? $request->stockable_id
+                        : null,
+                    'stock_quantity' => $request->stock_added,
+                    'status'         => 'active',
+                    'price'          => $request->base_unit_price ?? 0,
+                ]);
+            } else {
+
+                /* --------------------------------
+                | Update existing stock
+                |--------------------------------*/
+                if ($request->type === 'add') {
+                    $sellerProduct->stock_quantity += $request->stock_added;
+                } else {
+                    if ($sellerProduct->stock_quantity < $request->stock_added) {
+                        throw new \Exception('Insufficient stock');
+                    }
+                    $sellerProduct->stock_quantity -= $request->stock_added;
+                }
+
+                $sellerProduct->save();
+            }
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Stock updated successfully'
+        ]);
     }
 
     public function assign_product_to_seller(Request $request)

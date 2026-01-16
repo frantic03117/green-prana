@@ -122,11 +122,9 @@ Route::middleware('auth:api')->group(function () {
         Route::post('update', [\App\Http\Controllers\API\ProductApisController::class, 'update'])->name('products.update');
         Route::post('delete', [\App\Http\Controllers\API\ProductApisController::class, 'delete'])->name('products.delete');
         Route::post('multiple_delete', [\App\Http\Controllers\API\ProductApisController::class, 'multipleDelete'])->name('products.multiple_delete');
-
+        Route::post('add-stock', [\App\Http\Controllers\API\ProductApisController::class, 'add_stock']);
         Route::get('edit/{id}', [\App\Http\Controllers\API\ProductApisController::class, 'edit']);
-
         Route::post('change', [\App\Http\Controllers\API\ProductApisController::class, 'changeStatus'])->name('products.change');
-
         Route::get('product_info', [\App\Http\Controllers\API\ProductApisController::class, 'getProducts']);
         Route::get('order_list', [\App\Http\Controllers\API\ProductApisController::class, 'getProductsOrderList']);
         Route::post('updateOrder', [\App\Http\Controllers\API\ProductApisController::class, 'updateProductsOrder'])->name('products.updateOrder');

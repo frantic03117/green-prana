@@ -138,9 +138,6 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     savePrice: function savePrice(product) {
       var _this2 = this;
-      // alert("Saving price for: " + product.name + " Price: " + product.price);
-      console.log("Saving price for:", product.name);
-      console.log("Price:", product.price);
       this.isLoading = true;
       axios__WEBPACK_IMPORTED_MODULE_0___default().post(this.$apiUrl + "/products/seller_assigned_variants", {
         seller_id: this.seller_id,

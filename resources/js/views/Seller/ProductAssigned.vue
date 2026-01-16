@@ -120,9 +120,7 @@ export default {
     },
     methods: {
         savePrice(product) {
-            // alert("Saving price for: " + product.name + " Price: " + product.price);
-            console.log("Saving price for:", product.name);
-            console.log("Price:", product.price);
+
             this.isLoading = true;
             axios.post(this.$apiUrl + "/products/seller_assigned_variants", {
                 seller_id: this.seller_id,
@@ -237,7 +235,7 @@ export default {
             // Send POST request
             axios.post(this.$apiUrl + "/products/variants/update-stock", payload)
                 .then((res) => {
-                     this.loadAssignedProducts();
+                    this.loadAssignedProducts();
                     this.$swal.fire("Success", res.data.message, "success");
                 })
                 .catch(() => {
