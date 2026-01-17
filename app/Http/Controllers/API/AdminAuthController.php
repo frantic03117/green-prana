@@ -10,6 +10,7 @@ use App\Models\DeliveryBoy;
 use App\Models\Role;
 use App\Models\Seller;
 use App\Models\SellerCommission;
+use App\Models\Warehouse;
 use App\Models\Setting;
 use App\Models\UserToken;
 use App\Models\AdminToken;
@@ -80,6 +81,12 @@ class AdminAuthController extends Controller
 
         if ($user->role_id == Role::$roleSeller && isset($user->seller) && $user->seller->status == Seller::$statusDeactivated) {
             return CommonHelper::responseError("Your Account is Deactivated, Please Contact to Administrator for activate!");
+        }
+        if ($user->role_id == "5") {
+
+            $findWarehouse = Warehouse::where('email', request()->email)->first();
+
+            $user->warehouse_id = $findWarehouse->id;
         }
 
         //If delivery boy

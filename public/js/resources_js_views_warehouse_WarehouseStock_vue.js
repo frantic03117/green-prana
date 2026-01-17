@@ -207,6 +207,7 @@ __webpack_require__.r(__webpack_exports__);
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.$apiUrl + "/products/variants", {
         params: {
+          warehouse_id: this.warehouse_id,
           category_id: this.selectedCategory,
           search: this.keyword,
           page: page
@@ -464,7 +465,7 @@ var render = function () {
             ]),
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "col-span-7" }, [
+          _c("div", { staticClass: "col-md-7" }, [
             _c("div", { staticClass: "input-group" }, [
               _c("input", {
                 directives: [
@@ -504,7 +505,10 @@ var render = function () {
               _vm._v(" "),
               _c(
                 "button",
-                { staticClass: "btn p-2", on: { click: _vm.searchProducts } },
+                {
+                  staticClass: "btn p-2 bg-white",
+                  on: { click: _vm.searchProducts },
+                },
                 [
                   _c("i", {
                     staticClass: "fa fa-search",

@@ -286,7 +286,7 @@ export default {
                 {
                     name: 'Warehouses',
                     icon: 'male',
-                    permission: 'seller_list',
+                    permission: 'product_list',
                     submenu: [
                         {
                             name: 'warehouse_create',
@@ -299,6 +299,12 @@ export default {
                             icon: 'grid-fill',
                             url: '/warehouse',
                             permission: 'seller_create',
+                        },
+                        {
+                            name: 'warehouse_stock_list',
+                            icon: 'grid-fill',
+                            url: '/warehouse/stock-list',
+                            permission: 'product_list',
                         },
                     ],
                 },
@@ -387,8 +393,8 @@ export default {
                 {
                     name: __('point_of_sale'),
                     icon: 'calculator',
-                    url: '/point_of_sale',
-                    permission: 'seller_list',
+                    url: '/point-of-sale',
+                    permission: 'product_list',
                 },
 
                 {

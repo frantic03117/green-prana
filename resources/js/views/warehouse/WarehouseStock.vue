@@ -12,7 +12,7 @@
                                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                                     <ol class="breadcrumb">
                                         <li class="breadcrumb-item"><router-link to="/dashboard">{{ __('dashboard')
-                                        }}</router-link>
+                                                }}</router-link>
                                         </li>
                                         <li class="breadcrumb-item active" aria-current="page">Manage Warehouse Stock
                                         </li>
@@ -41,12 +41,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-span-7">
+                    <div class="col-md-7">
                         <div class="input-group">
                             <input type="text" name="keyword" id="keyword" v-model="keyword" class="form-control"
                                 placeholder="Search product" @keyup.enter="searchProducts">
 
-                            <button @click="searchProducts" class="btn p-2">
+                            <button @click="searchProducts" class="btn p-2 bg-white">
                                 <i class="fa fa-search" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -187,6 +187,7 @@ export default {
         viewProducts(page = 1) {
             axios.get(this.$apiUrl + "/products/variants", {
                 params: {
+                    warehouse_id: this.warehouse_id,
                     category_id: this.selectedCategory,
                     search: this.keyword,
                     page: page

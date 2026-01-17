@@ -189,6 +189,7 @@ class ProductApisController extends Controller
     }
     public function variants(Request $request)
     {
+
         $pv = ProductVariant::query();
 
         // =========================
@@ -249,12 +250,7 @@ class ProductApisController extends Controller
         // =========================
         // Filter: Search (SKU / Variant Title)
         // =========================
-        if ($request->filled('search')) {
-            $pv->where(function ($q) use ($request) {
-                $q->where('sku', 'like', '%' . $request->search . '%')
-                    ->orWhere('variant_title', 'like', '%' . $request->search . '%');
-            });
-        }
+
 
         // =========================
         // Filter: Category (via Product)
@@ -298,21 +294,22 @@ class ProductApisController extends Controller
         }
         if ($request->filled('warehouse_id')) {
 
-            $assigned = filter_var(
-                $request->get('assigned', true),
-                FILTER_VALIDATE_BOOLEAN
-            );
-
-            if ($assigned) {
-                // ✅ Assigned to warehouse
-                $pv->whereHas('warehouses', function ($q) use ($request) {
-                    $q->where('ware_houses.id', $request->warehouse_id);
-                });
-            } else {
-                // ❌ Not assigned to warehouse
-                $pv->whereDoesntHave('warehouses', function ($q) use ($request) {
-                    $q->where('ware_houses.id', $request->warehouse_id);
-                });
+            if (!empty($request->get('assigned'))) {
+                $assigned = filter_var(
+                    $request->get('assigned', true),
+                    FILTER_VALIDATE_BOOLEAN
+                );
+                if ($assigned) {
+                    // ✅ Assigned to warehouse
+                    $pv->whereHas('warehouses', function ($q) use ($request) {
+                        $q->where('ware_houses.id', $request->warehouse_id);
+                    });
+                } else {
+                    // ❌ Not assigned to warehouse
+                    $pv->whereDoesntHave('warehouses', function ($q) use ($request) {
+                        $q->where('ware_houses.id', $request->warehouse_id);
+                    });
+                }
             }
         }
         $pv->with([

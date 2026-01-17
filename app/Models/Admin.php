@@ -49,6 +49,7 @@ class Admin extends Authenticatable
         return $this->belongsTo(Seller::class, 'id', 'admin_id');
     }
 
+
     public function getSellerStatusAttribute()
     {
         $status = 0;

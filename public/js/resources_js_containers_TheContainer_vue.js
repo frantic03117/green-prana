@@ -313,7 +313,7 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         name: 'Warehouses',
         icon: 'male',
-        permission: 'seller_list',
+        permission: 'product_list',
         submenu: [{
           name: 'warehouse_create',
           icon: 'grid-fill',
@@ -324,6 +324,11 @@ __webpack_require__.r(__webpack_exports__);
           icon: 'grid-fill',
           url: '/warehouse',
           permission: 'seller_create'
+        }, {
+          name: 'warehouse_stock_list',
+          icon: 'grid-fill',
+          url: '/warehouse/stock-list',
+          permission: 'product_list'
         }]
       }, {
         name: __('sellers'),
@@ -393,8 +398,8 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         name: __('point_of_sale'),
         icon: 'calculator',
-        url: '/point_of_sale',
-        permission: 'seller_list'
+        url: '/point-of-sale',
+        permission: 'product_list'
       }, {
         name: __('promo_code'),
         icon: 'gift',
