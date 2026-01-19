@@ -401,6 +401,11 @@ __webpack_require__.r(__webpack_exports__);
         url: '/point-of-sale',
         permission: 'product_list'
       }, {
+        name: 'product_order_request_warehouse',
+        icon: 'calculator',
+        url: '/product_order_request_warehouse',
+        permission: 'product_list'
+      }, {
         name: __('promo_code'),
         icon: 'gift',
         permission: 'promo_code_list',

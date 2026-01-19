@@ -274,26 +274,26 @@ class ProductApisController extends Controller
         // Filter: Seller Assignment
         // =========================
         if ($request->filled('seller_id')) {
+            if ($request->filled('assigned')) {
+                $assigned = filter_var(
+                    $request->get('assigned', true),
+                    FILTER_VALIDATE_BOOLEAN
+                );
 
-            $assigned = filter_var(
-                $request->get('assigned', true),
-                FILTER_VALIDATE_BOOLEAN
-            );
-
-            if ($assigned) {
-                // ✅ Assigned to seller
-                $pv->whereHas('sellers', function ($q) use ($request) {
-                    $q->where('sellers.id', $request->seller_id);
-                });
-            } else {
-                // ❌ Not assigned to seller
-                $pv->whereDoesntHave('sellers', function ($q) use ($request) {
-                    $q->where('sellers.id', $request->seller_id);
-                });
+                if ($assigned) {
+                    // ✅ Assigned to seller
+                    $pv->whereHas('sellers', function ($q) use ($request) {
+                        $q->where('sellers.id', $request->seller_id);
+                    });
+                } else {
+                    // ❌ Not assigned to seller
+                    $pv->whereDoesntHave('sellers', function ($q) use ($request) {
+                        $q->where('sellers.id', $request->seller_id);
+                    });
+                }
             }
         }
         if ($request->filled('warehouse_id')) {
-
             if (!empty($request->get('assigned'))) {
                 $assigned = filter_var(
                     $request->get('assigned', true),
@@ -312,19 +312,20 @@ class ProductApisController extends Controller
                 }
             }
         }
-        $pv->with([
-            'sellerProducts' => function ($q) use ($request) {
+        if ($request->filled('seller_id') || $request->filled('warehouse_id')) {
+            $pv->with([
+                'sellerProducts' => function ($q) use ($request) {
 
-                if ($request->filled('seller_id')) {
-                    $q->where('seller_id', $request->seller_id);
+                    if ($request->filled('seller_id')) {
+                        $q->where('seller_id', $request->seller_id);
+                    }
+
+                    if ($request->filled('warehouse_id')) {
+                        $q->where('warehouse_id', $request->warehouse_id);
+                    }
                 }
-
-                if ($request->filled('warehouse_id')) {
-                    $q->where('warehouse_id', $request->warehouse_id);
-                }
-            }
-        ]);
-
+            ]);
+        }
         // =========================
         // Sorting
         // =========================
@@ -368,7 +369,7 @@ class ProductApisController extends Controller
                 'discounted_price'   => $v->discounted_price,
                 'measurement'        => $v->measurement,
                 'pv_status'          => $v->pv_status,
-                'stock'              => $sellerProduct?->stock_quantity ?? 0,
+                'stock'              => $sellerProduct ? $sellerProduct?->stock_quantity : 10000,
                 'stock_unit_id'      => $v->stock_unit_id,
                 'short_code'         => $v->unit?->short_code,
                 'stock_unit'         => $v->unit?->short_code,

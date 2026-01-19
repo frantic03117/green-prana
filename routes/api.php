@@ -56,6 +56,13 @@ Route::group(['prefix' => 'payment_methods'], function () {
     // Route::post('save', [\App\Http\Controllers\API\PaymentMethodsApiController::class, 'save'])->name('payment_methods.save');
 });
 Route::middleware('auth:api')->group(function () {
+    Route::group(['prefix' => 'purchase-order'], function () {
+        Route::get('/', [\App\Http\Controllers\API\PurchaseOrderRequestApiController::class, 'list_po_requests']);
+        Route::post('/', [\App\Http\Controllers\API\PurchaseOrderRequestApiController::class, 'make_purchase_order_request_by_seller']);
+        Route::post('/update/{id}', [\App\Http\Controllers\API\PurchaseOrderRequestApiController::class, 'update_po_request']);
+        Route::post('/add-to-cart', [\App\Http\Controllers\API\PurchaseOrderRequestApiController::class, 'add_to_cart']);
+    });
+
     Route::get('admin_settings', [\App\Http\Controllers\Controller::class, 'getAdminSettings']);
     Route::get('dashboard', [\App\Http\Controllers\Controller::class, 'index']);
     Route::get('get_top_notifications', [\App\Http\Controllers\Controller::class, 'getTopNotifications']);

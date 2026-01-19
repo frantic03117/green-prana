@@ -396,6 +396,12 @@ export default {
                     url: '/point-of-sale',
                     permission: 'product_list',
                 },
+                {
+                    name: 'product_order_request_warehouse',
+                    icon: 'calculator',
+                    url: '/product_order_request_warehouse',
+                    permission: 'product_list',
+                },
 
                 {
                     name: __('promo_code'),

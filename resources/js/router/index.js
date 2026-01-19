@@ -52,7 +52,9 @@ const RegisteredSellers = () => import("../views/Seller/RegisteredSellers");
 const EditSeller = () => import("../views/Seller/EditSeller");
 const SellerCommissions = () => import("../views/Seller/Commissions/SellerCommissions")
 const SellerWalletTransactions = () => import("../views/Seller/WalletTransactions/SellerWalletTransactions");
-
+const VerifySellerOrderRequest = () => import('../views/Seller/VerifyProductOrderRequestByAdmin.vue')
+const VerifySellerOrderRequestWarehouse = () => import('../views/warehouse/ProductOrderRequest.vue');
+const SellerCartStock = () => import('../views/warehouse/SellerCartStock.vue');
 //Home Slider Images
 const HomeSliders = () => import("../views/HomeSliders/HomeSliders");
 
@@ -255,6 +257,8 @@ const ListWareHouse = () => import('../views/warehouse/ListWarehouses.vue');
 const WarehouseStock = () => import('../views/warehouse/WarehouseStock.vue');
 const WarehouseStockList = () => import('../views/warehouse/WarehouseStockList.vue');
 
+const ProductOrderRequest = () => import('../views/Seller/ProductOrderRequest.vue');
+
 let router = new Router({
     mode: "history",
     scrollBehavior: () => ({ y: 0 }),
@@ -448,6 +452,39 @@ function configRoutes() {
                         permission: 'order_list',
                         role: adminRoles,
                         title: 'Order View'
+
+                    },
+                },
+                {
+                    path: "product_order_request",
+                    name: "VerifyProductOrderRequestByAdmin",
+                    component: VerifySellerOrderRequest,
+                    meta: {
+                        permission: 'order_list',
+                        role: adminRoles,
+                        title: 'product order request'
+
+                    },
+                },
+                {
+                    path: "add_to_stock_seller/:id",
+                    name: "AddToCartForSeller",
+                    component: SellerCartStock,
+                    meta: {
+                        permission: 'order_list',
+                        role: adminRoles,
+                        title: 'Add Stock to Seller'
+
+                    },
+                },
+                {
+                    path: "product_order_request_warehouse",
+                    name: "VerifySellerOrderRequestWarehouse",
+                    component: VerifySellerOrderRequestWarehouse,
+                    meta: {
+                        permission: 'order_list',
+                        role: adminRoles,
+                        title: 'product order request'
 
                     },
                 },
@@ -1671,6 +1708,16 @@ function configRoutes() {
                     path: "orders",
                     name: "SellerOrders",
                     component: SellerOrders,
+                    meta: {
+                        permission: 'order_list',
+                        role: sellerRoles,
+                        title: 'Orders'
+                    },
+                },
+                {
+                    path: "product-order-request",
+                    name: "ProductOrderRequest",
+                    component: ProductOrderRequest,
                     meta: {
                         permission: 'order_list',
                         role: sellerRoles,
