@@ -177,6 +177,22 @@ __webpack_require__.r(__webpack_exports__);
     this.viewProducts();
   },
   methods: {
+    onVariantChange: function onVariantChange(event, variant) {
+      if (event.target.checked) {
+        // add
+        this.selectedVariants.push({
+          variant_id: variant.id,
+          product_id: variant.product_id
+        });
+      } else {
+        // remove
+        this.selectedVariants = this.selectedVariants.filter(function (v) {
+          return v.variant_id !== variant.id;
+        });
+      }
+      console.log(variant);
+      console.log(this.selectedVariants);
+    },
     handleFile: function handleFile(e) {
       this.form.receipt = e.target.files[0];
     },
@@ -243,10 +259,11 @@ __webpack_require__.r(__webpack_exports__);
         formData.append("products[".concat(index, "][price]"), item.price);
       });
       axios__WEBPACK_IMPORTED_MODULE_0___default().post(this.$apiUrl + "/purchase-order", formData).then(function () {
-        alert("Purchase order request created successfully");
+        _this3.$swal.fire("Success", "Request generated successfully", "success");
         _this3.resetForm();
+        _this3.selectedVariants = [];
       })["catch"](function () {
-        alert("Failed to create request");
+        _this3.$swal.fire("Error", "Failed to generate request", "error");
       });
     },
     resetForm: function resetForm() {
@@ -482,7 +499,7 @@ var render = function () {
               _vm._l(_vm.categoryOptions, function (cat) {
                 return _c(
                   "option",
-                  { key: cat.id, domProps: { value: cat.id } },
+                  { key: cat.id * 2, domProps: { value: cat.id } },
                   [
                     _vm._v(
                       "\n                        " +
@@ -551,46 +568,15 @@ var render = function () {
               "tbody",
               [
                 _vm._l(_vm.variants, function (variant, index) {
-                  return _c("tr", { key: variant.variant_id }, [
+                  return _c("tr", { key: variant.id * 1.2 }, [
                     _c("td", [_vm._v(_vm._s(index + 1))]),
                     _vm._v(" "),
                     _c("td", [
                       _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.selectedVariants,
-                            expression: "selectedVariants",
-                          },
-                        ],
                         attrs: { type: "checkbox" },
-                        domProps: {
-                          value: variant,
-                          checked: Array.isArray(_vm.selectedVariants)
-                            ? _vm._i(_vm.selectedVariants, variant) > -1
-                            : _vm.selectedVariants,
-                        },
                         on: {
                           change: function ($event) {
-                            var $$a = _vm.selectedVariants,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = variant,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  (_vm.selectedVariants = $$a.concat([$$v]))
-                              } else {
-                                $$i > -1 &&
-                                  (_vm.selectedVariants = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
-                              }
-                            } else {
-                              _vm.selectedVariants = $$c
-                            }
+                            return _vm.onVariantChange($event, variant)
                           },
                         },
                       }),

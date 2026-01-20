@@ -68,17 +68,17 @@ class ProductApisController extends Controller
             $where[] = ['p.id', '=', $request->product_id];
         }
 
-        if (isset($request->seller) && $request->seller !== "") {
-            $where[] = ['p.seller_id', '=', $request->seller];
-            // Get the assigned categories from the seller table
-            $assignedCategories = Seller::where('id', $request->seller)->value('categories');
+        // if (isset($request->seller) && $request->seller !== "") {
+        //     $where[] = ['p.seller_id', '=', $request->seller];
+        //     // Get the assigned categories from the seller table
+        //     $assignedCategories = Seller::where('id', $request->seller)->value('categories');
 
-            // Convert the assigned categories into an array
-            $categoryIds = explode(',', $assignedCategories);
+        //     // Convert the assigned categories into an array
+        //     $categoryIds = explode(',', $assignedCategories);
 
-            // Query the categories based on the assigned categories from the seller
-            $categories = Category::whereIn('id', $categoryIds)->orderBy('id', 'DESC')->get()->toArray();
-        }
+        //     // Query the categories based on the assigned categories from the seller
+        //     $categories = Category::whereIn('id', $categoryIds)->orderBy('id', 'DESC')->get()->toArray();
+        // }
 
         if (isset($request->category) && $request->category !== "") {
             $where[] = ['p.category_id', '=', $request->category];
@@ -117,12 +117,12 @@ class ProductApisController extends Controller
             'p.id as id',
             'p.id as product_id',
             'p.name',
-            'p.seller_id',
+
             'p.status',
             'p.tax_id',
             'p.image',
-            's.name as seller_name',
-            's.id as seller_id',
+
+
             'p.indicator',
             'p.is_approved',
             'p.manufacturer',
@@ -140,7 +140,7 @@ class ProductApisController extends Controller
             'u.short_code',
             DB::raw('(select short_code from units where units.id = pv.stock_unit_id) as stock_unit')
         )
-            ->leftJoin('sellers as s', 'p.seller_id', '=', 's.id')
+
             ->join('product_variants as pv', 'p.id', '=', 'pv.product_id')
             ->join('units as u', 'pv.stock_unit_id', '=', 'u.id');
 
@@ -158,7 +158,6 @@ class ProductApisController extends Controller
                 'p.id',
                 'pv.id',
                 'p.name',
-                's.name',
                 'pv.price',
                 'pv.discounted_price',
                 'pv.measurement',

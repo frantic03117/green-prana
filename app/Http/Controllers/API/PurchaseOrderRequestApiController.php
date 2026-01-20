@@ -18,14 +18,13 @@ class PurchaseOrderRequestApiController extends Controller
     public function make_purchase_order_request_by_seller(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'seller_id' => 'required|exists:users,id',
-            'warehouse_id' => 'required|exists:warehouses,id',
+            'seller_id' => 'required|exists:sellers,id',
             'payment_date' => 'required|date',
             'payment_mode' => 'required|string',
             'notes' => 'nullable|string',
             'products' => 'required|array|min:1',
-            'products.*.product_id' => 'required|exists:products,id',
-            'products.*.variant_id' => 'required|exists:product_variants,id',
+            // 'products.*.product_id' => 'required|exists:products,id',
+            // 'products.*.variant_id' => 'required|exists:product_variants,id',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -35,13 +34,20 @@ class PurchaseOrderRequestApiController extends Controller
         }
         DB::beginTransaction();
         try {
-
+            $findSeller = Seller::find($request->seller_id);
             // 1️⃣ Create payment / purchase order
+            $receiptPath = null;
+
+            if ($request->hasFile('payment_receipt')) {
+                $receiptPath = $request->file('payment_receipt')
+                    ->store('receipts', 'public');
+            }
             $payment = ProductOrderPayment::create([
                 'seller_id' => $request->seller_id,
-                'warehouse_id' => $request->warehouse_id,
+                'warehouse_id' => $findSeller->warehouse_id,
                 'payment_date' => $request->payment_date,
                 'payment_mode' => $request->payment_mode,
+                'payment_receipt' =>   $receiptPath,
                 'notes' => $request->notes,
                 'admin_status' => 'pending',
                 'order_status' => 'requested'

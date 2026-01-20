@@ -380,7 +380,7 @@
                             <div class="mt-4">
                                 <div class="mb-3">
                                     <label for="paymentMethod" class="form-label">{{ __('select_payment_method')
-                                        }}</label>
+                                    }}</label>
                                     <select id="paymentMethod" class="form-select" v-model="paymentMethod">
                                         <option value="cash">{{ __('cash') }}</option>
                                         <option value="upi">{{ __('upi') }}</option>
@@ -428,9 +428,9 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="closeRegisterModal">{{ __('cancel')
-                            }}</button>
+                        }}</button>
                         <button type="button" class="btn btn-primary" @click="registerUser">{{ __('register')
-                            }}</button>
+                        }}</button>
                     </div>
                 </div>
             </div>
@@ -514,7 +514,7 @@
                             </div>
                             <small class="text-muted">{{ __('subtotal') }}: {{ $currency }} {{
                                 calculateSubtotal().toFixed(2)
-                                }}</small>
+                            }}</small>
                         </div>
                         <div class="mb-3">
                             <label for="discountAmount" class="form-label">{{ __('discount_amount') }}</label>
@@ -533,11 +533,11 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('cancel')
-                            }}</button>
+                        }}</button>
                         <button type="button" class="btn btn-danger" @click="clearDiscount">{{ __('clear_discount')
-                            }}</button>
+                        }}</button>
                         <button type="button" class="btn btn-primary" @click="applyDiscount">{{ __('apply_discount')
-                            }}</button>
+                        }}</button>
                     </div>
                 </div>
             </div>
@@ -595,13 +595,13 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('cancel')
-                            }}</button>
+                        }}</button>
                         <button type="button" class="btn btn-danger" @click="clearAdditionalCharges">{{
                             __('clear_all_charges')
-                            }}</button>
+                        }}</button>
                         <button type="button" class="btn btn-primary" @click="applyAdditionalCharges">{{
                             __('apply_charges')
-                            }}</button>
+                        }}</button>
                     </div>
                 </div>
             </div>

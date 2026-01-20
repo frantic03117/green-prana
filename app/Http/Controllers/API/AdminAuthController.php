@@ -82,10 +82,10 @@ class AdminAuthController extends Controller
         if ($user->role_id == Role::$roleSeller && isset($user->seller) && $user->seller->status == Seller::$statusDeactivated) {
             return CommonHelper::responseError("Your Account is Deactivated, Please Contact to Administrator for activate!");
         }
-        if ($user->role_id == "5") {
-
+        if ($user->role_id == 5) {
             $findWarehouse = Warehouse::where('email', request()->email)->first();
-
+            // return response()->json(['data' => $findWarehouse], 500);
+            // $user->load('warehouse');
             $user->warehouse_id = $findWarehouse->id;
         }
 

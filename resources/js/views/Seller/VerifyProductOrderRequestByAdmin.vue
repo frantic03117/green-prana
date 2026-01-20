@@ -10,43 +10,59 @@
                                 <th>Seller</th>
                                 <th>Payment Info</th>
                                 <th>Product</th>
+                                <th>Admin Status</th>
+                                <th>Order Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Sandeep Bhiya</td>
+                            <tr v-for="(item, index) in requests" :key="item.id">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ item.seller ? item.seller.name : 'N/A' }}</td>
 
                                 <td>
+
+
                                     <ul>
                                         <li>
                                             <strong>Payment Date:</strong>
-                                            <small>01-01-2025</small>
+                                            <small>{{ item.payment_date }}</small>
                                         </li>
                                         <li>
                                             <strong>Payment Amount:</strong>
-                                            <small>₹ 200,000.00</small>
+                                            <small>₹ {{ item.amount }}</small>
                                         </li>
                                         <li>
                                             <strong>Payment File:</strong>
-                                            <a href="#">View File</a>
+                                            <a v-if="item.payment_receipt" :href="receiptUrl(item.payment_receipt)"
+                                                target="_blank">
+                                                View
+                                            </a>
+                                            <span v-else>-</span>
                                         </li>
                                     </ul>
                                 </td>
-
                                 <td>
-                                    <button class="btn btn-link text-decoration-underline" @click="openProductModal">
+                                    <button class="btn btn-link text-decoration-underline"
+                                        @click="openProductModal(item)">
                                         View Product Request
                                     </button>
                                 </td>
 
                                 <td>
-                                    <button class="btn btn-sm btn-primary" @click="openActionModal">
+                                    <span class="badge bg-warning">{{ item.admin_status }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ item.order_status }}</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @click="openActionModal(item)">
                                         <i class="fa fa-pencil"></i>
                                     </button>
                                 </td>
+
                             </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -63,9 +79,22 @@
                     </div>
 
                     <div class="modal-body">
-                        <p><strong>Product Name:</strong> Sample Product</p>
-                        <p><strong>Category:</strong> Electronics</p>
-                        <p><strong>Description:</strong> Product description goes here.</p>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Product ID</th>
+                                    <th>Variant ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(product, index) in selectedOrder.order_requests" :key="product.id">
+                                    <td>{{ index + 1 }}</td>
+                                    <td>{{ product.product_id }}</td>
+                                    <td>{{ product.variant_id }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -112,9 +141,23 @@ import Auth from "../../Auth.js";
 
 export default {
     name: "VerifyProductOrderRequestByAdmin",
-
+    data() {
+        return {
+            loading: false,
+            requests: [],
+            selectedOrder: null,
+            currentPage: 1,
+            perPage: 10,
+            total: 0,
+            lastPage: 1
+        };
+    },
+    created() {
+        this.fetchRequests();
+    },
     methods: {
-        openProductModal() {
+        openProductModal(item) {
+            this.selectedOrder = item;
             const modal = new bootstrap.Modal(
                 document.getElementById("productModal")
             );
@@ -150,7 +193,33 @@ export default {
                 .catch(() => {
                     alert("Something went wrong");
                 });
-        }
+        },
+        fetchRequests(page = 1) {
+            this.loading = true;
+            this.currentPage = page;
+            axios
+                .get(this.$apiUrl + "/purchase-order", {
+                    params: {
+                        page: this.currentPage,
+                        per_page: this.perPage
+                    }
+                })
+                .then((res) => {
+                    // Laravel paginator response
+                    this.requests = res.data.data.data || [];
+                    this.total = res.data.data.total;
+                    this.lastPage = res.data.data.last_page;
+                })
+                .catch(() => {
+                    this.requests = [];
+                })
+                .finally(() => {
+                    this.loading = false;
+                });
+        },
+        receiptUrl(path) {
+            return `${this.$baseUrl}/storage/${path}`;
+        },
     }
 };
 </script>

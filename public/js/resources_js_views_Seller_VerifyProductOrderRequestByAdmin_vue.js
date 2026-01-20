@@ -122,11 +122,40 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "VerifyProductOrderRequestByAdmin",
+  data: function data() {
+    return {
+      loading: false,
+      requests: [],
+      // pagination
+      currentPage: 1,
+      perPage: 10,
+      total: 0,
+      lastPage: 1
+    };
+  },
+  created: function created() {
+    this.fetchRequests();
+  },
   methods: {
     openProductModal: function openProductModal() {
       var modal = new bootstrap.Modal(document.getElementById("productModal"));
@@ -151,6 +180,30 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function () {
         alert("Something went wrong");
       });
+    },
+    fetchRequests: function fetchRequests() {
+      var _this = this;
+      var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+      this.loading = true;
+      this.currentPage = page;
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.$apiUrl + "/purchase-order", {
+        params: {
+          page: this.currentPage,
+          per_page: this.perPage
+        }
+      }).then(function (res) {
+        // Laravel paginator response
+        _this.requests = res.data.data.data || [];
+        _this.total = res.data.data.total;
+        _this.lastPage = res.data.data.last_page;
+      })["catch"](function () {
+        _this.requests = [];
+      })["finally"](function () {
+        _this.loading = false;
+      });
+    },
+    receiptUrl: function receiptUrl(path) {
+      return "".concat(this.$baseUrl, "/storage/").concat(path);
     }
   }
 });
@@ -248,47 +301,104 @@ var render = function () {
           _c("table", { staticClass: "table" }, [
             _vm._m(0),
             _vm._v(" "),
-            _c("tbody", [
-              _c("tr", [
-                _c("td", [_vm._v("1")]),
-                _vm._v(" "),
-                _c("td", [_vm._v("Sandeep Bhiya")]),
-                _vm._v(" "),
-                _vm._m(1),
-                _vm._v(" "),
-                _c("td", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-link text-decoration-underline",
-                      on: { click: _vm.openProductModal },
-                    },
-                    [
-                      _vm._v(
-                        "\n                                    View Product Request\n                                "
-                      ),
-                    ]
-                  ),
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-sm btn-primary",
-                      on: { click: _vm.openActionModal },
-                    },
-                    [_c("i", { staticClass: "fa fa-pencil" })]
-                  ),
-                ]),
-              ]),
-            ]),
+            _c(
+              "tbody",
+              _vm._l(_vm.requests, function (item, index) {
+                return _c("tr", { key: item.id }, [
+                  _c("td", [_vm._v(_vm._s(index + 1))]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _vm._v(_vm._s(item.seller ? item.seller.name : "N/A")),
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("ul", [
+                      _c("li", [
+                        _c("strong", [_vm._v("Payment Date:")]),
+                        _vm._v(" "),
+                        _c("small", [_vm._v(_vm._s(item.payment_date))]),
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _c("strong", [_vm._v("Payment Amount:")]),
+                        _vm._v(" "),
+                        _c("small", [_vm._v("₹ " + _vm._s(item.amount))]),
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _c("strong", [_vm._v("Payment File:")]),
+                        _vm._v(" "),
+                        item.payment_receipt
+                          ? _c(
+                              "a",
+                              {
+                                attrs: {
+                                  href: _vm.receiptUrl(item.payment_receipt),
+                                  target: "_blank",
+                                },
+                              },
+                              [
+                                _vm._v(
+                                  "\n                                            View\n                                        "
+                                ),
+                              ]
+                            )
+                          : _c("span", [_vm._v("-")]),
+                      ]),
+                    ]),
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-link text-decoration-underline",
+                        on: { click: _vm.openProductModal },
+                      },
+                      [
+                        _vm._v(
+                          "\n                                    View Product Request\n                                "
+                        ),
+                      ]
+                    ),
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("span", { staticClass: "badge bg-warning" }, [
+                      _vm._v(_vm._s(item.admin_status)),
+                    ]),
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("span", { staticClass: "badge bg-info" }, [
+                      _vm._v(_vm._s(item.order_status)),
+                    ]),
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-sm btn-primary",
+                        on: {
+                          click: function ($event) {
+                            return _vm.openActionModal(item)
+                          },
+                        },
+                      },
+                      [_c("i", { staticClass: "fa fa-pencil" })]
+                    ),
+                  ]),
+                ])
+              }),
+              0
+            ),
           ]),
         ]),
       ]),
     ]),
     _vm._v(" "),
-    _vm._m(2),
+    _vm._m(1),
     _vm._v(" "),
     _c(
       "div",
@@ -299,9 +409,9 @@ var render = function () {
       [
         _c("div", { staticClass: "modal-dialog" }, [
           _c("div", { staticClass: "modal-content" }, [
-            _vm._m(3),
+            _vm._m(2),
             _vm._v(" "),
-            _vm._m(4),
+            _vm._m(3),
             _vm._v(" "),
             _c("div", { staticClass: "modal-footer" }, [
               _c(
@@ -342,33 +452,11 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("Product")]),
         _vm._v(" "),
+        _c("th", [_vm._v("Admin Status")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Order Status")]),
+        _vm._v(" "),
         _c("th", [_vm._v("Action")]),
-      ]),
-    ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [
-      _c("ul", [
-        _c("li", [
-          _c("strong", [_vm._v("Payment Date:")]),
-          _vm._v(" "),
-          _c("small", [_vm._v("01-01-2025")]),
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c("strong", [_vm._v("Payment Amount:")]),
-          _vm._v(" "),
-          _c("small", [_vm._v("₹ 200,000.00")]),
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c("strong", [_vm._v("Payment File:")]),
-          _vm._v(" "),
-          _c("a", { attrs: { href: "#" } }, [_vm._v("View File")]),
-        ]),
       ]),
     ])
   },

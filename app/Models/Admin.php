@@ -48,6 +48,10 @@ class Admin extends Authenticatable
     {
         return $this->belongsTo(Seller::class, 'id', 'admin_id');
     }
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class, 'email', 'email')->select(['id', 'name', 'email']);
+    }
 
 
     public function getSellerStatusAttribute()

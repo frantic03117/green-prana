@@ -260,6 +260,11 @@ __webpack_require__.r(__webpack_exports__);
         url: '/seller/stock_record',
         permission: 'product_list'
       }, {
+        name: "Order Request",
+        icon: 'retweet',
+        url: '/seller/product-order-request',
+        permission: 'return_request_list'
+      }, {
         name: __('return_requests'),
         icon: 'retweet',
         url: '/seller/return_requests',

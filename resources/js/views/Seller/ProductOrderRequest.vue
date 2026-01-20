@@ -36,7 +36,7 @@
                     <label>Category</label>
                     <select v-model="selectedCategory" class="form-control" @change="onCategoryChange">
                         <option value="">All Categories</option>
-                        <option v-for="cat in categoryOptions" :key="cat.id" :value="cat.id">
+                        <option v-for="cat in categoryOptions" :key="cat.id * 2" :value="cat.id">
                             {{ cat.name }}
                         </option>
                     </select>
@@ -64,10 +64,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(variant, index) in variants" :key="variant.variant_id">
+                            <tr v-for="(variant, index) in variants" :key="variant.id * 1.2">
                                 <td>{{ index + 1 }}</td>
                                 <td>
-                                    <input type="checkbox" :value="variant" v-model="selectedVariants">
+                                    <input type="checkbox" @change="onVariantChange($event, variant)">
                                 </td>
                                 <td>{{ variant.name }}</td>
                             </tr>
@@ -166,6 +166,22 @@ export default {
     },
 
     methods: {
+        onVariantChange(event, variant) {
+            if (event.target.checked) {
+                // add
+                this.selectedVariants.push({
+                    variant_id: variant.id,
+                    product_id: variant.product_id
+                })
+            } else {
+                // remove
+                this.selectedVariants = this.selectedVariants.filter(
+                    v => v.variant_id !== variant.id
+                )
+            }
+            console.log(variant)
+            console.log(this.selectedVariants)
+        },
         handleFile(e) {
             this.form.receipt = e.target.files[0];
         },
@@ -237,11 +253,12 @@ export default {
 
             axios.post(this.$apiUrl + "/purchase-order", formData)
                 .then(() => {
-                    alert("Purchase order request created successfully");
+                    this.$swal.fire("Success", "Request generated successfully", "success");
                     this.resetForm();
+                    this.selectedVariants = [];
                 })
                 .catch(() => {
-                    alert("Failed to create request");
+                    this.$swal.fire("Error", "Failed to generate request", "error");
                 });
         },
 

@@ -397,9 +397,15 @@ export default {
                     permission: 'product_list',
                 },
                 {
-                    name: 'product_order_request_warehouse',
+                    name: 'Order Request',
                     icon: 'calculator',
-                    url: '/product_order_request_warehouse',
+                    url: '/order_request',
+                    permission: 'product_list',
+                },
+                {
+                    name: 'Order Request Warehouse',
+                    icon: 'calculator',
+                    url: '/order_request_warehouse',
                     permission: 'product_list',
                 },
 

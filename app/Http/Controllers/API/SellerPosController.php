@@ -14,7 +14,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Models\Seller;
 use App\Models\Transaction;
-use App\Models\UserAddress;
+use App\Models\WareHouse;
 use App\Notifications\OrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -203,12 +203,13 @@ class SellerPosController extends Controller
 
             // Generate unique order ID
             $orders_id = 'POS' . date('YmdHis') . rand(10, 99);
+            $roleId = auth()->user()->role_id;
 
             // Create order data array
             $orderData = [
                 'pos_user_id' => ($request->user_type === 'pos') ? $request->user_id : null,
                 'user_id' => ($request->user_type === 'user') ? $request->user_id : null,
-                'store_id' => auth()->user()->seller->id,
+                'store_id' => $roleId == 3 ? auth()->user()?->seller?->id : auth()->user()->warehouse->id,
                 'total_amount' => $request->final_total,
                 'discount_amount' => $request->discount_amount ?? 0,
                 'discount_percentage' => $request->discount_percentage ?? 0,
@@ -394,17 +395,29 @@ class SellerPosController extends Controller
     public function getProducts(Request $request)
     {
         try {
-            $sellerId = auth()->user()->seller->id;
+            $roleId = auth()->user()->role_id;
+            $sellerId = auth()->user()?->seller?->id || 0;
+            if ($roleId == 5) {
+                $findWarehouse = WareHouse::where('email', auth()->user()->email)->select(['id', 'email'])->first();
+                // return response()->json($findWarehouse);
+                $sellerId =  $findWarehouse->id;
+            }
+
             $perPage = $request->per_page ?? 9;
 
             $query = SellerProduct::with([
                 'product',
                 'variant.unit'
-            ])
-                ->where('seller_id', $sellerId)
-                ->whereHas('product', function ($q) {
-                    $q->where('status', 1);
-                });
+            ]);
+            if ($roleId == "5") {
+                $query->where('warehouse_id', $sellerId);
+            }
+            if ($roleId == "3") {
+                $query->where('seller_id', $sellerId);
+            }
+            $query->whereHas('product', function ($q) {
+                $q->where('status', 1);
+            });
 
             // =========================
             // Category filter
@@ -441,13 +454,13 @@ class SellerPosController extends Controller
                     $product = $items->first()->product;
 
                     return [
-                        'id' => $product->id,
+                        'id' => $product?->id,
                         'name' => $product->name,
                         'description' => $product->description,
                         'image_url' => CommonHelper::getImage($product->image),
                         'variants' => $items->map(function ($sp) {
                             return [
-                                'id' => $sp->variant->id,
+                                'id' => $sp->variant?->id,
                                 'measurement' => $sp->variant->measurement,
                                 'measurement_unit_name' => $sp->variant->unit?->short_code,
                                 'price' => $sp->price,                // ✅ seller price
@@ -486,17 +499,16 @@ class SellerPosController extends Controller
     public function getSellerCategories()
     {
         try {
-            $seller = auth()->user()->seller;
+            // $seller = auth()->user()->seller;
 
-            if (!$seller) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Seller profile not found'
-                ], 404);
-            }
+            // if (!$seller) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Seller profile not found'
+            //     ], 404);
+            // }
 
-            $categories = Category::whereIn('id', explode(",", $seller->categories))
-                ->where('status', 1)
+            $categories = Category::where('status', '1')
                 ->orderBy('name', 'ASC')
                 ->get()
                 ->map(function ($category) {
@@ -922,27 +934,42 @@ class SellerPosController extends Controller
     public function getSellerStoreName()
     {
         try {
+            $roleId = auth()->user()->role_id;
+            // return response()->json(auth()->user()->warehouse);
             $userId = auth()->id();
-
-            // Find the seller where admin_id matches the authenticated user's ID
-            $seller = DB::table('sellers')
-                ->where('admin_id', $userId)
-                ->select('name as store_name')
-                ->first();
-
-            if (!$seller) {
+            if ($roleId == 5) {
+                $findWarehouse = WareHouse::where('email', auth()->user()->email)->select(['id', 'email'])->first();
+                $userId =  $findWarehouse->id;
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Seller not found for this user'
-                ], 404);
+                    'status' => true,
+                    'data' => [
+                        'store_name' => $findWarehouse->name
+                    ]
+                ]);
             }
 
-            return response()->json([
-                'status' => true,
-                'data' => [
-                    'store_name' => $seller->store_name
-                ]
-            ]);
+
+            if ($roleId == 3) {
+                // Find the seller where admin_id matches the authenticated user's ID
+                $seller = DB::table('sellers')
+                    ->where('admin_id', $userId)
+                    ->select('name as store_name')
+                    ->first();
+
+                if (!$seller) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Seller not found for this user'
+                    ], 404);
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'data' => [
+                        'store_name' => $seller->store_name
+                    ]
+                ]);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,

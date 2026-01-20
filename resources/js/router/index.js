@@ -224,6 +224,7 @@ const SellerMedia = () => import("../views/Product/Media");
 const SellerSettings = () => import('../views/Settings');
 const SellerProfile = () => import("../views/Seller/EditSeller");
 const SellerPointOfSale = () => import("../views/Sellers/PointOfSale");
+const WarehousePointofSale = () => import('../views/warehouse/PointOfSaleWarehouse.vue');
 const SellerPosReports = () => import("../views/Sellers/PosReport");
 /***********************************************************/
 /*Delivery Boy*/
@@ -258,6 +259,7 @@ const WarehouseStock = () => import('../views/warehouse/WarehouseStock.vue');
 const WarehouseStockList = () => import('../views/warehouse/WarehouseStockList.vue');
 
 const ProductOrderRequest = () => import('../views/Seller/ProductOrderRequest.vue');
+const ListProductOrderRequest = () => import('../views/Seller/ListProductOrderRequest.vue')
 
 let router = new Router({
     mode: "history",
@@ -456,7 +458,7 @@ function configRoutes() {
                     },
                 },
                 {
-                    path: "product_order_request",
+                    path: "order_request",
                     name: "VerifyProductOrderRequestByAdmin",
                     component: VerifySellerOrderRequest,
                     meta: {
@@ -478,7 +480,7 @@ function configRoutes() {
                     },
                 },
                 {
-                    path: "product_order_request_warehouse",
+                    path: "order_request_warehouse",
                     name: "VerifySellerOrderRequestWarehouse",
                     component: VerifySellerOrderRequestWarehouse,
                     meta: {
@@ -512,7 +514,7 @@ function configRoutes() {
                 {
                     path: "point-of-sale",
                     name: "SellerPointOfSale",
-                    component: SellerPointOfSale,
+                    component: WarehousePointofSale,
                     meta: {
                         permission: 'order_list',
                         role: adminRoles,
@@ -1715,9 +1717,19 @@ function configRoutes() {
                     },
                 },
                 {
-                    path: "product-order-request",
+                    path: "product-order-request/create",
                     name: "ProductOrderRequest",
                     component: ProductOrderRequest,
+                    meta: {
+                        permission: 'order_list',
+                        role: sellerRoles,
+                        title: 'Orders'
+                    },
+                },
+                {
+                    path: "product-order-request",
+                    name: "ProductOrderRequest",
+                    component: ListProductOrderRequest,
                     meta: {
                         permission: 'order_list',
                         role: sellerRoles,
