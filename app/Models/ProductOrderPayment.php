@@ -21,7 +21,7 @@ class ProductOrderPayment extends Model
     ];
     public function orderRequests()
     {
-        return $this->hasMany(ProductOrderRequest::class, 'po_id');
+        return $this->hasMany(ProductOrderRequest::class, 'po_id')->with(['product', 'variant']);
     }
     public function seller()
     {

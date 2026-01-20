@@ -13,4 +13,12 @@ class ProductOrderRequest extends Model
     {
         return $this->belongsTo(ProductOrderPayment::class, 'po_id');
     }
+    public function product()
+    {
+        return $this->hasOne(Product::class, 'product_id', 'id');
+    }
+    public function variant()
+    {
+        return $this->hasOne(ProductVariant::class, 'variant_id', 'id');
+    }
 }
